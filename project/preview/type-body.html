@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px 28px; }
+  .meta { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 16px; display: flex; justify-content: space-between; }
+  .meta .badge { background: var(--yellow); color: var(--ink); font-weight: 700; padding: 3px 8px; letter-spacing: 0.1em; }
+  .head { font-size: 26px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 4px; }
+  .sub { font-size: 16px; font-weight: 400; color: var(--grey); margin-bottom: 16px; }
+  .weights { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; padding-top: 12px; border-top: 0.5px dashed var(--border-soft); }
+  .w { }
+  .w-tag { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-faint); display: block; margin-bottom: 4px; }
+  .w-spec { font-size: 13px; color: var(--grey); }
+</style>
+</head>
+<body>
+  <div class="meta"><span>IBM Plex Mono · System Font</span><span class="badge">TUTTO IL RESTO</span></div>
+  <div class="head">iPhone o Android?</div>
+  <div class="sub">Ciao ragazzi, benvenuti in questo nuovo video.</div>
+  <div class="weights">
+    <div class="w"><span class="w-tag">Light 300</span><span class="w-spec" style="font-weight: 300;">Caption</span></div>
+    <div class="w"><span class="w-tag">Regular 400</span><span class="w-spec" style="font-weight: 400;">Corpo</span></div>
+    <div class="w"><span class="w-tag">Medium 500</span><span class="w-spec" style="font-weight: 500;">Info</span></div>
+    <div class="w"><span class="w-tag">Semibold 600</span><span class="w-spec" style="font-weight: 600; color: var(--ink);">Titoli</span></div>
+    <div class="w"><span class="w-tag">Bold 700</span><span class="w-spec" style="font-weight: 700; color: var(--yellow);">CTA</span></div>
+  </div>
+</body>
+</html>

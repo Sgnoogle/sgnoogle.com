@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 0; display: grid; grid-template-rows: 1.1fr 1fr; gap: 0; overflow: hidden; }
+
+  .panel { padding: 28px 28px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+
+  /* TOP — primary expression: yellow surface, white wordmark + mark */
+  .primary { background: var(--yellow); color: var(--white); }
+  .primary .wm  { color: var(--white); }
+  .primary .div { background: rgba(255,255,255,0.45); }
+  .primary .cap { color: rgba(255,255,255,0.7); }
+  .primary .sub { color: rgba(255,255,255,0.85); }
+
+  /* BOTTOM — secondary expression: paper surface, yellow wordmark + mark */
+  .secondary { background: var(--paper); color: var(--ink); border-top: 0.5px solid var(--border); }
+  .secondary .wm  { color: var(--yellow); }
+  .secondary .div { background: rgba(120,122,124,0.3); }
+  .secondary .cap { color: var(--grey); }
+  .secondary .sub { color: var(--grey); }
+
+  .lockup { display: flex; align-items: center; gap: 14px; }
+  .mark   { width: 36px; height: 36px; display: flex; flex-shrink: 0; }
+  .mark img { width: 100%; height: 100%; display: block; }
+  .div    { width: 0.5px; height: 24px; }
+  .wm     { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.025em; line-height: 1; }
+  .sub    { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; margin-top: 4px; }
+
+  .hero-wm {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+
+  .cap-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .cap { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; }
+  .swatch-row { display: flex; gap: 6px; align-items: center; }
+  .sw { width: 12px; height: 12px; display: inline-block; }
+  .sw.w { background: var(--white); border: 0.5px solid rgba(255,255,255,0.5); }
+  .sw.y { background: var(--yellow); border: 0.5px solid rgba(40,40,44,0.15); }
+</style>
+</head>
+<body>
+  <!-- ───── PRIMARY: yellow surface, white wordmark ───── -->
+  <div class="panel primary">
+    <div class="cap-row">
+      <span class="cap">PRIMARY · YELLOW + WHITE</span>
+      <span class="swatch-row">
+        <span class="sw w"></span>
+        <span class="sw y" style="border-color: rgba(255,255,255,0.5);"></span>
+      </span>
+    </div>
+
+    <div>
+      <div class="hero-wm">FRANCESCOSGNAOLIN</div>
+      <div class="sub">Wordmark · IBM Plex Mono Bold · -0.035em · single color</div>
+    </div>
+
+    <div class="lockup">
+      <div class="mark"><img src="../assets/logo-mark-white.svg" alt=""></div>
+      <div class="div"></div>
+      <div>
+        <div class="wm">FRANCESCOSGNAOLIN</div>
+        <div class="sub">Lockup · mark + divider + wordmark</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── SECONDARY: paper surface, yellow wordmark ───── -->
+  <div class="panel secondary">
+    <div class="cap-row">
+      <span class="cap">SECONDARY · YELLOW ON PAPER</span>
+      <span class="swatch-row">
+        <span class="sw y"></span>
+        <span class="cap" style="color: var(--grey);">@sgnoogle</span>
+      </span>
+    </div>
+
+    <div class="lockup">
+      <div class="mark"><img src="../assets/logo-mark-yellow.svg" alt=""></div>
+      <div class="div"></div>
+      <div>
+        <div class="wm">FRANCESCOSGNAOLIN</div>
+        <div class="sub">Use on paper — fallback when yellow can't be the surface</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

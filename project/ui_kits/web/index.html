@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGNOOGLE · SGN-OS</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  html, body { background: var(--paper); margin: 0; height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+  button, input, select, textarea { font-family: inherit; color: inherit; }
+
+  /* ── Pulse for status dots */
+  @keyframes sgnpulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.35; }
+  }
+
+  /* ── Module-change yellow sweep */
+  @keyframes sgnModuleSweep {
+    0%     { transform: scaleX(0); transform-origin: left; }
+    40%    { transform: scaleX(1); transform-origin: left; }
+    40.01% { transform-origin: right; }
+    100%   { transform: scaleX(0); transform-origin: right; }
+  }
+  @keyframes sgnTransNum {
+    0%   { opacity: 0; transform: translateY(6px); }
+    35%  { opacity: 1; transform: translateY(0); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes sgnPreviewIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+
+  /* ── 3D wireframe F monogram on home */
+  @keyframes sgnMarkSpin {
+    from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    to   { transform: rotateX(0deg) rotateY(360deg) rotateZ(0deg); }
+  }
+
+  /* ── Click ripple sonar */
+  .sgn-ripple-ring {
+    position: absolute;
+    width: 18px; height: 18px;
+    transform: translate(-50%, -50%);
+    border: 1.5px solid var(--yellow);
+    border-radius: 50%;
+    opacity: 0.9;
+    animation: sgnRipple 620ms cubic-bezier(0.2, 0, 0, 1) forwards;
+    will-change: transform, opacity, width, height;
+  }
+  @keyframes sgnRipple {
+    0%   { width: 14px; height: 14px; opacity: 0.85; border-width: 1.5px; }
+    60%  { opacity: 0.5; }
+    100% { width: 180px; height: 180px; opacity: 0; border-width: 0.5px; }
+  }
+
+  /* ── Fixed 100vh game-frame layout */
+  .sgn-frame {
+    display: grid;
+    grid-template-rows: 44px 1fr clamp(140px, 24vh, 200px);
+    height: 100vh;
+    overflow: hidden;
+  }
+  .sgn-display { position: relative; overflow: hidden; }
+  .sgn-display-inner {
+    position: absolute; inset: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120,122,124,0.3) transparent;
+  }
+  .sgn-display-inner::-webkit-scrollbar { width: 6px; }
+  .sgn-display-inner::-webkit-scrollbar-track { background: transparent; }
+  .sgn-display-inner::-webkit-scrollbar-thumb { background: rgba(120,122,124,0.3); }
+
+  /* Subtle hover on tabs */
+  .sgn-tab:hover { background: var(--white) !important; }
+
+  /* ── Mobile (<=760) ── */
+  @media (max-width: 760px) {
+    .sgn-frame {
+      grid-template-rows: 44px 1fr clamp(180px, 36vh, 280px);
+    }
+    .sgn-strip { grid-template-columns: 1fr !important; grid-auto-flow: column !important; grid-auto-columns: 78vw !important; overflow-x: auto !important; scroll-snap-type: x mandatory; }
+    .sgn-strip > button { scroll-snap-align: start; }
+    .sgn-self-grid { grid-template-columns: 1fr !important; }
+    .sgn-featured  { grid-template-columns: 1fr !important; }
+    .sgn-app-row {
+      grid-template-columns: 40px 1fr !important;
+      row-gap: 10px !important;
+    }
+    .sgn-app-row > *:nth-child(3),
+    .sgn-app-row > *:nth-child(4) { grid-column: 1 / -1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="os/audio.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="os/content.jsx"></script>
+<script type="text/babel" src="os/utils.jsx"></script>
+<script type="text/babel" src="os/animations.jsx"></script>
+<script type="text/babel" src="os/Hero3DMark.jsx"></script>
+<script type="text/babel" src="os/modules.jsx"></script>
+<script type="text/babel" src="os/Console.jsx"></script>
+<script type="text/babel" src="os/Boot.jsx"></script>
+<script type="text/babel" src="os/LangMenu.jsx"></script>
+<script type="text/babel" src="os/Cursor.jsx"></script>
+<script type="text/babel" src="os/ClickRipple.jsx"></script>
+<script type="text/babel" src="os/tweaks-panel.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "language": "it",
+  "sound": true,
+  "crosshair": true,
+  "ripple": true
+}/*EDITMODE-END*/;
+
+const MODULES = {
+  '01': VideoModule,
+  '02': ObjectsModule,
+  '03': AppsModule,
+  '04': LinkModule,
+  '05': SelfModule,
+};
+
+function useIsMobile(breakpoint = 760) {
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.innerWidth < breakpoint);
+  useEffect(() => {
+    function update() { setM(window.innerWidth < breakpoint); }
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [breakpoint]);
+  return m;
+}
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [lang, setLang] = useState(tweaks.language || 'it');
+  const [current, setCurrent] = useState(null);
+  const [focused, setFocused] = useState(null);
+  const [booted, setBooted] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const [transKey, setTransKey] = useState(0);
+  const mobile = useIsMobile();
+
+  useEffect(() => { if (tweaks.language && tweaks.language !== lang) setLang(tweaks.language); }, [tweaks.language]);
+  useEffect(() => { window.sgnAudio?.setEnabled(!!tweaks.sound); }, [tweaks.sound]);
+
+  const sound = useCallback((kind) => {
+    if (tweaks.sound && window.sgnTick) window.sgnTick(kind);
+  }, [tweaks.sound]);
+
+  const select = useCallback((id) => {
+    setCurrent(prev => {
+      const next = prev === id ? null : id;
+      if (next) { setTransKey(k => k + 1); sound('confirm'); }
+      else { sound('back'); }
+      return next;
+    });
+  }, [sound]);
+
+  const goHome = useCallback(() => { setCurrent(null); sound('back'); }, [sound]);
+
+  const onPickLang = useCallback((v) => {
+    setLang(v); setTweak('language', v);
+    setLangOpen(false);
+  }, [setTweak]);
+
+  useEffect(() => {
+    function onKey(e) {
+      const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
+      if (inInput || langOpen) return;
+      if (['1','2','3','4','5'].includes(e.key)) select(`0${e.key}`);
+      else if (e.key === 'Escape' || e.key === '0') goHome();
+      else if (e.key.toLowerCase() === 'l') setLangOpen(true);
+      else if (e.key.toLowerCase() === 'm') setTweak('sound', !tweaks.sound);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [select, goHome, langOpen, tweaks.sound, setTweak]);
+
+  const ActiveModule = current ? MODULES[current] : null;
+
+  return (
+    <div data-screen-label={current ? `${current} ${I18N[lang].modules[current].label}` : '00 Menu'}>
+      {!booted && <BootScreen lang={lang} onDone={() => setBooted(true)} sound={sound}/>}
+
+      <Cursor enabled={!!tweaks.crosshair} sound={sound}/>
+      <ClickRipple enabled={!!tweaks.ripple}/>
+
+      <LangMenu
+        open={langOpen}
+        lang={lang}
+        onPick={onPickLang}
+        onClose={() => setLangOpen(false)}
+        sound={sound}
+      />
+
+      <div className="sgn-frame">
+        <TopBar
+          lang={lang}
+          onOpenLang={() => { setLangOpen(true); sound('tick'); }}
+          onHome={goHome}
+          current={current}
+          mobile={mobile}
+          soundOn={!!tweaks.sound}
+          onToggleSound={() => setTweak('sound', !tweaks.sound)}
+        />
+
+        <section className="sgn-display">
+          <div
+            key={`mod-${current || 'idle'}-${transKey}`}
+            className="sgn-display-inner"
+            style={{
+              padding: ActiveModule ? 'clamp(16px, 2.5vw, 32px)' : 0,
+            }}>
+            {ActiveModule
+              ? <ActiveModule lang={lang} mobile={mobile}/>
+              : <IdleDisplay lang={lang} mobile={mobile} focused={focused}/>
+            }
+          </div>
+          <TransitionOverlay keyId={current ? `${transKey}-${current}` : null}/>
+        </section>
+
+        <ModuleStrip
+          current={current}
+          focused={focused}
+          setFocused={setFocused}
+          lang={lang}
+          onSelect={select}
+          mobile={mobile}
+          sound={sound}
+        />
+      </div>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Language">
+          <TweakRadio label="Locale" value={tweaks.language || 'it'}
+            onChange={(v) => { setLang(v); setTweak('language', v); }}
+            options={[{ value: 'it', label: 'IT' }, { value: 'en', label: 'EN' }]}/>
+          <TweakButton label="Open language menu" onClick={() => setLangOpen(true)} secondary/>
+        </TweakSection>
+        <TweakSection label="Feel">
+          <TweakToggle label="Sound (clicks)" value={!!tweaks.sound}
+            onChange={(v) => setTweak('sound', v)}/>
+          <TweakToggle label="Crosshair cursor" value={!!tweaks.crosshair}
+            onChange={(v) => setTweak('crosshair', v)}/>
+          <TweakToggle label="Click ripple" value={!!tweaks.ripple}
+            onChange={(v) => setTweak('ripple', v)}/>
+          <TweakButton label="Replay boot sequence" onClick={() => setBooted(false)} secondary/>
+        </TweakSection>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

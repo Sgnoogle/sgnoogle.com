@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .row { display: grid; grid-template-columns: 180px 1fr 70px; align-items: stretch; border: 0.5px solid var(--border-soft); background: var(--paper); }
+  .preview { padding: 10px 14px; display: flex; align-items: center; min-height: 44px; }
+  .desc { padding: 10px 14px; font-size: 10px; color: var(--grey); border-left: 0.5px solid var(--border-soft); display: flex; align-items: center; line-height: 1.5; }
+  .desc strong { color: var(--ink); margin-right: 6px; }
+  .use { padding: 10px; border-left: 0.5px solid var(--border-soft); display: flex; align-items: center; justify-content: center; }
+  .dot { width: 10px; height: 10px; }
+  .dot.p { background: var(--yellow); }
+  .dot.s { background: var(--grey); }
+  .dot.r { border: 0.5px solid var(--grey); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="preview" style="background: #F0F1F2;"><span style="font-size: 13px; color: #787A7C; font-weight: 600;">Testo grigio su acciaio</span></div>
+    <div class="desc"><span><strong>Grigio · Acciaio</strong> 70% delle grafiche · default</span></div>
+    <div class="use"><div class="dot p"></div></div>
+  </div>
+  <div class="row">
+    <div class="preview" style="background: #F0F1F2;"><span style="font-size: 13px; color: #28282C; font-weight: 700;">Antracite su acciaio</span></div>
+    <div class="desc"><span><strong>Antracite · Acciaio</strong> titoli, massimo peso</span></div>
+    <div class="use"><div class="dot p"></div></div>
+  </div>
+  <div class="row">
+    <div class="preview" style="background: #F0F1F2;"><span class="display" style="font-size: 22px; color: #FFC200;">TITOLO</span></div>
+    <div class="desc"><span><strong>Giallo · Acciaio</strong> solo display sopra 40px</span></div>
+    <div class="use"><div class="dot s"></div></div>
+  </div>
+  <div class="row">
+    <div class="preview" style="background: #F0F1F2; padding: 0;">
+      <div style="background: #999; height: 44px; flex: 1; position: relative;">
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(40,40,44,0.85));">
+          <span style="font-size: 9px; color: #FFC200; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">⚡ </span><span style="font-size: 11px; color: #FFFFFF;">Overlay footage</span>
+        </div>
+      </div>
+    </div>
+    <div class="desc"><span><strong>Bianco + Giallo su Gradient</strong> SOLO velo su footage video</span></div>
+    <div class="use"><div class="dot r"></div></div>
+  </div>
+  <div class="row">
+    <div class="preview" style="background: #FFC200;"><span style="font-size: 13px; color: #28282C; font-weight: 700;">Antracite su giallo</span></div>
+    <div class="desc"><span><strong>Antracite · Giallo</strong> Cover Tipo B · uso raro</span></div>
+    <div class="use"><div class="dot r"></div></div>
+  </div>
+  <div class="row">
+    <div class="preview" style="background: #FFFFFF;"><span style="font-size: 13px; color: #28282C; font-weight: 700;">Antracite su bianco</span></div>
+    <div class="desc"><span><strong>Antracite · Bianco</strong> card surfaces only</span></div>
+    <div class="use"><div class="dot r"></div></div>
+  </div>
+</body>
+</html>

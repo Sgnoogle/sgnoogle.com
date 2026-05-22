@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+  .btn { display: flex; align-items: stretch; height: 44px; cursor: pointer; user-select: none; }
+  .btn .icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+  .btn .lbl { flex: 1; display: flex; align-items: center; padding: 0 18px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .primary { background: var(--ink); }
+  .primary .icon { width: 48px; color: var(--yellow); border-right: 0.5px solid rgba(255,255,255,0.15); }
+  .primary .lbl { color: var(--white); }
+  .secondary { border: 0.5px solid var(--ink); height: 40px; }
+  .secondary .icon { width: 44px; color: var(--grey); border-right: 0.5px solid rgba(40,40,44,0.3); }
+  .secondary .lbl { color: var(--ink); font-size: 10px; }
+  .ghost { display: flex; align-items: center; gap: 10px; padding: 4px 0; cursor: pointer; }
+  .ghost .icon-sm { width: 26px; height: 26px; border: 0.5px solid rgba(120,122,124,0.4); display: flex; align-items: center; justify-content: center; color: var(--grey); font-size: 12px; }
+  .ghost .lbl-sm { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); }
+</style>
+</head>
+<body>
+  <div class="btn primary"><div class="icon">→</div><div class="lbl">CONTINUA</div></div>
+  <div class="btn secondary"><div class="icon">+</div><div class="lbl">NUOVO PROGETTO</div></div>
+  <div class="ghost"><div class="icon-sm">↗</div><span class="lbl-sm">IMPOSTAZIONI</span></div>
+</body>
+</html>

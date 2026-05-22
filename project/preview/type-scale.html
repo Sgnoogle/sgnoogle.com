@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 20px 28px; display: flex; flex-direction: column; justify-content: center; }
+  .row { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; border-bottom: 0.5px dashed var(--border-soft); }
+  .row:last-child { border-bottom: none; }
+  .l { font-size: 8px; color: rgba(120,122,124,0.55); letter-spacing: 0.1em; width: 110px; flex-shrink: 0; text-transform: uppercase; }
+  .px { font-size: 8px; color: rgba(120,122,124,0.55); width: 70px; flex-shrink: 0; }
+  .sp { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="row"><span class="l">Hero</span><span class="px">120–160px</span><span class="sp display" style="font-size: 32px;">TITOLO</span></div>
+  <div class="row"><span class="l">Cover</span><span class="px">80–100px</span><span class="sp" style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em;">Titolo Principale</span></div>
+  <div class="row"><span class="l">H1</span><span class="px">48–60px</span><span class="sp" style="font-size: 18px; font-weight: 700;">Heading uno</span></div>
+  <div class="row"><span class="l">Subtitle</span><span class="px">32–40px</span><span class="sp" style="font-size: 15px; color: var(--grey);">Sottotitolo nel video</span></div>
+  <div class="row"><span class="l">Tag</span><span class="px">20–24px</span><span class="sp" style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--yellow);">§ CATEGORIA · TAG</span></div>
+  <div class="row"><span class="l">Caption</span><span class="px">16–20px</span><span class="sp" style="font-size: 10px; font-weight: 300; color: var(--grey); letter-spacing: 0.06em;">Fonte · Annotazione · Dettaglio</span></div>
+</body>
+</html>

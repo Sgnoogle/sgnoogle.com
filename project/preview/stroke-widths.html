@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 28px; display: flex; flex-direction: column; gap: 22px; justify-content: center; }
+  .row { display: grid; grid-template-columns: 88px 1fr 110px; gap: 18px; align-items: center; }
+  .l { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); }
+  .desc { font-size: 9px; color: var(--fg-faint); letter-spacing: 0.04em; }
+  .desc strong { color: var(--ink); font-weight: 600; }
+  .line { width: 100%; background: var(--ink); }
+  .yline { background: var(--yellow); }
+</style>
+</head>
+<body>
+  <div class="row"><span class="l">0.5 px</span><div class="line" style="height: 0.5px;"></div><span class="desc"><strong>hairline</strong> — borders, dividers</span></div>
+  <div class="row"><span class="l">1 px</span><div class="line" style="height: 1px;"></div><span class="desc"><strong>thin</strong> — emphasis borders</span></div>
+  <div class="row"><span class="l">1.5 px</span><div class="line yline" style="height: 1.5px;"></div><span class="desc"><strong>corner-marks</strong> · yellow</span></div>
+  <div class="row"><span class="l">2 px</span><div class="line yline" style="height: 2px;"></div><span class="desc"><strong>top rail</strong> · HUD bars</span></div>
+  <div class="row"><span class="l">3 px</span><div class="line yline" style="height: 3px;"></div><span class="desc"><strong>info-slide left border</strong> · loudest stroke</span></div>
+</body>
+</html>

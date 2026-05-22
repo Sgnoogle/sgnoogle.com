@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px; display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: center; }
+  .ph { position: relative; aspect-ratio: 1/1; overflow: hidden; border: 0.5px solid var(--border-soft); }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph .cm { z-index: 2; }
+  .specs { display: flex; flex-direction: column; gap: 8px; }
+  .tag { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--yellow); font-weight: 700; }
+  .name { font-family: var(--font-display); font-weight: 900; font-size: 28px; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .desc { font-size: 11px; color: var(--grey); line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="ph">
+    <span class="cm tl"></span><span class="cm tr"></span><span class="cm bl"></span><span class="cm br"></span>
+    <img src="../assets/avatar-anime.jpg" alt="Anime mascot">
+  </div>
+  <div class="specs">
+    <span class="tag">⚡ BRAND MASCOT</span>
+    <div class="name">avatar.jpg</div>
+    <div class="desc">Illustrazione anime: canotta gialla, sfondo grigio chiaro — il sistema cromatico applicato al ritratto. Uso: avatar profilo, sign-off, splash. Mai come hero web.</div>
+  </div>
+</body>
+</html>

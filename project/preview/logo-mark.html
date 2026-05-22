@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .slot { position: relative; aspect-ratio: 1/1; border: 0.5px solid var(--border-soft); display: flex; align-items: center; justify-content: center; }
+  .slot img { width: 56%; height: auto; display: block; }
+  .lbl { position: absolute; bottom: 8px; left: 10px; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); }
+  .yellow .lbl { color: rgba(40,40,44,0.55); }
+  .white-on-yellow .lbl { color: rgba(40,40,44,0.55); }
+</style>
+</head>
+<body>
+  <div class="slot" style="background: var(--white);">
+    <img src="../assets/logo-mark-yellow.svg" alt="logo · yellow on white">
+    <span class="lbl">Yellow · White</span>
+  </div>
+  <div class="slot yellow" style="background: var(--yellow);">
+    <img src="../assets/logo-mark-white.svg" alt="logo · white on yellow">
+    <span class="lbl">White · Yellow</span>
+  </div>
+  <div class="slot" style="background: var(--paper);">
+    <img src="../assets/logo-mark-yellow.svg" alt="logo · yellow on paper">
+    <span class="lbl">Yellow · Paper</span>
+  </div>
+</body>
+</html>

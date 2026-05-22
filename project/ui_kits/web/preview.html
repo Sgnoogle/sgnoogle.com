@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGNOOGLE · Preview</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  html, body { background: #1a1b1f; margin: 0; min-height: 100vh; }
+  body { font-family: var(--font-mono); color: var(--ink); }
+
+  /* phone bezel */
+  .phone {
+    width: 412px; height: 892px;
+    border-radius: 52px;
+    background: #0a0a0c;
+    padding: 12px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset,
+                0 30px 80px rgba(0,0,0,0.35);
+    position: relative;
+  }
+  .phone::before {
+    content: '';
+    position: absolute; top: 14px; left: 50%;
+    transform: translateX(-50%);
+    width: 110px; height: 32px; border-radius: 20px;
+    background: #000; z-index: 10;
+  }
+  .phone-screen {
+    width: 100%; height: 100%;
+    border-radius: 40px;
+    overflow: hidden;
+    background: var(--paper);
+    position: relative;
+  }
+  .phone iframe {
+    width: 100%; height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* laptop / desktop frame */
+  .laptop {
+    width: 1280px; height: 800px;
+    background: var(--ink);
+    padding: 8px;
+    border-radius: 14px 14px 4px 4px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    position: relative;
+  }
+  .laptop-bar {
+    height: 26px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 12px;
+    color: rgba(255,255,255,0.7);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+  .laptop-bar .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .laptop-bar .dot.r { background: #ff5f57; }
+  .laptop-bar .dot.y { background: #ffbd2e; }
+  .laptop-bar .dot.g { background: #28c840; }
+  .laptop-bar .url {
+    margin-left: 14px;
+    background: rgba(255,255,255,0.08);
+    padding: 3px 12px;
+    border-radius: 4px;
+    font-size: 10px; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.8);
+  }
+  .laptop-screen {
+    width: 100%; height: calc(100% - 30px);
+    background: var(--paper);
+    overflow: hidden;
+    position: relative;
+  }
+  .laptop iframe {
+    width: 100%; height: 100%;
+    border: 0;
+    display: block;
+  }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+const { useEffect, useRef } = React;
+
+function DesktopFrame() {
+  return (
+    <div className="laptop">
+      <div className="laptop-bar">
+        <span className="dot r"/>
+        <span className="dot y"/>
+        <span className="dot g"/>
+        <span className="url">sgnoogle.com</span>
+        <span style={{ marginLeft: 'auto', fontWeight: 600 }}>SGN-OS · DESKTOP</span>
+      </div>
+      <div className="laptop-screen">
+        <iframe src="index.html" title="Desktop preview"/>
+      </div>
+    </div>
+  );
+}
+
+function MobileFrame() {
+  return (
+    <div className="phone">
+      <div className="phone-screen">
+        <iframe src="index.html" title="Mobile preview"/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <DesignCanvas
+    title="SGNOOGLE · SGN-OS"
+    subtitle="Live preview · desktop + mobile · same source"
+    background="#1a1b1f"
+  >
+    <DCSection id="live" title="Live preview" subtitle="Both frames load the real index.html — edit it once, see both">
+      <DCArtboard id="desktop" label="DESKTOP · 1280×800" width={1296} height={822}>
+        <DesktopFrame/>
+      </DCArtboard>
+      <DCArtboard id="mobile" label="MOBILE · iPhone 14 Pro" width={436} height={916}>
+        <MobileFrame/>
+      </DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+</script>
+</body>
+</html>

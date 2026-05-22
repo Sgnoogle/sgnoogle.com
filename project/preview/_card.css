@@ -1,0 +1,59 @@
+/* Shared scaffold for preview cards. Each card targets 700px wide and
+   declares its own height in its <body> inline style.
+   Inherits all tokens from ../colors_and_type.css */
+
+@import url('../colors_and_type.css');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+
+body {
+  padding: 24px;
+  position: relative;
+  isolation: isolate;
+}
+
+/* card-wide grain overlay so every preview gets the brand texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* Tiny label glyph used to caption tokens inside a card */
+.cap {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.cap-yellow { color: var(--yellow); font-weight: 700; }
+.mono { font-family: var(--font-mono); }
+.display { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.03em; }
+
+/* Corner-mark primitive — drop into any positioned parent */
+.cm {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--yellow);
+  border-style: solid;
+  pointer-events: none;
+}
+.cm.tl { top: 6px; left: 6px;     border-width: 1.5px 0 0 1.5px; }
+.cm.tr { top: 6px; right: 6px;    border-width: 1.5px 1.5px 0 0; }
+.cm.bl { bottom: 6px; left: 6px;  border-width: 0 0 1.5px 1.5px; }
+.cm.br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }

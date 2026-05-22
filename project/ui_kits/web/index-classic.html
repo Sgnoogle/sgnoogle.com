@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrancescoSgnaolin — Personal Site</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  /* Page-level overrides only. Tokens come from colors_and_type.css. */
+  html, body { background: var(--paper); }
+  body {
+    font-family: var(--font-mono);
+    color: var(--ink);
+    margin: 0;
+    padding-top: 48px; /* nav height */
+    min-height: 100vh;
+    position: relative;
+    isolation: isolate;
+  }
+  /* page-wide grain */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+  button { font-family: inherit; }
+  a { color: inherit; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="components/utils.jsx"></script>
+<script type="text/babel" src="components/Corners.jsx"></script>
+<script type="text/babel" src="components/HUDWatermark.jsx"></script>
+<script type="text/babel" src="components/Nav.jsx"></script>
+<script type="text/babel" src="components/CTAButton.jsx"></script>
+<script type="text/babel" src="components/Hero.jsx"></script>
+<script type="text/babel" src="components/VideoCard.jsx"></script>
+<script type="text/babel" src="components/VideoGrid.jsx"></script>
+<script type="text/babel" src="components/InfoSlide.jsx"></script>
+<script type="text/babel" src="components/StatBars.jsx"></script>
+<script type="text/babel" src="components/Progress.jsx"></script>
+<script type="text/babel" src="components/Annotation.jsx"></script>
+<script type="text/babel" src="components/ContactStrip.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const VIDEOS = [
+  { variant: 'A', title: '2 ANNI', accent: 'DOPO', meta: 'Sgnaolin · Tech',     duration: '08:47', views: '127K' },
+  { variant: 'B', title: '€ 1.299', accent: 'TROPPO?', meta: 'FS / Recensione', duration: '12:04', views: '84K' },
+  { variant: 'B', title: 'ASPETTA A', accent: 'COMPRARLO', meta: 'FS · TECH',   duration: '14:32', views: '212K' },
+  { variant: 'A', title: 'iPHONE', accent: 'O ANDROID', meta: 'Sgnaolin · Q/A', duration: '09:18', views: '68K' },
+  { variant: 'A', title: 'IL MIO', accent: 'STUDIO',    meta: 'FS · BTS',       duration: '06:55', views: '143K' },
+  { variant: 'B', title: 'MAC MINI', accent: 'M4',      meta: 'FS / 2026',      duration: '11:22', views: '96K' },
+];
+
+const NAV_ITEMS = [
+  { id: 'home',   label: 'Home' },
+  { id: 'video',  label: 'Video' },
+  { id: 'about',  label: 'Chi sono' },
+  { id: 'shop',   label: 'Shop' },
+  { id: 'contatti', label: 'Contatti' },
+];
+
+function HomeScreen({ onPickVideo }) {
+  return (
+    <>
+      <Hero
+        tag="§ 00 · INDEX"
+        title="ORDINE E"
+        accent="GIALLO."
+        sub="Recensioni tech senza fronzoli. Cinque colori, due font, zero compromessi. Ogni video è un manuale tecnico travestito da racconto."
+        ctaPrimary="ULTIMO VIDEO"
+        ctaSecondary="ARCHIVIO"
+        onPrimary={() => onPickVideo(VIDEOS[0])}
+        onSecondary={() => onPickVideo(VIDEOS[2])}
+      />
+
+      <VideoGrid
+        tag="§ 01 · CATALOGO"
+        num="01"
+        title="Ultimi video"
+        sub="Cadenza 3+3+3 — tre Tipo A, tre Tipo B, tre Tipo C su ogni serie di nove. Il sistema regge da solo."
+        videos={VIDEOS}
+        onPick={onPickVideo}
+      />
+
+      <section style={{ padding: '64px', borderBottom: `0.5px solid ${C.border}`, position: 'relative' }}>
+        <Tag>§ 02 · DATI</Tag>
+        <h2 style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 28, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em', margin: '8px 0 36px' }}>Il canale, in numeri.</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <InfoSlide label="Iscritti · 2026" value="412K" sub="YouTube · Italia" source="Dato live · Maggio 2026"/>
+          <InfoSlide label="Video pubblicati" value="284" sub="Dal 2019 ad oggi" source="Archivio completo"/>
+          <InfoSlide label="Tempo di visione" value="9.2M h" sub="Ore totali · all-time" source="YouTube Studio"/>
+        </div>
+
+        <div style={{ marginTop: 56, display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 48, alignItems: 'start' }}>
+          <div>
+            <Label color={C.grey} style={{ display: 'block', marginBottom: 14 }}>VALUTAZIONE — iPhone 16 Pro Max</Label>
+            <StatBars stats={[
+              { label: 'Fotocamera', score: 9 },
+              { label: 'Batteria',   score: 7 },
+              { label: 'Software',   score: 8 },
+              { label: 'Valore',     score: 10, highlight: true },
+            ]}/>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <Progress variant="chapter" label="CAPITOLO 02" value={25} timeLabel="02:14 / 08:47"/>
+            <Progress variant="comparison" leftLabel="iPhone 16 Pro" rightLabel="Samsung S25" leftPct={62} rightPct={38}/>
+          </div>
+        </div>
+      </section>
+
+      <ContactStrip/>
+    </>
+  );
+}
+
+function VideoScreen({ video, onBack }) {
+  return (
+    <>
+      <section style={{ padding: '64px', borderBottom: `0.5px solid ${C.border}` }}>
+        <div style={{ marginBottom: 28 }}>
+          <CTAButton variant="ghost" icon="←" onClick={onBack}>TORNA ALL'ARCHIVIO</CTAButton>
+        </div>
+        <Tag>§ VIDEO · TIPO {video.variant}</Tag>
+        <h1 style={{
+          fontFamily: 'Neue Machina, monospace', fontWeight: 900,
+          fontSize: 'clamp(40px, 5vw, 84px)', lineHeight: 0.95,
+          letterSpacing: '-0.035em', color: C.ink,
+          margin: '12px 0 6px', textTransform: 'uppercase',
+        }}>{video.title} <span style={{ color: C.yellow }}>{video.accent}</span></h1>
+        <div style={{
+          fontFamily: 'IBM Plex Mono, monospace', fontSize: 13, color: C.grey,
+          margin: '10px 0 32px', letterSpacing: '0.04em',
+        }}>{video.meta} · {video.duration} · {video.views} views</div>
+
+        {/* Player placeholder */}
+        <div style={{
+          position: 'relative', aspectRatio: '16/9', background: C.ink,
+          border: `0.5px solid ${C.border}`, isolation: 'isolate',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <GrainOverlay opacity={0.07}/>
+          <Corners color={C.yellow}/>
+          <div style={{
+            width: 64, height: 64, border: `1.5px solid ${C.yellow}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: C.yellow, fontSize: 24, zIndex: 2,
+          }}>▸</div>
+          {/* lower-third overlay */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            padding: '14px 18px',
+            background: 'linear-gradient(transparent, rgba(40,40,44,0.9))',
+            zIndex: 2,
+          }}>
+            <Tag color={C.yellow} style={{ letterSpacing: '0.14em' }}>⚡ FrancescoSgnaolin</Tag>
+            <div style={{
+              fontFamily: 'IBM Plex Mono, monospace', fontSize: 14, fontWeight: 500,
+              color: C.white, marginTop: 4,
+            }}>{video.title} {video.accent} · {video.meta.split('·')[0].trim()}</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 24 }}>
+          <Progress variant="chapter" label={`CAPITOLO 02 · ${video.title}`} value={25} timeLabel={`02:14 / ${video.duration}`}/>
+        </div>
+      </section>
+
+      <section style={{ padding: '64px', borderBottom: `0.5px solid ${C.border}` }}>
+        <Tag>§ ANNOTAZIONI · TECH</Tag>
+        <h2 style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 24, fontWeight: 700, color: C.ink, margin: '8px 0 32px', letterSpacing: '-0.02em' }}>Specifiche chiave.</h2>
+        <Annotation
+          title="Componente — Modulo fotocamera"
+          leftSpecs={['48 MP', '12 MP UW', 'f/1.8']}
+          rightSpecs={[
+            { label: 'PRO MAX', key: true },
+            { label: 'USB-C', key: false },
+            { label: '256 GB', key: false },
+          ]}
+        />
+      </section>
+
+      <ContactStrip/>
+    </>
+  );
+}
+
+function AboutScreen() {
+  const rules = [
+    { do: false, t: 'Zero Blu',                   d: 'Nessuna tonalità di blu, mai.' },
+    { do: true,  t: 'Grigio su Acciaio',          d: '70% delle grafiche vive qui.' },
+    { do: false, t: 'Giallo Solo in Grande',      d: 'Solo sopra i 40px su acciaio chiaro.' },
+    { do: true,  t: 'Corner Marks Sempre',        d: 'Quattro L gialle, ogni container.' },
+    { do: false, t: 'No Gradient · No Glow',      d: 'Hard cut, slide lineare. Nient\'altro.' },
+    { do: true,  t: 'Grana Sempre',               d: 'Sfondi a tinta unita: noise 3–5%.' },
+    { do: false, t: 'No Nero Puro',               d: 'Il dark è #28282C, non #000000.' },
+    { do: true,  t: 'Il Giallo è l\'Unico Calore',d: 'Tutto il resto è neutro.' },
+  ];
+
+  return (
+    <>
+      <section style={{ padding: '80px 64px 64px', borderBottom: `0.5px solid ${C.border}`, position: 'relative' }}>
+        <Tag>§ 03 · CHI</Tag>
+        <h1 style={{
+          fontFamily: 'Neue Machina, monospace', fontWeight: 900,
+          fontSize: 'clamp(48px, 6vw, 96px)', letterSpacing: '-0.035em',
+          color: C.ink, margin: '12px 0 0', textTransform: 'uppercase', lineHeight: 0.95,
+        }}>FRANCESCO<br/><span style={{ color: C.yellow }}>SGNAOLIN</span></h1>
+
+        <div style={{
+          marginTop: 48, display: 'grid', gridTemplateColumns: '280px 1fr', gap: 48, alignItems: 'start',
+        }}>
+          <div style={{ position: 'relative', aspectRatio: '1/1', overflow: 'hidden', border: `0.5px solid ${C.borderSoft}` }}>
+            <Corners color={C.yellow}/>
+            <img src="../../assets/avatar-anime.jpg" alt="Sgnaolin anime avatar"
+                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
+          </div>
+          <div>
+            <Label color={C.grey} style={{ display: 'block', marginBottom: 16 }}>BIO · v2.4</Label>
+            <p style={{
+              fontFamily: 'IBM Plex Mono, monospace', fontSize: 14,
+              color: C.grey, lineHeight: 1.8, margin: 0, maxWidth: 520,
+            }}>
+              Recensioni tech in italiano. Studio grigio chiaro, telaio metallico a soffitto, monitor gialli — il brand applicato allo spazio fisico. Niente gradient, niente bounce. Tutto è geometricamente semplice perché possa reggere da solo.
+            </p>
+            <p style={{
+              fontFamily: 'IBM Plex Mono, monospace', fontSize: 14,
+              color: C.grey, lineHeight: 1.8, margin: '20px 0 0', maxWidth: 520,
+            }}>
+              412K iscritti · 284 video · 9.2M ore di visione. Padova, Italia.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '64px', borderBottom: `0.5px solid ${C.border}` }}>
+        <Tag>§ 04 · REGOLE D'ORO</Tag>
+        <h2 style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 28, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em', margin: '8px 0 36px' }}>Le otto regole.</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: C.borderSoft, border: `0.5px solid ${C.borderSoft}` }}>
+          {rules.map((r, i) => (
+            <div key={i} style={{ background: C.white, padding: '22px 26px', display: 'flex', gap: 16 }}>
+              <div style={{
+                width: 26, height: 26, flexShrink: 0,
+                background: r.do ? C.yellow : C.ink,
+                color: r.do ? C.ink : C.yellow,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700, fontSize: 13,
+              }}>{r.do ? '✓' : '✗'}</div>
+              <div>
+                <div style={{
+                  fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, fontWeight: 700,
+                  letterSpacing: '0.1em', textTransform: 'uppercase', color: C.ink, marginBottom: 5,
+                }}>{r.t}</div>
+                <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: C.grey, lineHeight: 1.7 }}>{r.d}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <ContactStrip/>
+    </>
+  );
+}
+
+function App() {
+  const [screen, setScreen] = useState('home');
+  const [video, setVideo] = useState(VIDEOS[0]);
+
+  // jump to top on screen change
+  useEffect(() => { window.scrollTo(0, 0); }, [screen]);
+
+  function nav(id) {
+    if (id === 'home')   setScreen('home');
+    if (id === 'video')  { setVideo(VIDEOS[0]); setScreen('video'); }
+    if (id === 'about')  setScreen('about');
+    if (id === 'shop')   alert('Shop — non implementato in questa UI kit.');
+    if (id === 'contatti') {
+      document.querySelector('footer')?.scrollIntoView();
+    }
+  }
+
+  function pickVideo(v) { setVideo(v); setScreen('video'); }
+
+  return (
+    <div data-screen-label={
+      screen === 'home'  ? '01 Home' :
+      screen === 'video' ? '02 Video' :
+                            '03 About'
+    }>
+      <Nav current={screen === 'video' ? null : screen} onNav={nav} items={NAV_ITEMS}/>
+      <HUDWatermark progress={0.68}/>
+      {screen === 'home'  && <HomeScreen onPickVideo={pickVideo}/>}
+      {screen === 'video' && <VideoScreen video={video} onBack={() => setScreen('home')}/>}
+      {screen === 'about' && <AboutScreen/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

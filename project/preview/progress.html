@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px 28px; display: flex; flex-direction: column; gap: 22px; justify-content: center; }
+  .row { display: flex; flex-direction: column; gap: 6px; }
+  .top { display: flex; justify-content: space-between; }
+  .l { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey); }
+  .l.y { color: var(--yellow); font-weight: 700; }
+  .v { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink); }
+  .track { background: rgba(120,122,124,0.2); position: relative; }
+  .fill { height: 100%; }
+  .fill.dark { background: var(--ink); }
+  .fill.gold { background: var(--yellow); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="top"><span class="l">CARICAMENTO</span><span class="v">68%</span></div>
+    <div class="track" style="height: 1.5px;"><div class="fill dark" style="width: 68%;"></div></div>
+  </div>
+  <div class="row">
+    <div class="top"><span class="l y">⚡ CAPITOLO 02</span><span class="l">02:14 / 08:47</span></div>
+    <div class="track" style="height: 2px;"><div class="fill gold" style="width: 25%;"></div></div>
+  </div>
+  <div class="row">
+    <div class="top"><span class="l">iPhone 16 Pro</span><span class="l">Samsung S25</span></div>
+    <div class="track" style="height: 3px;">
+      <div style="position: absolute; left: 0; width: 62%; height: 100%; background: var(--ink);"></div>
+      <div style="position: absolute; right: 0; width: 38%; height: 100%; background: rgba(120,122,124,0.4);"></div>
+    </div>
+    <div class="top"><span class="v">62%</span><span class="l">38%</span></div>
+  </div>
+</body>
+</html>

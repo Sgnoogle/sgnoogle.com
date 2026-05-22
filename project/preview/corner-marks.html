@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+  .box { position: relative; height: 180px; background: var(--paper); border: 0.5px solid var(--border-soft); padding: 24px; }
+  .box .content { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); }
+  .specs { display: flex; flex-direction: column; gap: 9px; }
+  .row { display: flex; gap: 10px; align-items: baseline; }
+  .k { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-faint); width: 78px; flex-shrink: 0; }
+  .v { font-size: 10px; color: var(--ink); }
+  .v.y { color: var(--yellow); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <span class="cm tl"></span><span class="cm tr"></span><span class="cm bl"></span><span class="cm br"></span>
+    <div class="content">CONTENITORE TECNICO</div>
+  </div>
+  <div class="specs">
+    <div class="row"><span class="k">Stroke</span><span class="v y">1.5px solid #FFC200</span></div>
+    <div class="row"><span class="k">Arm length</span><span class="v">10px (orizz. e vert.)</span></div>
+    <div class="row"><span class="k">Inset</span><span class="v">6px da ogni angolo</span></div>
+    <div class="row"><span class="k">v2.6 rule</span><span class="v y">OPZIONALI · solo se narrativo</span></div>
+    <div class="row"><span class="k">Quando sì</span><span class="v">Recensione prodotto · screenshot · spec</span></div>
+    <div class="row"><span class="k">Quando no</span><span class="v">Su tutto per abitudine = rumore</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 28px; display: flex; align-items: center; justify-content: center; }
+  .stage { position: relative; width: 100%; height: 100%; min-height: 160px; background: var(--paper); border: 0.5px solid var(--border-soft); padding: 24px; }
+  .device { width: 86px; height: 150px; background: rgba(120,122,124,0.12); border: 0.5px solid rgba(120,122,124,0.35); margin: 0 auto; position: relative; }
+  .lens { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: rgba(120,122,124,0.22); }
+  .home { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); width: 40px; height: 6px; background: rgba(120,122,124,0.2); }
+  svg { position: absolute; inset: 0; pointer-events: none; }
+  .lbl { position: absolute; font-size: 9px; font-family: var(--font-mono); letter-spacing: 0.08em; color: var(--grey); }
+  .lbl.y { color: var(--yellow); font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="device">
+      <div class="lens"></div>
+      <div class="home"></div>
+    </div>
+    <svg viewBox="0 0 644 200" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+      <!-- Left annotations -->
+      <circle cx="278" cy="68" r="3" fill="none" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="278" y1="68" x2="200" y2="68" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="200" y1="68" x2="100" y2="68" stroke="#787A7C" stroke-width="0.5"/>
+      <circle cx="278" cy="138" r="3" fill="none" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="278" y1="138" x2="200" y2="138" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="200" y1="138" x2="100" y2="138" stroke="#787A7C" stroke-width="0.5"/>
+      <!-- Right annotations -->
+      <circle cx="365" cy="86" r="3" fill="none" stroke="#FFC200" stroke-width="0.5"/>
+      <line x1="365" y1="86" x2="450" y2="86" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="450" y1="86" x2="540" y2="86" stroke="#787A7C" stroke-width="0.5"/>
+      <circle cx="365" cy="112" r="3" fill="none" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="365" y1="112" x2="450" y2="112" stroke="#787A7C" stroke-width="0.5"/>
+      <line x1="450" y1="112" x2="540" y2="112" stroke="#787A7C" stroke-width="0.5"/>
+    </svg>
+    <div class="lbl" style="top: 60px; left: 22px;">48 MP</div>
+    <div class="lbl" style="top: 130px; left: 22px;">f/1.8</div>
+    <div class="lbl y" style="top: 78px; right: 22px;">⚡ PRO</div>
+    <div class="lbl" style="top: 104px; right: 22px;">USB-C</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+  .row { display: flex; flex-direction: column; gap: 6px; }
+  .top { display: flex; justify-content: space-between; }
+  .l { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); }
+  .l.y { color: var(--yellow); font-weight: 700; }
+  .v { font-size: 9px; font-weight: 600; color: var(--ink); }
+  .v.y { color: var(--yellow); font-weight: 700; }
+  .bar { display: flex; gap: 3px; }
+  .seg { flex: 1; height: 8px; background: rgba(120,122,124,0.2); }
+  .seg.on { background: var(--ink); }
+  .seg.gold { background: var(--yellow); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="top"><span class="l">Fotocamera</span><span class="v">9/10</span></div>
+    <div class="bar">
+      <div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="top"><span class="l">Batteria</span><span class="v">7/10</span></div>
+    <div class="bar">
+      <div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg on"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="top"><span class="l y">⚡ Valore</span><span class="v y">10/10</span></div>
+    <div class="bar">
+      <div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div><div class="seg gold"></div>
+    </div>
+  </div>
+</body>
+</html>

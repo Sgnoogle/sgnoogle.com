@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrancescoSgnaolin — Brand Guidelines v3.0</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --yellow:  #FFC200;
+  --paper:   #F0F1F2;
+  --grey:    #787A7C;
+  --ink:     #28282C;
+  --white:   #FFFFFF;
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  font-family: var(--mono);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid #E8E8E8;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 52px;
+}
+.nav-brand {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  color: var(--ink); text-decoration: none; text-transform: uppercase;
+}
+.nav-brand span { color: var(--yellow); }
+.nav-links { display: flex; list-style: none; gap: 32px; }
+.nav-links a {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--grey); text-decoration: none;
+  transition: color .15s;
+}
+.nav-links a:hover { color: var(--ink); }
+
+.page { padding-top: 52px; }
+
+/* SECTIONS */
+section {
+  padding: 80px 48px 100px;
+  border-bottom: 1px solid #E8E8E8;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.sec-num  { font-size: 9px; letter-spacing: 0.2em; color: var(--yellow); margin-bottom: 8px; display: block; text-transform: uppercase; }
+.sec-title { font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); line-height: 1; margin-bottom: 16px; }
+.sec-sub  { font-size: 12px; color: var(--grey); max-width: 520px; line-height: 1.8; margin-bottom: 56px; }
+
+/* COVER */
+#cover {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 80px 48px; max-width: none; border-bottom: 1px solid #E8E8E8;
+}
+.cover-name {
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 600; letter-spacing: -0.03em;
+  color: var(--ink); line-height: 0.95;
+  margin-bottom: 32px;
+}
+.cover-name span { color: var(--yellow); }
+.cover-details {
+  display: flex; gap: 48px;
+  font-size: 10px; letter-spacing: 0.08em; color: var(--grey);
+  border-top: 1px solid #E8E8E8; padding-top: 24px;
+}
+.cover-details strong { display: block; color: var(--ink); margin-bottom: 3px; font-size: 11px; }
+
+/* PALETTE */
+.colors-row {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 2px; margin-bottom: 48px;
+}
+.color-item {}
+.color-block { height: 88px; }
+.color-info { padding: 12px 0 0; }
+.color-hex  { font-size: 12px; font-weight: 500; display: block; margin-bottom: 3px; }
+.color-name { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); display: block; margin-bottom: 2px; }
+.color-use  { font-size: 9px; color: #C0C0C0; display: block; line-height: 1.5; }
+
+/* PRINCIPLES */
+.principles {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: #E8E8E8;
+  margin-bottom: 0;
+}
+.principle {
+  background: var(--white);
+  padding: 32px;
+}
+.principle-num { font-size: 9px; letter-spacing: 0.14em; color: var(--yellow); margin-bottom: 12px; display: block; }
+.principle-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
+.principle-text { font-size: 11px; color: var(--grey); line-height: 1.75; }
+
+/* TYPOGRAPHY */
+.font-item {
+  padding: 40px 0;
+  border-bottom: 1px solid #E8E8E8;
+}
+.font-item:last-child { border-bottom: none; }
+.font-tag { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 16px; display: flex; gap: 16px; align-items: center; }
+.font-tag span { color: var(--yellow); }
+.font-sample { margin-bottom: 20px; }
+.font-detail { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.font-detail-item { font-size: 10px; color: var(--grey); line-height: 1.7; }
+.font-detail-item strong { display: block; color: var(--ink); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+
+/* SCALE */
+.scale-row {
+  display: flex; align-items: baseline; gap: 24px;
+  padding: 12px 0; border-bottom: 1px solid #F0F0F0;
+}
+.scale-tag { font-size: 9px; color: #C0C0C0; width: 120px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.08em; }
+.scale-size { font-size: 9px; color: #C0C0C0; width: 80px; flex-shrink: 0; }
+
+/* COVERS */
+.cover-principles { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+.cover-principle h4 { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); margin-bottom: 10px; }
+.cover-principle p { font-size: 11px; color: var(--grey); line-height: 1.75; }
+
+.examples-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 16px; }
+.example-frame {
+  aspect-ratio: 16/9; position: relative; overflow: hidden;
+  border: 1px solid #E8E8E8;
+}
+.example-label { font-size: 9px; color: var(--grey); letter-spacing: 0.06em; margin-top: 8px; }
+
+/* IN-VIDEO */
+.invideo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 48px; align-items: start; }
+.invideo-preview { border: 1px solid #E8E8E8; }
+.invideo-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); padding: 10px 14px; border-bottom: 1px solid #E8E8E8; }
+.invideo-specs h4 { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); margin-bottom: 14px; }
+.spec { display: flex; gap: 12px; margin-bottom: 8px; align-items: baseline; }
+.spec-k { font-size: 9px; color: #C0C0C0; width: 80px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.08em; }
+.spec-v { font-size: 10px; color: var(--ink); }
+.spec-v.y { color: var(--yellow); font-weight: 600; }
+
+/* NOTE */
+.note { border-left: 2px solid var(--yellow); padding: 14px 20px; font-size: 11px; color: var(--grey); line-height: 1.8; }
+.note strong { color: var(--ink); }
+
+/* FOOTER */
+.footer-block {
+  padding: 48px;
+  background: var(--paper);
+  border-top: 2px solid var(--yellow);
+  max-width: none;
+  border-bottom: none;
+}
+.footer-quote { font-size: 18px; font-weight: 300; color: var(--ink); line-height: 1.75; max-width: 560px; margin-bottom: 24px; letter-spacing: 0.01em; }
+.footer-meta { font-size: 9px; color: var(--grey); letter-spacing: 0.12em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#cover">Francesco<span>Sgnaolin</span></a>
+  <ul class="nav-links">
+    <li><a href="#palette">Palette</a></li>
+    <li><a href="#typography">Font</a></li>
+    <li><a href="#covers">Copertine</a></li>
+    <li><a href="#invideo">In-Video</a></li>
+    <li><a href="#principles">Principi</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+<!-- COVER -->
+<section id="cover">
+  <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--grey);margin-bottom:24px;">Brand Guidelines · v3.0 · 2026</div>
+  <div class="cover-name">Francesco<br><span>Sgnaolin</span></div>
+  <div class="cover-details">
+    <div><strong>Font</strong>Neue Machina + IBM Plex Mono</div>
+    <div><strong>Palette</strong>5 colori · Steel</div>
+    <div><strong>Principio</strong>Pulito. Leggero. Preciso.</div>
+    <div><strong>Versione</strong>3.0 · Minimal</div>
+  </div>
+</section>
+
+<!-- PALETTE -->
+<section id="palette">
+  <span class="sec-num">01</span>
+  <h2 class="sec-title">Palette</h2>
+  <p class="sec-sub">Cinque colori. Il giallo è l'unico accento — usalo con parsimonia per dargli peso. Tutto il resto è neutro.</p>
+
+  <div class="colors-row">
+    <div class="color-item">
+      <div class="color-block" style="background:#FFC200;"></div>
+      <div class="color-info">
+        <span class="color-hex">#FFC200</span>
+        <span class="color-name">Giallo</span>
+        <span class="color-use">Accento · parole chiave · sfondo Tipo B</span>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-block" style="background:#F0F1F2;border:1px solid #E8E8E8;"></div>
+      <div class="color-info">
+        <span class="color-hex">#F0F1F2</span>
+        <span class="color-name">Acciaio</span>
+        <span class="color-use">Sfondo principale di tutto</span>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-block" style="background:#787A7C;"></div>
+      <div class="color-info">
+        <span class="color-hex">#787A7C</span>
+        <span class="color-name">Grigio</span>
+        <span class="color-use">Testo principale · label · caption</span>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-block" style="background:#28282C;"></div>
+      <div class="color-info">
+        <span class="color-hex">#28282C</span>
+        <span class="color-name">Antracite</span>
+        <span class="color-use">Titoli · numeri importanti · solo testo</span>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-block" style="background:#FFFFFF;border:1px solid #E8E8E8;"></div>
+      <div class="color-info">
+        <span class="color-hex">#FFFFFF</span>
+        <span class="color-name">Bianco</span>
+        <span class="color-use">Testo su giallo · outfit on camera</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to use -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;">
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink);margin-bottom:20px;">Come usarli insieme</div>
+
+      <!-- combo 1 -->
+      <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+        <div style="display:flex;gap:6px;align-items:center;width:120px;flex-shrink:0;">
+          <div style="width:20px;height:20px;background:#F0F1F2;border:1px solid #E8E8E8;"></div>
+          <div style="font-size:9px;color:var(--grey);">+</div>
+          <div style="width:20px;height:20px;background:#787A7C;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--grey);">Acciaio + Grigio — combinazione principale. Il 70% di tutto.</div>
+      </div>
+
+      <!-- combo 2 -->
+      <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+        <div style="display:flex;gap:6px;align-items:center;width:120px;flex-shrink:0;">
+          <div style="width:20px;height:20px;background:#F0F1F2;border:1px solid #E8E8E8;"></div>
+          <div style="font-size:9px;color:var(--grey);">+</div>
+          <div style="width:20px;height:20px;background:#28282C;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--grey);">Acciaio + Antracite — per titoli e numeri importanti.</div>
+      </div>
+
+      <!-- combo 3 -->
+      <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+        <div style="display:flex;gap:6px;align-items:center;width:120px;flex-shrink:0;">
+          <div style="width:20px;height:20px;background:#FFC200;"></div>
+          <div style="font-size:9px;color:var(--grey);">+</div>
+          <div style="width:20px;height:20px;background:#28282C;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--grey);">Giallo + Antracite — copertine Tipo B. Massimo impatto.</div>
+      </div>
+
+      <!-- combo 4 -->
+      <div style="display:flex;align-items:center;gap:16px;padding:14px 0;">
+        <div style="display:flex;gap:6px;align-items:center;width:120px;flex-shrink:0;">
+          <div style="width:20px;height:20px;background:#F0F1F2;border:1px solid #E8E8E8;"></div>
+          <div style="font-size:9px;color:var(--grey);">+</div>
+          <div style="width:20px;height:20px;background:#FFC200;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--grey);">Acciaio + Giallo — solo per testo display grande (40px+).</div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink);margin-bottom:20px;">Regole</div>
+      <div style="font-size:11px;color:var(--grey);line-height:2;">
+        Sfondi sempre chiari — #F0F1F2 o #FFC200<br>
+        Antracite solo come colore di testo, mai sfondo<br>
+        Giallo usato pochissimo — vale perché è raro<br>
+        Il grigio è il colore di testo di default<br>
+        Zero blu in qualsiasi forma
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TYPOGRAPHY -->
+<section id="typography">
+  <span class="sec-num">02</span>
+  <h2 class="sec-title">Tipografia</h2>
+  <p class="sec-sub">Due font con ruoli fissi. Neue Machina per i titoli grandi, IBM Plex Mono per tutto il resto. Non sono intercambiabili.</p>
+
+  <!-- Neue Machina -->
+  <div class="font-item">
+    <div class="font-tag">Neue Machina Ultrabold <span>Display · Copertine · Numeri</span></div>
+    <div class="font-sample">
+      <div style="font-family:'Neue Machina','IBM Plex Mono',monospace;font-size:56px;font-weight:900;letter-spacing:-0.03em;line-height:0.95;color:var(--ink);">2 ANNI<br>DOPO</div>
+      <div style="font-family:'Neue Machina','IBM Plex Mono',monospace;font-size:28px;font-weight:900;color:var(--yellow);margin-top:16px;">NUOVO INIZIO</div>
+    </div>
+    <div class="font-detail">
+      <div class="font-detail-item"><strong>Quando usarlo</strong>Titoli copertina, numeri grandi, parole singole ad alto impatto. Mai per frasi lunghe.</div>
+      <div class="font-detail-item"><strong>Dimensione minima</strong>40px in 1920×1080. Sotto quella soglia passa a IBM Plex Mono Bold.</div>
+      <div class="font-detail-item"><strong>Colore testo</strong>Antracite su sfondo chiaro. Giallo solo sopra i 60px. Mai su sfondo scuro.</div>
+    </div>
+  </div>
+
+  <!-- IBM Plex Mono -->
+  <div class="font-item">
+    <div class="font-tag">IBM Plex Mono <span>Tutto il resto</span></div>
+    <div class="font-sample">
+      <div style="font-size:28px;font-weight:600;color:var(--ink);margin-bottom:8px;letter-spacing:-0.01em;">iPhone o Android?</div>
+      <div style="font-size:18px;font-weight:400;color:var(--grey);">Ciao ragazzi, benvenuti in questo nuovo video.</div>
+    </div>
+    <div class="font-detail">
+      <div class="font-detail-item"><strong>Pesi da usare</strong>400 per didascalie e caption. 600 per titoli grafiche. 700 per accenti e parole in giallo.</div>
+      <div class="font-detail-item"><strong>Mai in video</strong>Peso 300 — sparisce su sfondi variabili e in movimento.</div>
+      <div class="font-detail-item"><strong>Perché non Poppins</strong>Poppins è morbido e rotondo. IBM Plex Mono ha il registro tecnico preciso che vuoi.</div>
+    </div>
+  </div>
+
+  <!-- Scale -->
+  <div style="margin-top:40px;">
+    <div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--grey);margin-bottom:16px;">Scala — 1920×1080</div>
+    <div class="scale-row">
+      <span class="scale-tag">Titolo hero</span>
+      <span class="scale-size">120–160px</span>
+      <span style="font-size:34px;font-weight:700;letter-spacing:-0.03em;">TITOLO</span>
+    </div>
+    <div class="scale-row">
+      <span class="scale-tag">Titolo copertina</span>
+      <span class="scale-size">80–100px</span>
+      <span style="font-size:24px;font-weight:600;">Titolo Principale</span>
+    </div>
+    <div class="scale-row">
+      <span class="scale-tag">Sottotitolo</span>
+      <span class="scale-size">32–40px</span>
+      <span style="font-size:18px;font-weight:400;color:var(--grey);">Sottotitolo nel video</span>
+    </div>
+    <div class="scale-row">
+      <span class="scale-tag">Label</span>
+      <span class="scale-size">20–24px</span>
+      <span style="font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--yellow);">CATEGORIA</span>
+    </div>
+    <div class="scale-row">
+      <span class="scale-tag">Caption</span>
+      <span class="scale-size">16–20px</span>
+      <span style="font-size:11px;font-weight:400;color:var(--grey);letter-spacing:0.04em;">Fonte · Annotazione · Dettaglio</span>
+    </div>
+  </div>
+</section>
+
+<!-- COVERS -->
+<section id="covers">
+  <span class="sec-num">03</span>
+  <h2 class="sec-title">Copertine</h2>
+  <p class="sec-sub">Nessun template rigido. Due sfondi possibili, una gerarchia chiara. La copertina vive o muore sul contenuto — non sulla struttura grafica attorno.</p>
+
+  <div class="cover-principles">
+    <div class="cover-principle">
+      <h4>Sfondo Acciaio</h4>
+      <p>Sfondo #F0F1F2 o foto chiara desaturata. Titolo in Neue Machina, antracite o grigio. Il giallo entra come colore di una parola, non come forma o barra. Spazio generoso, poche parole.</p>
+    </div>
+    <div class="cover-principle">
+      <h4>Sfondo Giallo</h4>
+      <p>Sfondo #FFC200 pieno. Solo antracite e bianco come colori di testo — nessun altro colore. Titolo in Neue Machina antracite. Per video ad alto impatto emotivo o numeri grandi.</p>
+    </div>
+    <div class="cover-principle">
+      <h4>Max 5 parole</h4>
+      <p>La copertina non è un riassunto del video. È un segnale. Meno parole, più impatto. Se hai bisogno di più di 5 parole per spiegare il video, il titolo non è ancora pronto.</p>
+    </div>
+    <div class="cover-principle">
+      <h4>Gerarchia</h4>
+      <p>Un titolo grande. Un elemento di supporto piccolo se serve. Il logo in uno degli angoli. Nient'altro. Il volto, se presente, occupa il terzo destro del frame.</p>
+    </div>
+  </div>
+
+  <!-- Examples -->
+  <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--grey);margin-bottom:16px;">Esempi</div>
+  <div class="examples-row">
+
+    <!-- Esempio A -->
+    <div>
+      <div class="example-frame" style="background:#F0F1F2;">
+        <div style="position:absolute;top:14px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--grey);line-height:1.2;">NUOVO<br>VIDEO</div>
+        <div style="position:absolute;bottom:10px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(120,122,124,0.5);letter-spacing:0.08em;">Sgnaolin · Tech</div>
+        <div style="position:absolute;bottom:8px;right:10px;font-size:14px;color:var(--yellow);">⚡</div>
+      </div>
+      <div class="example-label">Acciaio · testo grigio · accento minimo</div>
+    </div>
+
+    <!-- Esempio B -->
+    <div>
+      <div class="example-frame" style="background:#F0F1F2;">
+        <div style="position:absolute;top:14px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);line-height:1.2;">ASPETTA A<br>COMPRARLO</div>
+        <div style="position:absolute;bottom:10px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(120,122,124,0.5);">FS · 2026</div>
+      </div>
+      <div class="example-label">Acciaio · testo antracite · titolo forte</div>
+    </div>
+
+    <!-- Esempio C -->
+    <div>
+      <div class="example-frame" style="background:#FFC200;">
+        <div style="position:absolute;top:14px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--ink);line-height:1.15;">2 MESI<br>DOPO</div>
+        <div style="position:absolute;bottom:10px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(40,40,44,0.4);">FS / 2026</div>
+      </div>
+      <div class="example-label">Giallo · testo antracite · alto impatto</div>
+    </div>
+
+  </div>
+
+  <div class="note" style="margin-top:32px;">
+    <strong>Libertà di esecuzione:</strong> Questi esempi mostrano la direzione, non la regola. Puoi aggiungere una foto, cambiare il peso del testo, lasciare più spazio. L'importante è che sfondo, font e gerarchia rispettino il sistema. Il resto è tuo.
+  </div>
+</section>
+
+<!-- IN-VIDEO -->
+<section id="invideo">
+  <span class="sec-num">04</span>
+  <h2 class="sec-title">Grafiche In-Video</h2>
+  <p class="sec-sub">Sfondo acciaio chiaro, testo grigio o antracite, giallo come accento. Grana leggera sugli sfondi a tinta unita — solo in video, mai nel brand statico.</p>
+
+  <!-- Screenshot -->
+  <div class="invideo-row">
+    <div class="invideo-preview">
+      <div class="invideo-label">Screenshot / Prodotto</div>
+      <div style="padding:20px;background:#F0F1F2;">
+        <div style="background:#FFFFFF;padding:8px;border:1px solid #E8E8E8;">
+          <div style="background:#EBEBEB;height:72px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#bbb;letter-spacing:0.08em;">SCREENSHOT</div>
+        </div>
+        <div style="margin-top:8px;font-size:9px;color:var(--grey);letter-spacing:0.08em;text-align:center;">Titolo · Fonte · Anno</div>
+      </div>
+    </div>
+    <div class="invideo-specs">
+      <h4>Regole</h4>
+      <div class="spec"><span class="spec-k">Sfondo</span><span class="spec-v">#F0F1F2 + grana 3–5% (solo video)</span></div>
+      <div class="spec"><span class="spec-k">Padding</span><span class="spec-v">Minimo 20px su tutti i lati</span></div>
+      <div class="spec"><span class="spec-k">Bordo img</span><span class="spec-v">1px · #E8E8E8</span></div>
+      <div class="spec"><span class="spec-k">Caption</span><span class="spec-v">IBM Plex Mono 400 · 9px · grigio</span></div>
+      <div class="spec"><span class="spec-k">Mai</span><span class="spec-v">Screenshot senza sfondo · ombre</span></div>
+    </div>
+  </div>
+
+  <!-- Info slide -->
+  <div class="invideo-row">
+    <div class="invideo-preview">
+      <div class="invideo-label">Dato / Prezzo / Statistica</div>
+      <div style="padding:20px;background:#F0F1F2;">
+        <div style="padding:16px 0 0;">
+          <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--grey);margin-bottom:8px;">Prezzo · Italia</div>
+          <div style="font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-0.02em;line-height:1;margin-bottom:6px;">€ 1.299</div>
+          <div style="font-size:12px;color:var(--grey);margin-bottom:12px;">iPhone 16 Pro Max · 256GB</div>
+          <div style="height:1px;background:#E8E8E8;margin-bottom:10px;"></div>
+          <div style="font-size:9px;color:#C0C0C0;letter-spacing:0.04em;">Apple Store Italia · Nov 2024</div>
+        </div>
+      </div>
+    </div>
+    <div class="invideo-specs">
+      <h4>Regole</h4>
+      <div class="spec"><span class="spec-k">Sfondo</span><span class="spec-v">#F0F1F2</span></div>
+      <div class="spec"><span class="spec-k">Numero</span><span class="spec-v">Neue Machina · Antracite · grande</span></div>
+      <div class="spec"><span class="spec-k">Label top</span><span class="spec-v">IBM Plex Mono 600 · 9px · ALL CAPS · grigio</span></div>
+      <div class="spec"><span class="spec-k">Descrizione</span><span class="spec-v">IBM Plex Mono 400 · grigio</span></div>
+      <div class="spec"><span class="spec-k">Fonte</span><span class="spec-v">IBM Plex Mono 300 · 9px · #C0C0C0</span></div>
+      <div class="spec"><span class="spec-k">Separatore</span><span class="spec-v">1px · #E8E8E8 · orizzontale</span></div>
+    </div>
+  </div>
+
+  <!-- Overlay footage -->
+  <div class="invideo-row">
+    <div class="invideo-preview">
+      <div class="invideo-label">Overlay su Footage</div>
+      <div style="background:#888;height:110px;display:flex;align-items:flex-end;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">FOOTAGE</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:linear-gradient(transparent,rgba(40,40,44,0.85));">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--yellow);text-transform:uppercase;margin-bottom:2px;">⚡ FrancescoSgnaolin</div>
+          <div style="font-size:12px;font-weight:500;color:white;">Nome prodotto · Anno</div>
+        </div>
+      </div>
+    </div>
+    <div class="invideo-specs">
+      <h4>Regole</h4>
+      <div class="spec"><span class="spec-k">Posizione</span><span class="spec-v">Bottom-left · 14px dai bordi</span></div>
+      <div class="spec"><span class="spec-k">Sfondo</span><span class="spec-v">Gradient rgba(40,40,44, 0→85%)</span></div>
+      <div class="spec"><span class="spec-k">Brand label</span><span class="spec-v y">IBM Plex Mono 700 · #FFC200</span></div>
+      <div class="spec"><span class="spec-k">Testo</span><span class="spec-v">IBM Plex Mono 500 · bianco</span></div>
+      <div class="spec"><span class="spec-k">Mai</span><span class="spec-v">Box colorato pieno sopra il video</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- PRINCIPLES -->
+<section id="principles">
+  <span class="sec-num">05</span>
+  <h2 class="sec-title">Principi</h2>
+  <p class="sec-sub">Non regole da seguire — modi di pensare. Se sei in dubbio su qualcosa, torna qui.</p>
+
+  <div class="principles">
+    <div class="principle">
+      <span class="principle-num">01</span>
+      <div class="principle-title">Spazio prima di tutto</div>
+      <div class="principle-text">Il vuoto non è assenza di design. È il design. Più spazio intorno a un elemento, più quell'elemento pesa. Non riempire — scegli cosa mettere.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-num">02</span>
+      <div class="principle-title">Il giallo vale perché è raro</div>
+      <div class="principle-text">Se il giallo compare ovunque smette di essere un segnale. Usalo per una parola, un bordo, un accento. Non per riempire. La sua forza viene dalla rarità.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-num">03</span>
+      <div class="principle-title">Sfondi sempre chiari</div>
+      <div class="principle-text">Acciaio #F0F1F2 o giallo #FFC200. Mai antracite come sfondo. Il sistema è luminoso — non forzarlo verso il buio nemmeno per un header o una nav bar.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-num">04</span>
+      <div class="principle-title">Il grigio è il colore principale</div>
+      <div class="principle-text">Il 70% del testo è grigio #787A7C. L'antracite è riservato al titolo o al numero più importante. Questo crea una gerarchia naturale senza bisogno di altri effetti.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-num">05</span>
+      <div class="principle-title">Niente decorazioni non necessarie</div>
+      <div class="principle-text">Ogni elemento deve avere una ragione per esistere. Niente barre laterali, niente corner marks automatici, niente grana sulle grafiche statiche. Se non serve, non c'è.</div>
+    </div>
+    <div class="principle">
+      <span class="principle-num">06</span>
+      <div class="principle-title">Il font fa il lavoro</div>
+      <div class="principle-text">Neue Machina e IBM Plex Mono hanno già abbastanza personalità. Non aiutarli con effetti, ombre o outline. Lasciali parlare da soli sulla superficie pulita.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<section class="footer-block">
+  <div class="footer-quote">"Pulito. Leggero. Preciso.<br>Un sistema che si toglie di mezzo e lascia parlare il contenuto."</div>
+  <div class="footer-meta">FrancescoSgnaolin · Brand Guidelines v3.0 · 2026</div>
+</section>
+
+</div>
+</body>
+</html>

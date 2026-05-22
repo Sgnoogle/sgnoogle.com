@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-content: center; }
+  .panel { border: 0.5px solid var(--border-soft); background: var(--white); padding: 20px 22px; min-height: 140px; display: flex; flex-direction: column; justify-content: center; }
+  .tag { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--yellow); font-weight: 700; margin-bottom: 8px; }
+  .val { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 6px; }
+  .note { font-size: 10px; color: var(--grey); line-height: 1.5; }
+  .note strong { color: var(--ink); }
+  .geom { display: flex; gap: 14px; align-items: center; margin-top: 10px; }
+  .square { width: 38px; height: 38px; background: var(--paper); border: 0.5px solid var(--border-soft); }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <div class="tag">RADIUS</div>
+    <div class="val">0</div>
+    <div class="note">Niente angoli arrotondati. Mai. Su nessun elemento.</div>
+    <div class="geom">
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square" style="background: var(--yellow); border: none;"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="tag">SHADOW</div>
+    <div class="val">none</div>
+    <div class="note">Niente <strong>box-shadow</strong>. Profondità solo da hairline + livelli di sfondo.</div>
+    <div class="geom">
+      <div class="square" style="background: var(--white);"></div>
+      <div class="square" style="background: var(--paper);"></div>
+      <div class="square" style="background: var(--ink); border: none;"></div>
+    </div>
+  </div>
+</body>
+</html>
