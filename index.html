@@ -7024,7 +7024,6 @@ function App() {
   const [swipeHint, setSwipeHint] = useState(false);
   const [onboard, setOnboard] = useState(false);
   const prevRef = useRef(null);
-  const initialHashRef = useRef(parseHash());
   const pendingPageRef = useRef(null);
   const mobile = useIsMobile();
   const displayInnerRef = useRef(null);
@@ -7067,19 +7066,6 @@ function App() {
 
   useEffect(() => { if (tweaks.language && tweaks.language !== lang) setLang(tweaks.language); }, [tweaks.language]);
   useEffect(() => { window.sgnAudio?.setEnabled(!!tweaks.sound); }, [tweaks.sound]);
-
-  // After boot: navigate to the module the URL was pointing at (if any).
-  // We defer this so the boot overlay always plays before any module opens.
-  useEffect(() => {
-    if (!booted) return;
-    const { mod, page } = initialHashRef.current;
-    if (mod) {
-      pendingPageRef.current = page;
-      setDirection(computeDirection(null, mod));
-      setTransKey(k => k + 1);
-      setCurrent(mod);
-    }
-  }, [booted]);
 
   const sound = useCallback((kind) => {
     if (tweaks.sound && window.sgnTick) window.sgnTick(kind);
