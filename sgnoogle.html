@@ -1086,7 +1086,12 @@ body {
       { freq: 800,  dur: 0.040, vol: 0.030, type: 'triangle', when: 0     },
       { freq: 480,  dur: 0.070, vol: 0.035, type: 'triangle', when: 0.045 },
     ],
-    boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine'     }],
+    boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
+    bootReady: [
+      { freq:  880, dur: 0.055, vol: 0.050, type: 'triangle', bend: 0.99, when: 0    },
+      { freq: 1319, dur: 0.065, vol: 0.055, type: 'triangle', bend: 0.99, when: 0.06 },
+      { freq: 1760, dur: 0.140, vol: 0.060, type: 'triangle', bend: 0.96, when: 0.13 },
+    ],
   };
 
   window.sgnTick = function(kind = 'tick') {
@@ -5558,7 +5563,7 @@ function BootScreen({ lang = 'it', onDone, sound }) {
     // After the full fill, hold for a beat, then leave.
     const leave = setTimeout(() => {
       if (cancelled || skipRef.current) return;
-      if (soundRef.current) soundRef.current('confirm');
+      if (soundRef.current) soundRef.current('bootReady');
       setPhase('leaving');
       setTimeout(() => { if (!cancelled) onDoneRef.current?.(); }, 320);
     }, TOTAL - 320);
