@@ -670,7 +670,7 @@ body {
 
   /* ── Mobile (<=760) ── */
   @media (max-width: 760px) {
-    .sgn-page { padding: clamp(8px, 2vh, 16px) clamp(10px, 3vw, 20px); }
+    .sgn-page { padding: clamp(8px, 2vh, 16px) clamp(10px, 3vw, 20px) max(52px, env(safe-area-inset-bottom, 0px) + 28px); }
     .sgn-frame {
       grid-template-rows: 44px 1fr auto;
       gap: clamp(10px, 1.5vh, 16px);
@@ -3946,7 +3946,7 @@ function SelfModule({ lang }) {
   const L = I18N[lang];
   return (
     <PageDeck>
-      <Page label={lang === 'it' ? 'PROFILO' : 'PROFILE'}>
+      <Page label={lang === 'it' ? 'PROFILO' : 'PROFILE'} justify="center">
         <AboutProfilePage L={L} lang={lang}/>
       </Page>
       <Page label="SKILL TREE">
