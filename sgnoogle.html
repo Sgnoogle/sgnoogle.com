@@ -269,7 +269,6 @@ body {
     position: relative;
     overflow: hidden;
     background: var(--white);
-    border: 0.5px solid var(--border-soft);
   }
   /* ── Display area = display + (optional) side pager card ── */
   .sgn-display-area {
@@ -670,7 +669,7 @@ body {
 
   /* ── Mobile (<=760) ── */
   @media (max-width: 760px) {
-    .sgn-page { padding: clamp(8px, 2vh, 16px) clamp(10px, 3vw, 20px); }
+    .sgn-page { padding: clamp(8px, 2vh, 16px) 0; }
     .sgn-frame {
       grid-template-rows: 44px 1fr auto;
       gap: clamp(10px, 1.5vh, 16px);
