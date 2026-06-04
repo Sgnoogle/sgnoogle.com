@@ -699,11 +699,10 @@ body {
     .sgn-app-about { display: none !important; }
     /* caratteristiche: via su mobile, la gallery prende tutto lo spazio */
     .sgn-app-textcol { display: none !important; }
-    /* gallery: prende tutto lo spazio residuo e ci sta dentro (può ridursi,
-       gli shot scorrono comunque in orizzontale). Mai scroll verticale. */
+    /* gallery: altezza fissa su mobile — screenshot sempre visibili per intero */
     .sgn-app-galcol {
-      flex: 1 1 auto !important;
-      min-height: 0 !important;
+      flex: 0 0 auto !important;
+      height: clamp(200px, 38vh, 300px) !important;
     }
     .sgn-app-row {
       grid-template-columns: 40px 1fr !important;
@@ -3347,7 +3346,7 @@ function AppPage({ app, lang }) {
           così il nome non si spezza su più righe e l'hero resta basso —
           lasciando alla descrizione tutto lo spazio verticale. */}
       <div style={{
-        display: 'flex', alignItems: 'flex-start',
+        display: 'flex', alignItems: 'center',
         gap: 'clamp(12px, 1.8vw, 22px)',
       }} className="sgn-app-hero">
         <AppIcon app={app}/>
