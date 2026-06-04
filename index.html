@@ -1424,7 +1424,7 @@ const UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ'; // uploads playlist = UC→UU
    gratuita di YouTube Data v3 — niente backend. Lasciata vuota, la pagina 2
    ricade sulla lista curata qui sotto (gli upload reali più recenti trovati).
    Console Google Cloud → abilita "YouTube Data API v3" → crea una API key. */
-const YT_API_KEY = ''; // ← incolla qui la API key per il feed live della pagina 2
+const YT_API_KEY = 'AIzaSyBqqeQJvz12FXPkL0QsPPDz4W1r_hQ7U_I';
 
 const VIDEOS = [
   { id: '01', title: 'ULTIMO CARICAMENTO', cat: '@SGNOOGLE · FEED LIVE', kind: 'A',
@@ -2886,6 +2886,66 @@ function PageHeader({ id, title, page, showTag = true }) {
 }
 
 /* ════════ 01 VIDEO ════════ */
+
+/* ── Helpers per i metadati live del featured video ── */
+function fmtViews(n) {
+  if (!n) return '—';
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(n);
+}
+function fmtDur(iso) {
+  const m = iso?.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return '—';
+  const h = parseInt(m[1] || 0), min = parseInt(m[2] || 0), sec = parseInt(m[3] || 0);
+  if (h > 0) return `${h}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${min}:${String(sec).padStart(2,'0')}`;
+}
+function fmtPubDate(iso, lang) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  const M = lang === 'it'
+    ? ['GEN','FEB','MAR','APR','MAG','GIU','LUG','AGO','SET','OTT','NOV','DIC']
+    : ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  return `${d.getDate()} ${M[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/* useFeaturedVideoMeta — due fetch a YouTube Data v3:
+   1. playlistItems → videoId + titolo + data del PRIMO upload (= il più recente)
+   2. videos        → statistics (views, likes) + contentDetails (duration)
+   Senza YT_API_KEY ritorna null e l'UI mostra il fallback statico. */
+function useFeaturedVideoMeta() {
+  const [meta, setMeta] = React.useState(null);
+  React.useEffect(() => {
+    if (!YT_API_KEY) return;
+    let alive = true;
+    fetch('https://www.googleapis.com/youtube/v3/playlistItems'
+      + '?part=snippet&maxResults=1&playlistId=' + UPLOADS_PID + '&key=' + YT_API_KEY)
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(d => {
+        if (!alive || !d?.items?.[0]) return;
+        const sn = d.items[0].snippet;
+        const videoId = sn.resourceId.videoId;
+        return fetch('https://www.googleapis.com/youtube/v3/videos'
+          + '?part=statistics,contentDetails&id=' + videoId + '&key=' + YT_API_KEY)
+          .then(r => r.ok ? r.json() : Promise.reject(r.status))
+          .then(sd => {
+            if (!alive || !sd?.items?.[0]) return;
+            const { statistics: s, contentDetails: cd } = sd.items[0];
+            if (alive) setMeta({
+              videoId, title: sn.title, publishedAt: sn.publishedAt,
+              views: parseInt(s.viewCount || 0),
+              likes: parseInt(s.likeCount || 0),
+              duration: cd.duration,
+            });
+          });
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  return meta;
+}
+
 /* useLatestUploads — popola la pagina 2 con gli ULTIMI video reali del canale.
    Con YT_API_KEY impostata: chiede a YouTube Data v3 gli item della
    uploads-playlist (già ordinati dal più recente), scarta il primo (è
@@ -2960,6 +3020,10 @@ function VideoModule({ lang }) {
 function FeaturedVideo({ v, L, lang }) {
   const [ref, inView] = useInView({ threshold: 0.2 });
   const subsK = Math.round((CHANNEL.subs.value || 0) / 1000) + 'K';
+  const meta = useFeaturedVideoMeta();
+  const displayTitle = meta?.title || v.title;
+  const displayDate  = meta ? fmtPubDate(meta.publishedAt, lang) : null;
+
   return (
     <div ref={ref} className="sgn-card-hover sgn-card-hover--media sgn-featured" style={{
       position: 'relative',
@@ -2971,51 +3035,72 @@ function FeaturedVideo({ v, L, lang }) {
       background: C.white,
       padding: 'clamp(10px, 1.2vw, 16px)',
       boxSizing: 'border-box',
-    }} >
-      {/* Player incorniciato da una hairline propria: così il bordo della
-         card resta visibile tutt'attorno (matte) e non finisce mai "sotto"
-         il player di YouTube. Cella in flex-center → il frame mantiene un
-         rapporto 18:9 (2:1) fisso, centrato verticalmente. */}
+    }}>
       <div style={{
         position: 'relative', minWidth: 0, minHeight: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         <div className="sgn-feat-vid" style={{
-          // FINESTRA 18:9 REALE — guidata dalla LARGHEZZA: l'altezza deriva
-          // dal rapporto, mai il contrario. (Prima `height:100%` + `maxWidth`
-          // rompevano l'aspect-ratio quando la cella era più alta che larga →
-          // finestra ~3:2.) `maxHeight:100%` è solo guard-rail per celle
-          // basse e larghe. Centrata vert. dal flex genitore.
           position: 'relative', width: '100%', aspectRatio: '18 / 9',
           maxHeight: '100%', margin: '0 auto',
           border: `0.5px solid ${C.border}`, overflow: 'hidden',
         }}>
-          {v.youtubeId || v.playlistId
-            ? <VideoPreview youtubeId={v.youtubeId} playlistId={v.playlistId} title={v.title}/>
+          {v.youtubeId || v.playlistId || meta?.videoId
+            ? <VideoPreview
+                youtubeId={meta?.videoId || v.youtubeId}
+                playlistId={meta?.videoId ? undefined : v.playlistId}
+                title={displayTitle}/>
             : <VideoArt v={v} big fill/>}
         </div>
       </div>
+
       <div className="sgn-feat-info" style={{
         padding: 'clamp(6px, 1vh, 12px) 0',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 14,
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         overflow: 'hidden',
       }}>
+        {/* HEAD — tag + titolo reale + data */}
         <div className="sgn-feat-head" style={{ minHeight: 0 }}>
           <Tag color={C.yellow}>{L.video.featured}</Tag>
           <div className="sgn-feat-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-            fontSize: 'clamp(20px, 2.4vw, 34px)', letterSpacing: '-0.025em',
-            color: C.ink, lineHeight: 1, marginTop: 12, textTransform: 'uppercase',
-          }}>{v.title}</div>
-          <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 10 }}>{v.cat}</Label>
+            fontSize: 'clamp(13px, 1.3vw, 19px)', letterSpacing: '-0.02em',
+            color: C.ink, lineHeight: 1.2, marginTop: 10, textTransform: 'uppercase',
+            display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}>{displayTitle}</div>
+          <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
+            @sgnoogle{displayDate ? ` · ${displayDate}` : ' · FEED LIVE'}
+          </Label>
         </div>
 
-        {/* DATO REALE, sempre fresco da YouTube — zero API/chiavi: il player a
-            sinistra mostra SEMPRE l'ultimo upload del canale (uploads playlist);
-            qui sotto il dato di canale verificato + accesso diretto. Sostituisce
-            la vecchia perf-bar inventata (rating/tier) con un solo numero vero. */}
-        <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(10px, 1.6vh, 16px)' }}>
-          <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>
+        {/* STATS — views / likes / durata (solo quando l'API ha risposto) */}
+        {meta && (
+          <div style={{
+            display: 'flex', gap: 'clamp(10px, 1.4vw, 20px)',
+            padding: 'clamp(8px, 1vh, 12px) 0',
+            borderTop: `0.5px solid ${C.border}`,
+            borderBottom: `0.5px solid ${C.border}`,
+          }}>
+            {[
+              { k: 'VIEWS',  v: fmtViews(meta.views) },
+              { k: 'LIKES',  v: fmtViews(meta.likes) },
+              { k: lang === 'it' ? 'DURATA' : 'LENGTH', v: fmtDur(meta.duration) },
+            ].map(({ k, v: val }) => (
+              <div key={k}>
+                <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 4 }}>{k}</Label>
+                <span style={{
+                  fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+                  fontSize: 'clamp(14px, 1.3vw, 18px)', color: C.ink, lineHeight: 1,
+                }}>{val}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* FOOT — iscritti + CTA */}
+        <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(8px, 1.2vh, 14px)' }}>
+          {!meta && <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>}
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
             <span style={{
               fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
