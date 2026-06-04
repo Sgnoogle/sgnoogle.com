@@ -2324,7 +2324,7 @@ function STLLab({ lang }) {
     if (!window.THREE && !window.__sgnThreeLoading) {
       window.__sgnThreeLoading = true;
       const s = document.createElement('script');
-      s.src = 'https://unpkg.com/three@0.149.1/build/three.min.js';
+      s.src = 'https://cdn.jsdelivr.net/npm/three@0.149.1/build/three.min.js';
       s.async = true;
       document.head.appendChild(s);
     }
@@ -2515,6 +2515,7 @@ function STLLab({ lang }) {
           <div style={{
             display: 'flex', flexDirection: 'column', gap: 1,
             background: C.borderSoft,
+            paddingBottom: 1,
           }}>
             {OBJECTS.map(o => (
               <STLListItem
