@@ -674,7 +674,9 @@ body {
       grid-template-rows: 44px 1fr auto;
       gap: clamp(10px, 1.5vh, 16px);
     }
-    .sgn-self-grid { grid-template-columns: 1fr !important; }
+    .sgn-self-grid { grid-template-columns: 1fr !important; justify-items: center; text-align: center; }
+    .sgn-self-grid > div:first-child { width: clamp(160px, 52vw, 240px) !important; }
+    .sgn-self-grid > div:last-child { width: 100%; text-align: left; }
     .sgn-stl-grid  { grid-template-columns: 1fr !important; }
     /* App hero: l'icona e il blocco testo restano in riga, il bottone
        INSTALLA va a capo a tutta larghezza (flex-wrap nel componente). */
@@ -1168,7 +1170,7 @@ const CHANNEL = {
   subs:    { value: 67000, fmt: 'short',  source: 'manual',     synced: true  },
   videos:  { value: null,                  source: 'youtube-api', synced: false },
   hours:   { value: null,                  source: 'youtube-api', synced: false },
-  startYear: 2019,
+  startYear: 2013,
 };
 
 const I18N = {
@@ -1240,7 +1242,7 @@ const I18N = {
       sinceVal: String(CHANNEL.startYear),
       skillsLabel: 'SKILL TREE',
       contactLabel: 'CONTATTI',
-      bio: 'Recensioni e making in italiano dal 2019. Studio minimal, monitor gialli, telaio metallico. Niente bounce, niente filler. Solo quello che serve, ben fatto.',
+      bio: 'Recensioni e making in italiano dal 2013. Studio minimal, monitor gialli, telaio metallico. Niente bounce, niente filler. Solo quello che serve, ben fatto.',
       viewToggleAvatar: 'AVATAR',
       viewToggleReal:   'REAL',
       viewHint:         'PREMI PER RUOTARE',
@@ -1352,7 +1354,7 @@ const I18N = {
       sinceVal: String(CHANNEL.startYear),
       skillsLabel: 'SKILL TREE',
       contactLabel: 'CONTACT',
-      bio: 'Italian reviews and making since 2019. Minimal studio, yellow monitors, metal ceiling rig. No bounce, no filler. Only what\'s needed, done well.',
+      bio: 'Italian reviews and making since 2013. Minimal studio, yellow monitors, metal ceiling rig. No bounce, no filler. Only what\'s needed, done well.',
       viewToggleAvatar: 'AVATAR',
       viewToggleReal:   'REAL',
       viewHint:         'PRESS TO ROTATE',
