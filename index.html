@@ -697,13 +697,8 @@ body {
     }
     /* descrizione: via su mobile (ridondante con la tagline dell'hero) */
     .sgn-app-about { display: none !important; }
-    /* caratteristiche: altezza naturale, mai compressa, niente maschera */
-    .sgn-app-textcol {
-      flex: 0 0 auto !important;
-      overflow: visible !important;
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
-    }
+    /* caratteristiche: via su mobile, la gallery prende tutto lo spazio */
+    .sgn-app-textcol { display: none !important; }
     /* gallery: prende tutto lo spazio residuo e ci sta dentro (può ridursi,
        gli shot scorrono comunque in orizzontale). Mai scroll verticale. */
     .sgn-app-galcol {
