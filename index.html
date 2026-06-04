@@ -1030,8 +1030,24 @@ body {
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.1/build/three.min.js" defer crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.1/examples/js/loaders/STLLoader.js" defer crossorigin="anonymous"></script>
+<!-- Three.js via ES module + import map. Il vecchio build UMD (build/three.min.js)
+     e la cartella examples/js sono stati rimossi da three.js in r148+, quindi
+     l'unico path valido è il module build + examples/jsm. Esponiamo THREE e
+     STLLoader su window così il resto dell'app (Babel classico) li trova. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.149.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.149.1/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+  import * as THREE from 'three';
+  import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+  window.THREE = THREE;
+  window.STLLoader = STLLoader;
+</script>
 
 <script>
 /* Tiny WebAudio click engine — game-menu style ticks.
@@ -2336,8 +2352,11 @@ function STLLab({ lang }) {
     if (!ready || !mountRef.current) return undefined;
     const THREE = window.THREE;
     const el = mountRef.current;
-    const w = el.clientWidth;
-    const h = el.clientHeight;
+    // Guardia: se il layout non ha ancora dato dimensioni al contenitore,
+    // usa fallback ragionevoli — il ResizeObserver correggerà appena il grid
+    // risolve l'altezza (evita aspect=NaN e canvas 0×0 → schermo vuoto).
+    const w = el.clientWidth  || 600;
+    const h = el.clientHeight || 400;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFFFFFF);
@@ -2403,6 +2422,7 @@ function STLLab({ lang }) {
 
     const onResize = () => {
       const W = el.clientWidth, H = el.clientHeight;
+      if (!W || !H) return;
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
       renderer.setSize(W, H);
@@ -2441,10 +2461,10 @@ function STLLab({ lang }) {
 
     const obj = OBJECTS.find(o => o.id === currentId);
 
-    if (obj?.real && THREE.STLLoader) {
+    if (obj?.real && window.STLLoader) {
       // Phase 2: load real STL file
       let cancelled = false;
-      const loader = new THREE.STLLoader();
+      const loader = new window.STLLoader();
       const fillMat = new THREE.MeshLambertMaterial({ color: 0xFFC200 });
       const edgeMat = new THREE.LineBasicMaterial({ color: 0x28282C, linewidth: 1 });
 
