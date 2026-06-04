@@ -3336,43 +3336,45 @@ function AppPage({ app, lang }) {
     <div className="sgn-app-page" style={{
       flex: 1, minHeight: 0,
       display: 'grid',
-      gridTemplateRows: 'auto auto minmax(0, 1fr)',
-      gap: 'clamp(12px, 1.6vh, 18px)',
+      gridTemplateRows: 'auto auto auto minmax(0, 1fr)',
+      gap: 'clamp(10px, 1.4vh, 16px)',
       overflow: 'hidden',
     }}>
-      {/* ─── HERO ─── icona + meta + INSTALL CTA.
-          flex-wrap: su display stretti il bottone INSTALLA va a capo
-          sotto al blocco testo invece di strozzare la colonna centrale,
-          così il nome non si spezza su più righe e l'hero resta basso —
-          lasciando alla descrizione tutto lo spazio verticale. */}
+      {/* ─── HERO ─── icona definisce l'altezza; right col stretch + space-between:
+          nome in cima, CTA in fondo, esattamente dentro l'altezza dell'icona. */}
       <div style={{
-        display: 'flex', alignItems: 'center',
+        display: 'flex', alignItems: 'stretch',
         gap: 'clamp(12px, 1.8vw, 22px)',
       }} className="sgn-app-hero">
         <AppIcon app={app}/>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-            <h3 style={{
-              fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
-              fontSize: 'clamp(26px, 3vw, 42px)', letterSpacing: '-0.04em',
-              color: C.ink, lineHeight: 0.9, margin: 0, textTransform: 'lowercase',
-            }}>{app.name}</h3>
-            <CTA
-              href={APP_PLAY_URL(app.pkg)}
-              target="_blank"
-              size="sm"
-              label={lang === 'it' ? 'INSTALLA' : 'INSTALL'}
-              style={{ flexShrink: 0 }}
-            />
-          </div>
-          <p style={{
-            margin: 0, fontFamily: 'IBM Plex Mono, monospace',
-            fontSize: 'clamp(12px, 1.05vw, 14px)', color: C.ink,
-            lineHeight: 1.5, fontWeight: 600, maxWidth: 640,
-            textWrap: 'pretty',
-          }}>{tagline}</p>
+        <div style={{
+          flex: 1, minWidth: 0,
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+          <h3 style={{
+            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+            fontSize: 'clamp(22px, 3vw, 42px)', letterSpacing: '-0.04em',
+            color: C.ink, lineHeight: 1, margin: 0, textTransform: 'lowercase',
+          }}>{app.name}</h3>
+          <CTA
+            href={APP_PLAY_URL(app.pkg)}
+            target="_blank"
+            size="sm"
+            label={lang === 'it' ? 'INSTALLA' : 'INSTALL'}
+            style={{ alignSelf: 'flex-start' }}
+          />
         </div>
       </div>
+
+      {/* ─── TAGLINE ─── riga separata sotto l'hero */}
+      {tagline && (
+        <p style={{
+          margin: 0, fontFamily: 'IBM Plex Mono, monospace',
+          fontSize: 'clamp(12px, 1.05vw, 14px)', color: C.ink,
+          lineHeight: 1.5, fontWeight: 600, textWrap: 'pretty',
+        }}>{tagline}</p>
+      )}
 
       {/* ─── META BAND ─── solo i dati essenziali, celle equispaziate.
           Rimossi su richiesta: RECENSIONI, CATEGORIA, MONETIZZAZIONE, SNAPSHOT. */}
@@ -3471,12 +3473,12 @@ function AppGallery({ shots, name }) {
     }}>
       {shots.map((h, i) => (
         <div key={i} style={{
+          position: 'relative',
           flex: '0 0 auto', height: '100%',
           aspectRatio: '9 / 16',
-          border: `0.5px solid ${C.borderSoft}`, background: C.paper,
+          background: C.paper,
           scrollSnapAlign: 'start',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 4, boxSizing: 'border-box',
+          overflow: 'hidden',
         }}>
           <img
             src={APP_LH(h, 'w512')}
@@ -3487,6 +3489,11 @@ function AppGallery({ shots, name }) {
               objectFit: 'contain',
             }}
           />
+          <div style={{
+            position: 'absolute', inset: 0,
+            border: `0.5px solid ${C.borderSoft}`,
+            pointerEvents: 'none',
+          }} />
         </div>
       ))}
     </div>
