@@ -681,7 +681,6 @@ body {
     .sgn-stl-grid  { grid-template-columns: 1fr !important; }
     /* App hero: l'icona e il blocco testo restano in riga, il bottone
        INSTALLA va a capo a tutta larghezza (flex-wrap nel componente). */
-    .sgn-app-hero > a.sgn-hot { flex: 1 1 100%; justify-content: center; }
     /* App body su mobile: NIENTE scroll interno alla pagina (richiesta esplicita).
        La pagina app deve entrare intera nel display. Per farcela:
        · la DESCRIZIONE è nascosta (ridondante: la tagline sotto al nome fa già
@@ -3353,20 +3352,25 @@ function AppPage({ app, lang }) {
           così il nome non si spezza su più righe e l'hero resta basso —
           lasciando alla descrizione tutto lo spazio verticale. */}
       <div style={{
-        display: 'flex', flexWrap: 'wrap',
-        alignItems: 'center',
-        gap: 'clamp(14px, 2vw, 26px)',
+        display: 'flex', alignItems: 'flex-start',
+        gap: 'clamp(12px, 1.8vw, 22px)',
       }} className="sgn-app-hero">
         <AppIcon app={app}/>
-        <div style={{
-          flex: '1 1 240px', minWidth: 0,
-          display: 'flex', flexDirection: 'column', gap: 6,
-        }}>
-          <h3 style={{
-            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
-            fontSize: 'clamp(26px, 3vw, 42px)', letterSpacing: '-0.04em',
-            color: C.ink, lineHeight: 0.9, margin: 0, textTransform: 'lowercase',
-          }}>{app.name}</h3>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <h3 style={{
+              fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+              fontSize: 'clamp(26px, 3vw, 42px)', letterSpacing: '-0.04em',
+              color: C.ink, lineHeight: 0.9, margin: 0, textTransform: 'lowercase',
+            }}>{app.name}</h3>
+            <CTA
+              href={APP_PLAY_URL(app.pkg)}
+              target="_blank"
+              size="md"
+              label={lang === 'it' ? 'INSTALLA' : 'INSTALL'}
+              style={{ flexShrink: 0 }}
+            />
+          </div>
           <p style={{
             margin: 0, fontFamily: 'IBM Plex Mono, monospace',
             fontSize: 'clamp(12px, 1.05vw, 14px)', color: C.ink,
@@ -3374,13 +3378,6 @@ function AppPage({ app, lang }) {
             textWrap: 'pretty',
           }}>{tagline}</p>
         </div>
-        <CTA
-          href={APP_PLAY_URL(app.pkg)}
-          target="_blank"
-          size="md"
-          label={lang === 'it' ? 'INSTALLA' : 'INSTALL'}
-          style={{ flexShrink: 0 }}
-        />
       </div>
 
       {/* ─── META BAND ─── solo i dati essenziali, celle equispaziate.
