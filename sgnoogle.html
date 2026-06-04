@@ -4778,7 +4778,26 @@ function IdleDisplay({ lang, mobile, focused }) {
 
         {!preview && <LiveBadge armed={armed} dimmed={idleMode}/>}
 
-        {preview && (
+        {!preview && (
+          <div aria-hidden style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            border: `0.5px dashed ${C.border}`,
+            padding: 'clamp(8px, 1.4vh, 13px) clamp(20px, 4vw, 40px)',
+            opacity: idleMode ? 0 : (armed ? 1 : 0),
+            transition: 'opacity 700ms linear 500ms',
+          }}>
+            <span style={{
+              fontSize: 9, color: C.faint,
+              animation: 'sgnBlink 1.4s step-start infinite',
+            }}>▶</span>
+            <span style={{
+              fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
+              fontFamily: 'IBM Plex Mono, monospace',
+            }}>
+              {lang === 'it' ? 'SELEZIONA MODULO' : 'SELECT MODULE'}
+            </span>
+          </div>
+        )}
           <ModulePreview id={focused} module={preview} lang={lang}/>
         )}
       </div>
