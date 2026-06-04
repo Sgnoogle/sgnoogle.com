@@ -3223,7 +3223,7 @@ function VideoCard({ v, L, delay = 0 }) {
       {/* copertina 16:9 — verrà popolata con la cover reale del video.
          Rapporto fisso così tutte le card sono identiche e allineate;
          la card si dimensiona sul contenuto (niente stretch di riga). */}
-      <div style={{ aspectRatio: '18 / 9', minHeight: 0, position: 'relative', border: `0.5px solid ${C.borderSoft}`, overflow: 'hidden' }}>
+      <div style={{ aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', border: `0.5px solid ${C.borderSoft}`, overflow: 'hidden' }}>
         {v.youtubeId ? <VideoThumb id={v.youtubeId} title={v.title}/> : <VideoArt v={v} fill/>}
       </div>
       <div style={{ flexShrink: 0, padding: '0 2px 2px' }}>
