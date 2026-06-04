@@ -1030,7 +1030,8 @@ body {
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.1/build/three.min.js" async crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.1/build/three.min.js" defer crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.1/examples/js/loaders/STLLoader.js" defer crossorigin="anonymous"></script>
 
 <script>
 /* Tiny WebAudio click engine — game-menu style ticks.
@@ -1482,6 +1483,9 @@ const OBJECTS = [
   { id: '05', name: 'F-Coin',        file: 'f-coin.stl', mat: 'PLA · Bambu A1', setup: '0.08mm · 100%', verts: 124, faces: 44, units: 'mm (1:1)', size: 'Ά32×5',
     desc: { it: 'Token souvenir con monogramma in rilievo, fronte-retro.', en: 'Souvenir token with embossed monogram, both sides.' },
     link: 'https://makerworld.com/en/models/placeholder-05', tier: 'S', complexity: 2, type: 'BRAND' },
+  { id: '06', name: 'CMF GameBoy Slide', file: 'topslide.stl', real: true, mat: 'PLA · Bambu A1', setup: '0.20mm · 15%', units: 'mm (1:1)',
+    desc: { it: 'Modulo Game Boy per CMF Phone 1/2 Pro. Meccanismo a scorrimento superiore con pulsante fisico integrato.', en: 'Game Boy module for CMF Phone 1/2 Pro. Top sliding mechanism with integrated physical button.' },
+    link: 'https://makerworld.com/en/models/1494487-cmf-phone-1-2-pro-game-boy-module#profileId-1562614', tier: 'S', complexity: 4, type: 'MOD' },
 ];
 
 /* APPS — Play Store roster, snapshot MAG 2026.
@@ -2435,8 +2439,39 @@ function STLLab({ lang }) {
       }
     }
 
-    const model = buildProceduralModel(THREE, currentId);
-    holder.add(model);
+    const obj = OBJECTS.find(o => o.id === currentId);
+
+    if (obj?.real && THREE.STLLoader) {
+      let cancelled = false;
+      const loader = new THREE.STLLoader();
+      const fillMat = new THREE.MeshLambertMaterial({ color: 0xFFC200 });
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0x28282C, linewidth: 1 });
+
+      loader.load(
+        `/assets/models/${obj.file}`,
+        (geometry) => {
+          if (cancelled) return;
+          const mesh  = new THREE.Mesh(geometry, fillMat);
+          const edges = new THREE.EdgesGeometry(geometry, 15);
+          const lines = new THREE.LineSegments(edges, edgeMat);
+          const group = new THREE.Group();
+          group.add(mesh);
+          group.add(lines);
+          const box3   = new THREE.Box3().setFromObject(group);
+          const center = box3.getCenter(new THREE.Vector3());
+          group.position.sub(center);
+          const size   = box3.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          if (maxDim > 0) group.scale.setScalar(180 / maxDim);
+          holder.add(group);
+        },
+        undefined,
+        () => { if (!cancelled) holder.add(buildProceduralModel(THREE, currentId)); }
+      );
+      return () => { cancelled = true; };
+    }
+
+    holder.add(buildProceduralModel(THREE, currentId));
   }, [currentId, ready]);
 
   return (
@@ -2680,6 +2715,15 @@ function buildProceduralModel(THREE, id) {
       const emboss = new THREE.BoxGeometry(60, 60, 20);
       emboss.translate(0, 0, 8);
       addMesh(emboss);
+      break;
+    }
+    case '06': {
+      const body = new THREE.BoxGeometry(200, 18, 96);
+      body.translate(0, 0, 0);
+      addMesh(body);
+      const rail = new THREE.BoxGeometry(200, 7, 10);
+      rail.translate(0, -12, 0);
+      addMesh(rail);
       break;
     }
     default: {
