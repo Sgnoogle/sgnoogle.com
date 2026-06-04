@@ -4798,6 +4798,8 @@ function IdleDisplay({ lang, mobile, focused }) {
             </span>
           </div>
         )}
+
+        {preview && (
           <ModulePreview id={focused} module={preview} lang={lang}/>
         )}
       </div>
