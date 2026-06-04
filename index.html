@@ -1470,26 +1470,10 @@ const VIDEOS = [
     youtubeId: '4g1rF1OsKdY', url: 'https://www.youtube.com/watch?v=4g1rF1OsKdY' },
 ];
 
-/* OBJECTS — placeholder STL sheets. Replace mat/desc/link when real STL
-   files land in /assets/models/. Until then the viewer renders a procedural
-   geometry keyed off `id` so each entry still feels distinct. */
+/* OBJECTS — modelli STL reali in /assets/models/. Le voci con `real: true`
+   vengono caricate via THREE.STLLoader; altrimenti fallback procedurale. */
 const OBJECTS = [
-  { id: '01', name: 'F-monogram',    file: 'f-monogram.stl', mat: 'PLA · Bambu A1', setup: '0.16mm · 15%',  verts: 9,    faces: 3,    units: 'mm (1:1)', size: '120×120×45',
-    desc: { it: 'Monogramma F estruso. Stampa-test, calibrazione assi e ritrazione.', en: 'Extruded F monogram. Print-test for axis calibration and retraction.' },
-    link: 'https://makerworld.com/en/models/placeholder-01', tier: 'S', complexity: 3, type: 'BRAND' },
-  { id: '02', name: 'HUD-Bracket',   file: 'hud-bracket.stl', mat: 'PETG · Bambu A1', setup: '0.20mm · 25%',  verts: 1842, faces: 614, units: 'mm (1:1)', size: '85×40×35',
-    desc: { it: 'Staffa per microfono shotgun, attacco cold-shoe.', en: 'Shotgun mic mount with cold-shoe attachment.' },
-    link: 'https://makerworld.com/en/models/placeholder-02', tier: 'A', complexity: 4, type: 'RIG' },
-  { id: '03', name: 'Cable-Comb',    file: 'cable-comb.stl', mat: 'PLA · Bambu A1', setup: '0.12mm · 20%',  verts: 246,  faces: 80,  units: 'mm (1:1)', size: '60×20×10',
-    desc: { it: 'Pettine per cable-management 8 canali, dietro la scrivania.', en: '8-channel cable-management comb for behind-desk routing.' },
-    link: 'https://makerworld.com/en/models/placeholder-03', tier: 'B', complexity: 2, type: 'TOOL' },
-  { id: '04', name: 'Lens-Cap-Dock', file: 'lens-cap-dock.stl', mat: 'PLA · Bambu A1', setup: '0.16mm · 18%', verts: 580, faces: 192, units: 'mm (1:1)', size: '50×50×20',
-    desc: { it: 'Aggancio magnetico per tappi obiettivo sul rig camera.', en: 'Magnetic dock for lens caps on the camera rig.' },
-    link: 'https://makerworld.com/en/models/placeholder-04', tier: 'A', complexity: 3, type: 'RIG' },
-  { id: '05', name: 'F-Coin',        file: 'f-coin.stl', mat: 'PLA · Bambu A1', setup: '0.08mm · 100%', verts: 124, faces: 44, units: 'mm (1:1)', size: 'Ά32×5',
-    desc: { it: 'Token souvenir con monogramma in rilievo, fronte-retro.', en: 'Souvenir token with embossed monogram, both sides.' },
-    link: 'https://makerworld.com/en/models/placeholder-05', tier: 'S', complexity: 2, type: 'BRAND' },
-  { id: '06', name: 'CMF GameBoy Slide', file: 'topslide.stl', real: true, mat: 'PLA · Bambu A1', setup: '0.20mm · 15%', units: 'mm (1:1)',
+  { id: '01', name: 'CMF GameBoy Slide', file: 'topslide.stl', real: true, mat: 'PLA · Bambu A1', setup: '0.20mm · 15%', units: 'mm (1:1)',
     desc: { it: 'Modulo Game Boy per CMF Phone 1/2 Pro. Meccanismo a scorrimento superiore con pulsante fisico integrato.', en: 'Game Boy module for CMF Phone 1/2 Pro. Top sliding mechanism with integrated physical button.' },
     link: 'https://makerworld.com/en/models/1494487-cmf-phone-1-2-pro-game-boy-module#profileId-1562614', tier: 'S', complexity: 4, type: 'MOD' },
 ];
@@ -2661,89 +2645,14 @@ function buildProceduralModel(THREE, id) {
     group.add(new THREE.LineSegments(edges, edgeMat));
   }
 
-  switch (id) {
-    case '01': {
-      // F-monogram — extrude i 3 poligoni del brand mark.
-      const polys = [
-        [[51.44, 100.64], [154.75, 100.64], [0, 201.44]],
-        [[102.79, 0], [206.1, 0], [51.35, 100.8]],
-        [[84.44, 0], [33, 100.8], [8.4, 100.8], [59.83, 0]],
-      ];
-      polys.forEach(pts => {
-        const shape = new THREE.Shape();
-        shape.moveTo(pts[0][0], -pts[0][1]);
-        pts.slice(1).forEach(p => shape.lineTo(p[0], -p[1]));
-        shape.closePath();
-        addMesh(new THREE.ExtrudeGeometry(shape, { depth: 32, bevelEnabled: false }));
-      });
-      break;
-    }
-    case '02': {
-      // HUD-Bracket — L-bracket: una base + un montante verticale + foro.
-      const base = new THREE.BoxGeometry(160, 18, 70);
-      base.translate(0, -50, 0);
-      addMesh(base);
-      const post = new THREE.BoxGeometry(40, 100, 70);
-      post.translate(-60, 0, 0);
-      addMesh(post);
-      // Cold-shoe (piccolo blocco)
-      const shoe = new THREE.BoxGeometry(50, 14, 28);
-      shoe.translate(60, -34, 0);
-      addMesh(shoe);
-      break;
-    }
-    case '03': {
-      // Cable-Comb — barra con 8 denti che spuntano in cima.
-      const bar = new THREE.BoxGeometry(180, 22, 36);
-      bar.translate(0, -10, 0);
-      addMesh(bar);
-      for (let i = 0; i < 8; i++) {
-        const x = -77 + i * 22;
-        const tooth = new THREE.BoxGeometry(10, 38, 36);
-        tooth.translate(x, 20, 0);
-        addMesh(tooth);
-      }
-      break;
-    }
-    case '04': {
-      // Lens-Cap-Dock — disco circolare con magneti incassati.
-      const disc = new THREE.CylinderGeometry(90, 90, 16, 24);
-      disc.translate(0, 0, 0);
-      addMesh(disc);
-      for (let i = 0; i < 4; i++) {
-        const a = (i / 4) * Math.PI * 2;
-        const mag = new THREE.CylinderGeometry(14, 14, 18, 16);
-        mag.translate(Math.cos(a) * 55, 4, Math.sin(a) * 55);
-        addMesh(mag);
-      }
-      break;
-    }
-    case '05': {
-      // F-Coin — disco sottile con il monogramma a rilievo.
-      const coin = new THREE.CylinderGeometry(90, 90, 14, 36);
-      coin.rotateX(Math.PI / 2);
-      addMesh(coin);
-      // Rilievo F (semplificato) — un piccolo blocco al centro.
-      const emboss = new THREE.BoxGeometry(60, 60, 20);
-      emboss.translate(0, 0, 8);
-      addMesh(emboss);
-      break;
-    }
-    case '06': {
-      // CMF GameBoy Slide — corpo rettangolare con guida laterale
-      const body = new THREE.BoxGeometry(200, 18, 96);
-      body.translate(0, 0, 0);
-      addMesh(body);
-      const rail = new THREE.BoxGeometry(200, 7, 10);
-      rail.translate(0, -12, 0);
-      addMesh(rail);
-      break;
-    }
-    default: {
-      const box = new THREE.BoxGeometry(120, 120, 120);
-      addMesh(box);
-    }
-  }
+  // Fallback procedurale (usato solo se il caricamento dell'STL reale fallisce):
+  // CMF GameBoy Slide — corpo rettangolare con guida laterale.
+  const body = new THREE.BoxGeometry(200, 18, 96);
+  body.translate(0, 0, 0);
+  addMesh(body);
+  const rail = new THREE.BoxGeometry(200, 7, 10);
+  rail.translate(0, -12, 0);
+  addMesh(rail);
 
   // Center + scale to fit
   const box = new THREE.Box3().setFromObject(group);
