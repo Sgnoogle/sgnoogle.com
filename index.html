@@ -3093,7 +3093,7 @@ function FeaturedVideo({ v, L, lang }) {
           <p style={{
             margin: 0, fontFamily: 'IBM Plex Mono, monospace',
             fontSize: 'clamp(11px, 0.85vw, 13px)', color: C.grey, lineHeight: 1.6,
-            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+            display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
           }}>{meta.description}</p>
         )}
@@ -3122,7 +3122,6 @@ function FeaturedVideo({ v, L, lang }) {
 
         <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(8px, 1.2vh, 14px)' }}>
           {!meta && <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>}
-          <Label color={C.grey} size={10}>{subsK} {L.stats.subs}</Label>
           <CTA
             href="https://www.youtube.com/@sgnoogle/videos"
             target="_blank"
