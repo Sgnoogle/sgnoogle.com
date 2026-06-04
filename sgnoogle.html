@@ -3074,25 +3074,30 @@ function FeaturedVideo({ v, L, lang }) {
           </Label>
         </div>
 
-        {/* STATS — views / likes / durata (solo quando l'API ha risposto) */}
+        {/* STATS — views / durata, 2 celle equidistanti con divisore centrale */}
         {meta && (
           <div style={{
-            display: 'flex', gap: 'clamp(10px, 1.4vw, 20px)',
-            padding: 'clamp(8px, 1vh, 12px) 0',
+            display: 'flex',
             borderTop: `0.5px solid ${C.border}`,
             borderBottom: `0.5px solid ${C.border}`,
           }}>
             {[
-              { k: 'VIEWS',  v: fmtViews(meta.views) },
-              { k: 'LIKES',  v: fmtViews(meta.likes) },
+              { k: lang === 'it' ? 'VISUALIZZAZIONI' : 'VIEWS', v: fmtViews(meta.views) },
               { k: lang === 'it' ? 'DURATA' : 'LENGTH', v: fmtDur(meta.duration) },
-            ].map(({ k, v: val }) => (
-              <div key={k}>
-                <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 4 }}>{k}</Label>
+            ].map(({ k, v: val }, i) => (
+              <div key={k} style={{
+                flex: 1,
+                padding: 'clamp(10px, 1.2vh, 14px) 0',
+                paddingLeft: i > 0 ? 'clamp(12px, 1.4vw, 18px)' : 0,
+                borderLeft: i > 0 ? `0.5px solid ${C.border}` : 'none',
+              }}>
                 <span style={{
-                  fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
-                  fontSize: 'clamp(14px, 1.3vw, 18px)', color: C.ink, lineHeight: 1,
+                  display: 'block',
+                  fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
+                  fontSize: 'clamp(16px, 1.5vw, 20px)', color: C.ink,
+                  lineHeight: 1, marginBottom: 5, letterSpacing: '-0.02em',
                 }}>{val}</span>
+                <Label size={9} color={C.faint}>{k}</Label>
               </div>
             ))}
           </div>
