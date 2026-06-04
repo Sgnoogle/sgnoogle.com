@@ -2464,16 +2464,21 @@ function STLLab({ lang }) {
         `/assets/models/${obj.file}`,
         (geometry) => {
           if (cancelled) return;
+          // Centra la GEOMETRIA all'origine PRIMA di scalare: gli STL di
+          // MakerWorld hanno spesso l'origine in un angolo / sul piano di
+          // stampa. Centrare la geometria (non la posizione del gruppo) fa sì
+          // che lo scaling avvenga attorno al baricentro → il modello resta
+          // al centro del piano e ruota su se stesso.
+          geometry.center();
+          geometry.computeVertexNormals();
           const mesh  = new THREE.Mesh(geometry, fillMat);
           const edges = new THREE.EdgesGeometry(geometry, 15);
           const lines = new THREE.LineSegments(edges, edgeMat);
           const group = new THREE.Group();
           group.add(mesh);
           group.add(lines);
-          // Center + scale to fit ~180 units
+          // Scale to fit ~180 units (geometria già centrata sull'origine)
           const box3   = new THREE.Box3().setFromObject(group);
-          const center = box3.getCenter(new THREE.Vector3());
-          group.position.sub(center);
           const size   = box3.getSize(new THREE.Vector3());
           const maxDim = Math.max(size.x, size.y, size.z);
           if (maxDim > 0) group.scale.setScalar(180 / maxDim);
@@ -2672,15 +2677,20 @@ function buildProceduralModel(THREE, id) {
   rail.translate(0, -12, 0);
   addMesh(rail);
 
-  // Center + scale to fit
+  // Center + scale: `group` viene centrato all'origine, poi avvolto in un
+  // wrapper esterno che fa lo scaling. Così il fit avviene attorno al centro
+  // (lo scaling di `group` direttamente, dopo position.sub, sposterebbe il
+  // modello fuori asse di center*(k-1)).
   const box = new THREE.Box3().setFromObject(group);
   const center = box.getCenter(new THREE.Vector3());
   group.position.sub(center);
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
   const target = 180;
-  group.scale.setScalar(target / maxDim);
-  return group;
+  const wrapper = new THREE.Group();
+  wrapper.add(group);
+  if (maxDim > 0) wrapper.scale.setScalar(target / maxDim);
+  return wrapper;
 }
 
 Object.assign(window, { STLLab, StlSpec, STLListItem, buildProceduralModel });
