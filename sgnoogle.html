@@ -765,6 +765,15 @@ body {
       justify-content: center !important;
     }
 
+    /* 01b · ULTIMI VIDEO → su mobile la griglia collassa a 1 colonna: aggancio
+       dolce (proximity) della cima di ogni card così si vede sempre intera,
+       senza che lo snap "combatta" col dito (no mandatory). Desktop = libero. */
+    .sgn-video-grid {
+      scroll-snap-type: y proximity;
+      scroll-padding-top: 4px;
+    }
+    .sgn-video-grid > * { scroll-snap-align: start; }
+
     /* 02 · STL → viewer in alto, catalogo sotto (mantiene il suo scroll) */
     .sgn-stl-grid {
       grid-template-columns: 1fr !important;
