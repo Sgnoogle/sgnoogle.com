@@ -979,11 +979,19 @@ body {
   }
   .sgn-mrail-bar {
     appearance: none; margin: 0; padding: 0; cursor: pointer;
+    position: relative;
     background: transparent;
     border: 0.5px solid rgba(120,122,124,0.4);
     width: 5px; height: 22px;
     transition: height 200ms cubic-bezier(0.2,0,0,1),
                 background 160ms linear, border-color 160ms linear;
+  }
+  /* La barra visibile resta sottile (5px) ma l'area toccabile è molto più
+     ampia: un overlay trasparente che si estende oltre la barra e copre anche
+     il gap verticale, così non ci sono zone morte tra una barra e l'altra. */
+  .sgn-mrail-bar::after {
+    content: ''; position: absolute;
+    top: -5px; bottom: -5px; left: -14px; right: -14px;
   }
   .sgn-mrail-bar.active {
     height: 34px; background: var(--yellow); border-color: var(--yellow);
@@ -2423,7 +2431,22 @@ function STLLab({ lang }) {
     };
     const onUp = () => { dragging = false; };
 
+    // Rotazione da tastiera: frecce orbitano (il mount è focusabile).
+    const onKey = (e) => {
+      const step = 0.18;
+      let handled = true;
+      switch (e.key) {
+        case 'ArrowLeft':  rotY -= step; break;
+        case 'ArrowRight': rotY += step; break;
+        case 'ArrowUp':    rotX = Math.max(-1.2, rotX - step); break;
+        case 'ArrowDown':  rotX = Math.min(1.2,  rotX + step); break;
+        default: handled = false;
+      }
+      if (handled) { autoSpin = false; e.preventDefault(); }
+    };
+
     el.addEventListener('pointerdown', onDown);
+    el.addEventListener('keydown', onKey);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup',   onUp);
 
@@ -2453,6 +2476,7 @@ function STLLab({ lang }) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       el.removeEventListener('pointerdown', onDown);
+      el.removeEventListener('keydown', onKey);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup',   onUp);
       renderer.dispose();
@@ -2530,9 +2554,13 @@ function STLLab({ lang }) {
         border: `0.5px solid ${C.border}`,
         minHeight: 0,
       }}>
-        <div ref={mountRef} style={{
+        <div ref={mountRef}
+          tabIndex={ready ? 0 : -1}
+          role="img"
+          aria-label={(lang === 'it' ? 'Modello 3D: ' : '3D model: ') + (current?.name || '') + (lang === 'it' ? ' — usa le frecce per ruotare' : ' — use arrow keys to rotate')}
+          style={{
           position: 'absolute', inset: 0,
-          touchAction: 'none', cursor: 'grab',
+          touchAction: 'none', cursor: 'grab', outlineOffset: '-2px',
         }}/>
         {!ready && !loadError && (
           <div style={{
