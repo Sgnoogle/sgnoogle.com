@@ -566,7 +566,7 @@ body {
   .sgn-topctl { transition: border-color 120ms linear, background 120ms linear; }
   .sgn-topctl:hover {
     border-color: var(--ink) !important;
-    background: var(--paper) !important;
+    background: #FFFFFF !important;
   }
   /* l'icona audio si "arma": la freccia gialla resta, ma il bordo si fa ink */
   .sgn-topctl:active { background: #ECEBE7 !important; }
@@ -581,10 +581,10 @@ body {
   .sgn-langbtn:hover { border-color: var(--ink) !important; }
   /* la cella valore (IT/EN) si accende a ink+paper anche al solo hover,
      non solo da aperta — feedback "sta per selezionare". */
-  .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink); color: var(--paper); }
+  .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
   .sgn-langbtn__val { transition: background 120ms linear, color 120ms linear; }
   .sgn-langbtn.is-open { border-color: var(--ink); }
-  .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--ink); color: var(--paper); }
+  .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
   .sgn-caret { transition: transform 160ms cubic-bezier(0.2,0,0,1); }
   .sgn-langbtn.is-open .sgn-caret { transform: rotate(180deg); }
 
@@ -4831,12 +4831,12 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
 
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 6 }}>
         <button onClick={onToggleSound} className="sgn-hot sgn-topctl" title={soundOn ? 'Sound on' : 'Sound off'} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: 'transparent', border: `0.5px solid ${C.border}`,
-          padding: '4px 7px', cursor: 'pointer', fontFamily: 'inherit',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+          padding: '6px 9px', cursor: 'pointer', fontFamily: 'inherit',
           color: C.ink,
         }}>
-          <svg width="10" height="10" viewBox="0 0 11 11" aria-hidden style={{ display: 'block' }}>
+          <svg width="14" height="14" viewBox="0 0 11 11" aria-hidden style={{ display: 'block' }}>
             <path d="M2 4 L4 4 L6.5 2 L6.5 9 L4 7 L2 7 Z" fill={C.ink}/>
             {soundOn ? (
               <>
@@ -4851,23 +4851,23 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
         <span style={{ position: 'relative', display: 'inline-flex' }}>
           <button onClick={onToggleLang} className={`sgn-hot sgn-topctl sgn-langbtn${langOpen ? ' is-open' : ''}`} aria-haspopup="menu" aria-expanded={!!langOpen} style={{
             display: 'inline-flex', alignItems: 'stretch',
-            background: 'transparent', border: `0.5px solid ${C.border}`,
+            background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
           }}>
             <span style={{
-              padding: '4px 6px', fontSize: 9, letterSpacing: '0.18em',
-              color: C.faint, fontWeight: 600, alignSelf: 'center',
+              padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em',
+              color: C.grey, fontWeight: 700, alignSelf: 'center',
             }}>LANG</span>
             <span className="sgn-langbtn__val" style={{
-              padding: '4px 7px', fontSize: 11, fontWeight: 700,
+              padding: '6px 8px', fontSize: 11, fontWeight: 700,
               letterSpacing: '0.18em', color: C.ink,
-              borderLeft: `0.5px solid ${C.border}`,
+              borderLeft: '0.5px solid rgba(120,122,124,0.45)',
               background: C.paper,
-              display: 'inline-flex', alignItems: 'center', gap: 5,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
             }}>
               {lang.toUpperCase()}
-              <svg className="sgn-caret" width="7" height="5" viewBox="0 0 7 5" aria-hidden style={{ display: 'block' }}>
-                <path d="M0.5 0.9 L3.5 3.9 L6.5 0.9" fill="none" stroke="currentColor" strokeWidth="1"/>
+              <svg className="sgn-caret" width="9" height="6" viewBox="0 0 7 5" aria-hidden style={{ display: 'block' }}>
+                <path d="M0.5 0.9 L3.5 3.9 L6.5 0.9" fill="none" stroke="currentColor" strokeWidth="1.2"/>
               </svg>
             </span>
           </button>
