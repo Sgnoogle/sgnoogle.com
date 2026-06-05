@@ -505,6 +505,17 @@ body {
   .sgn-cta.sgn-hot:active .sgn-cta__icon > span { background-color: var(--paper) !important; }
   .sgn-cta.sgn-hot:active .sgn-cta__label { color: var(--paper) !important; }
 
+  /* Pulsante video nelle SponsorCard — stesso linguaggio del box-icona CTA:
+     a riposo hairline + glifo ink; al hover/press della card si riempie di
+     ink e il glifo (currentColor) diventa paper. */
+  .sgn-ytbtn { transition: background 140ms linear, border-color 140ms linear, color 140ms linear; }
+  .sgn-card-hover:hover .sgn-ytbtn,
+  .sgn-card-hover:active .sgn-ytbtn {
+    background: var(--ink) !important;
+    border-color: var(--ink) !important;
+    color: var(--paper) !important;
+  }
+
   /* ══════════════════════════════════════════════════════════════
      Card interattiva — qualunque .sgn-card-hover (video, app-row,
      link/sponsor/contact card, channel row). HOVER "COMBO" (selezione
@@ -4134,15 +4145,15 @@ function SponsorCard({ s, L, lang }) {
           letterSpacing: '-0.02em', lineHeight: 1.05,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{s.name}</span>
-        {/* pulsante "c'è un video": stessa icona YouTube dei contatti */}
-        <span aria-hidden="true" style={{
+        {/* pulsante "c'è un video": glifo YouTube dei contatti; hover come le CTA */}
+        <span aria-hidden="true" className="sgn-ytbtn" style={{
           flexShrink: 0,
           width: 'clamp(28px, 3.2vw, 34px)', height: 'clamp(28px, 3.2vw, 34px)',
           border: `0.5px solid ${C.border}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          background: C.paper,
+          background: 'transparent', color: C.ink,
         }}>
-          <ChannelGlyph id="YOUTUBE" size={16} color={C.ink}/>
+          <ChannelGlyph id="YOUTUBE" size={16} color="currentColor"/>
         </span>
       </div>
       <HoverCornerMarks/>
