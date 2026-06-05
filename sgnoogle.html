@@ -820,10 +820,17 @@ body {
       aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
     }
+    /* Impilato: niente divisore verticale, padding laterale comodo al dito.
+       Il video resta a filo (full-bleed), label e info rientrano. */
+    .sgn-feat-label-row {
+      border-left: none !important;
+      padding: 0 clamp(12px, 3.5vw, 16px) !important;
+    }
     .sgn-feat-info {
       justify-content: space-between !important;
-      padding: clamp(6px, 1.2vh, 10px) 2px clamp(12px, 2.5vh, 20px) !important;
+      padding: clamp(6px, 1.2vh, 10px) clamp(12px, 3.5vw, 16px) clamp(12px, 2.5vh, 20px) !important;
       gap: clamp(8px, 1.8vh, 14px) !important;
+      border-left: none !important;
     }
     .sgn-feat-title {
       font-size: clamp(15px, 4.5vw, 20px) !important;
@@ -1733,6 +1740,11 @@ const C = {
   faint: '#727476',
   yellowSoft: 'rgba(255,194,0,0.12)',
 };
+
+/* Padding unico per le FASCE DI TESTO dei box che contengono media
+   (featured / griglia video / sponsor). Principio: il media va a filo
+   della cornice (niente mat bianco intorno), il padding vive solo qui. */
+const CARD_PAD = 'clamp(10px, 1vw, 14px)';
 
 /* ───────── Tag / Label / Caption / Pill ───────── */
 
@@ -3214,14 +3226,18 @@ function FeaturedVideo({ v, L, lang }) {
       gridTemplateAreas: '"vid tag" "vid info"',
       gridTemplateColumns: 'minmax(0, 1.55fr) minmax(0, 1fr)',
       gridTemplateRows: 'auto 1fr',
-      gap: 'clamp(12px, 1.5vw, 22px)',
       border: `0.5px solid ${C.border}`,
       background: C.white,
-      padding: 'clamp(10px, 1.2vw, 16px)',
       boxSizing: 'border-box',
     }}>
-      {/* LABEL: desktop col2-row1 | mobile row1 (sopra il player) */}
-      <div className="sgn-feat-label-row">
+      {/* LABEL: desktop col2-row1 | mobile row1 (sopra il player).
+         Su desktop fa parte del pannello info: hairline a sinistra (divisore
+         dal video) + padding condiviso. Su mobile gli override azzerano bordo
+         e padding laterale (vedi @media). */}
+      <div className="sgn-feat-label-row" style={{
+        padding: `${CARD_PAD} ${CARD_PAD} clamp(8px, 1vh, 12px)`,
+        borderLeft: `0.5px solid ${C.border}`,
+      }}>
         <Tag color={C.yellow}>{L.video.featured}</Tag>
       </div>
 
@@ -3233,7 +3249,7 @@ function FeaturedVideo({ v, L, lang }) {
         <div className="sgn-feat-vid" style={{
           position: 'relative', width: '100%', aspectRatio: '18 / 9',
           maxHeight: '100%', margin: '0 auto',
-          border: `0.5px solid ${C.border}`, overflow: 'hidden',
+          overflow: 'hidden',
         }}>
           {v.youtubeId || v.playlistId || meta?.videoId
             ? <VideoPreview
@@ -3244,9 +3260,12 @@ function FeaturedVideo({ v, L, lang }) {
         </div>
       </div>
 
-      {/* INFO: desktop col2-row2 | mobile row3 */}
+      {/* INFO: desktop col2-row2 | mobile row3. Stessa hairline-divisore e
+         stesso padding orizzontale della label-row → pannello info coeso a
+         destra del video. Override mobile azzerano bordo e ridanno padding. */}
       <div className="sgn-feat-info" style={{
-        padding: 'clamp(4px, 0.6vh, 8px) 0 clamp(6px, 1vh, 12px)',
+        padding: `0 ${CARD_PAD} ${CARD_PAD}`,
+        borderLeft: `0.5px solid ${C.border}`,
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         overflow: 'hidden',
       }}>
@@ -3399,17 +3418,14 @@ function VideoCard({ v, L, delay = 0 }) {
       transition: `opacity 400ms linear ${delay}ms`,
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
-      padding: 'clamp(6px, 0.7vw, 10px)',
-      gap: 'clamp(6px, 0.7vh, 10px)',
       boxSizing: 'border-box',
     }}>
-      {/* copertina 16:9 — verrà popolata con la cover reale del video.
-         Rapporto fisso così tutte le card sono identiche e allineate;
-         la card si dimensiona sul contenuto (niente stretch di riga). */}
-      <div style={{ aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', border: `0.5px solid ${C.borderSoft}`, overflow: 'hidden' }}>
+      {/* copertina 16:9 a FILO della cornice: niente mat, è la card stessa a
+         fare da frame. Una hairline sotto la separa dalla fascia titolo. */}
+      <div style={{ aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden', borderBottom: `0.5px solid ${C.borderSoft}` }}>
         {v.youtubeId ? <VideoThumb id={v.youtubeId} title={v.title}/> : <VideoArt v={v} fill/>}
       </div>
-      <div style={{ flexShrink: 0, padding: '0 2px 2px' }}>
+      <div style={{ flexShrink: 0, padding: CARD_PAD }}>
         {/* Solo il titolo — verrà recuperato da YouTube a sito pronto.
             Nessun altro metadato (categoria/durata/data) per scelta. */}
         <div style={{
@@ -4142,17 +4158,19 @@ function SponsorCard({ s, L, lang }) {
         background: C.white, textDecoration: 'none', color: C.ink,
         border: `0.5px solid ${C.borderSoft}`,
         boxSizing: 'border-box',
-        padding: 'clamp(18px, 2vw, 28px)',
-        display: 'flex', flexDirection: 'column', gap: 'clamp(12px,1.6vh,18px)',
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
         fontFamily: 'IBM Plex Mono, monospace',
       }}>
-      {/* logo mono-ink, oppure placeholder a strisce con la sigla */}
+      {/* logo a FILO della cornice: una sola cornice (quella della card) e un
+         solo respiro interno — niente più doppio box + doppio padding che
+         faceva "galleggiare" il logo piccolo. Hairline sotto come divisore. */}
       <div style={{
         flex: 1, minHeight: 0,
-        border: `0.5px solid ${C.borderSoft}`,
+        borderBottom: `0.5px solid ${C.borderSoft}`,
         backgroundImage: s.logo ? 'none' : `repeating-linear-gradient(45deg, ${C.borderSoft} 0 1px, transparent 1px 14px)`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: s.logo ? 'clamp(16px, 2.4vw, 30px)' : 0,
+        padding: s.logo ? 'clamp(18px, 2.6vw, 36px)' : 0,
       }}>
         {s.logo ? (
           <img src={s.logo} alt={s.name} loading="lazy" style={{
@@ -4167,11 +4185,12 @@ function SponsorCard({ s, L, lang }) {
         )}
       </div>
 
-      {/* footer: nome staccato dal logo da una hairline, con pulsante video */}
+      {/* footer: fascia nome padded (il divisore è la hairline del box logo
+         qui sopra), con pulsante video allineato a destra */}
       <div style={{
+        flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-        borderTop: `0.5px solid ${C.borderSoft}`,
-        paddingTop: 'clamp(10px, 1.4vh, 16px)',
+        padding: `clamp(12px, 1.4vw, 18px)`,
       }}>
         <span style={{
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
