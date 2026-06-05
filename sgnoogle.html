@@ -1809,11 +1809,11 @@ function BarHeader({ children, tick = C.yellow, color = C.ink, size = 9, style }
 
 function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay = 0, sound = false }) {
   const [filled, setFilled] = useState(active ? 0 : value);
-  const blockRef = React.useRef(0);
+  const doneRef = React.useRef(false);
   useEffect(() => {
     if (!active) return;
     setFilled(0);
-    blockRef.current = 0;
+    doneRef.current = false;
     const start = performance.now();
     const dur = 700;
     let raf;
@@ -1822,15 +1822,14 @@ function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay 
       if (elapsed < 0) { raf = requestAnimationFrame(tick); return; }
       const p = Math.min(1, elapsed / dur);
       const eased = 1 - Math.pow(1 - p, 3);
-      const next = value * eased;
-      setFilled(next);
-      // Un click per ogni tacca che si accende — stesso feel del contatore di boot.
-      const blocks = Math.floor(next);
-      if (sound && blocks > blockRef.current) {
-        blockRef.current = blocks;
+      setFilled(value * eased);
+      if (p < 1) raf = requestAnimationFrame(tick);
+      // Un solo click quando la barra ha finito di riempirsi (niente ticchettio
+      // per ogni tacca). Stesso timbro 'skill', feel del contatore di boot.
+      else if (sound && value > 0 && !doneRef.current) {
+        doneRef.current = true;
         if (window.sgnTick) window.sgnTick('skill');
       }
-      if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
