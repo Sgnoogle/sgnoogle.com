@@ -1679,8 +1679,11 @@ const APPS = [
 
 Object.assign(window, { APP_SNAPSHOT, APP_LH, APP_PROFILE_URL, APP_PLAY_URL });
 
-/* LINKS — placeholder sponsors. Real list incoming. */
-const LINKS = [];
+/* LINKS — sponsor con cui ho collaborato. Logo mono-ink in
+   /assets/sponsors/, url → video di riferimento. */
+const LINKS = [
+  { name: 'FlexiSpot', logo: '/assets/sponsors/flexispot.png', url: 'https://youtu.be/NKQta2eLNB0', status: 'active' },
+];
 
 const HERO_STATS = [
   { id: 'subs',   raw: CHANNEL.subs.value, fmt: 'short' },
@@ -4063,10 +4066,12 @@ function ContactCard({ L, lang }) {
   );
 }
 
-/* SponsorCard — un brand con cui ho collaborato. Cliccata → contenuto
-   social fatto con loro (s.url). Logo dell'utente da droppare in futuro;
-   per ora un placeholder a strisce con la sigla del brand. */
+/* SponsorCard — un brand con cui ho collaborato. Cliccata → video di
+   riferimento (s.url). Logo mono-ink (ink cotto nell'alpha del PNG) reso
+   con object-fit:contain; se manca il logo, placeholder a strisce con la
+   sigla del brand. */
 function SponsorCard({ s, L, lang }) {
+  const isIt = lang === 'it';
   const isActive = s.status === 'active';
   const href = s.url || s.link || undefined;
   return (
@@ -4074,6 +4079,7 @@ function SponsorCard({ s, L, lang }) {
       href={href}
       target={href ? '_blank' : undefined}
       rel="noopener noreferrer"
+      aria-label={href ? `${s.name}${isIt ? ' — guarda il video' : ' — watch the video'}` : s.name}
       data-link-card
       className="sgn-hot sgn-card-hover"
       style={{
@@ -4088,18 +4094,25 @@ function SponsorCard({ s, L, lang }) {
         display: 'flex', flexDirection: 'column', gap: 'clamp(12px,1.6vh,18px)',
         fontFamily: 'IBM Plex Mono, monospace',
       }}>
-      {/* logo placeholder a strisce */}
+      {/* logo mono-ink, oppure placeholder a strisce con la sigla */}
       <div style={{
         flex: 1, minHeight: 0,
         border: `0.5px solid ${C.borderSoft}`,
-        backgroundImage: `repeating-linear-gradient(45deg, ${C.borderSoft} 0 1px, transparent 1px 14px)`,
+        backgroundImage: s.logo ? 'none' : `repeating-linear-gradient(45deg, ${C.borderSoft} 0 1px, transparent 1px 14px)`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: s.logo ? 'clamp(16px, 2.4vw, 30px)' : 0,
       }}>
-        <span style={{
-          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
-          fontSize: 'clamp(28px, 3.4vw, 48px)', letterSpacing: '-0.04em',
-          color: C.ink, lineHeight: 0.9,
-        }}>{(s.name || '—').slice(0, 2).toUpperCase()}</span>
+        {s.logo ? (
+          <img src={s.logo} alt={s.name} loading="lazy" style={{
+            maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block',
+          }}/>
+        ) : (
+          <span style={{
+            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+            fontSize: 'clamp(28px, 3.4vw, 48px)', letterSpacing: '-0.04em',
+            color: C.ink, lineHeight: 0.9,
+          }}>{(s.name || '—').slice(0, 2).toUpperCase()}</span>
+        )}
       </div>
 
       <div style={{
