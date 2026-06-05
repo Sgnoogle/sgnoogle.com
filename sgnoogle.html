@@ -3379,6 +3379,7 @@ function VideoThumb({ id, title }) {
       src={src}
       alt={title}
       loading="lazy"
+      decoding="async"
       onError={() => setSrc(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`)}
       style={{
         position: 'absolute', inset: 0, width: '100%', height: '100%',
@@ -3698,6 +3699,7 @@ function AppGallery({ shots, name }) {
             src={APP_LH(h, 'w512')}
             alt={`${name} — screenshot ${i + 1}`}
             loading="lazy"
+            decoding="async"
             style={{
               display: 'block', width: '100%', height: '100%',
               objectFit: 'contain',
