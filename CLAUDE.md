@@ -85,6 +85,19 @@ until ready. Loading rules learned the hard way:
 - Guard the canvas against a 0×0 container at first paint (fallback dims +
   ResizeObserver), or the model renders invisibly.
 
+## Settled decisions (don't re-propose)
+
+- **No build step.** The single-file, hand-edited `index.html` workflow stays.
+  Loading React dev + Babel-standalone (in-browser JSX transpile) is a known
+  tradeoff the owner has accepted — do NOT suggest migrating to esbuild /
+  precompiled JSX / React production builds. The big perf win (the 2.4MB inline
+  avatar) is already done.
+- **YouTube API key** is restricted by HTTP referrer in Google Cloud Console.
+  Leave the hardcoded key as-is unless asked; no Cloudflare proxy needed.
+- Avatar is an external lazy WebP at `/assets/avatar-real.webp` (no longer
+  inlined as base64). Favicon/OG art live in `/assets/` (favicon.svg/png,
+  apple-touch-icon.png, og-image.jpg) and are generated from the F-monogram.
+
 ## Conventions
 
 - Bilingual: Italian (default) + English, switched via `lang` prop. Every
