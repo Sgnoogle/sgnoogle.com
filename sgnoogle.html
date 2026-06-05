@@ -5411,7 +5411,9 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
   const onUp = (e) => {
     if (!armed) return;
     setArmed(false);
-    spawnRipple(e.clientX, e.clientY);
+    // Solo mouse: niente sonar al tap su touch/pen (ridondante su mobile).
+    // La selezione (onClick) scatta comunque.
+    if (!e.pointerType || e.pointerType === 'mouse') spawnRipple(e.clientX, e.clientY);
     onClick && onClick();
   };
   const onCancel = () => { setArmed(false); };
@@ -6235,6 +6237,10 @@ function ClickRipple({ enabled = true }) {
     function onDown(e) {
       // Only primary-button clicks — secondary/middle aren't a "select".
       if (e.button !== 0) return;
+      // Solo mouse: su touch (e pen) il sonar a ogni tap è ridondante —
+      // sul mobile il feedback c'è già (card selezionata, pulsante pieno).
+      // pointerType distingue l'input anche sui dispositivi ibridi.
+      if (e.pointerType && e.pointerType !== 'mouse') return;
       // Suppress on form inputs so the ripple doesn't fight focus rings.
       const t = e.target;
       if (t && t.closest && t.closest('input, textarea, select')) return;
