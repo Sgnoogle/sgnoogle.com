@@ -5804,7 +5804,9 @@ function BootScreen({ lang = 'it', onDone, sound }) {
       style={{
         position: 'fixed', inset: 0, zIndex: 100000,
         background: C.paper,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        gap: 'clamp(28px, 8vh, 56px)',
         padding: 'clamp(20px, 5vw, 60px)',
         fontFamily: 'IBM Plex Mono, monospace',
         opacity: phase === 'leaving' ? 0 : 1,
@@ -5866,26 +5868,31 @@ function BootScreen({ lang = 'it', onDone, sound }) {
           </span>
         </div>
 
-        {/* micro-status — riga sotto, fixed-width così non sfarfalla */}
-        <div style={{
-          width: '100%', textAlign: 'left',
-          fontFamily: 'IBM Plex Mono, monospace',
-          fontSize: 10, fontWeight: 600, letterSpacing: '0.16em',
-          color: C.grey, fontVariantNumeric: 'tabular-nums',
-          display: 'flex', alignItems: 'center', gap: 8,
-          minHeight: 14,
-        }}>
-          <span style={{
-            display: 'inline-block', width: 6, height: 6,
-            background: C.yellow,
-            animation: 'sgnpulse 1.2s linear infinite',
-            flexShrink: 0,
-          }}/>
-          <span style={{
-            color: C.ink, fontWeight: 700, letterSpacing: '0.18em',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>{statusLine}</span>
-        </div>
+      </div>
+
+      {/* Footer: stesso ingombro del bottone START di TapToStart (stessa
+          larghezza/padding, bordo trasparente) → il cluster qui sopra è
+          centrato in modo IDENTICO nelle due schermate, così la barra NON si
+          sposta quando parte il boot. Mostra la micro-status al posto del bottone. */}
+      <div style={{
+        width: '100%', maxWidth: 440, boxSizing: 'border-box',
+        display: 'flex', alignItems: 'center', gap: 8,
+        border: '0.5px solid transparent',
+        padding: 'clamp(12px, 2vh, 18px) clamp(12px, 3vw, 20px)',
+        fontFamily: 'IBM Plex Mono, monospace',
+        fontSize: 10, fontWeight: 600, letterSpacing: '0.16em',
+        color: C.grey, fontVariantNumeric: 'tabular-nums',
+      }}>
+        <span style={{
+          display: 'inline-block', width: 6, height: 6,
+          background: C.yellow,
+          animation: 'sgnpulse 1.2s linear infinite',
+          flexShrink: 0,
+        }}/>
+        <span style={{
+          color: C.ink, fontWeight: 700, letterSpacing: '0.18em',
+          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        }}>{statusLine}</span>
       </div>
     </div>
   );
