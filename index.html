@@ -4239,8 +4239,7 @@ function AboutProfilePage({ L, lang }) {
         {/* stat band — character sheet a 3 celle */}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '0.5px', background: C.borderSoft,
-          border: `0.5px solid ${C.border}`,
+          gap: 1, background: C.borderSoft, padding: 1, boxSizing: 'border-box',
         }}>
           {stats.map((s, i) => (
             <div key={i} style={{
@@ -4353,7 +4352,7 @@ function AboutContactPage({ L, lang }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(2, minmax(0, 1fr))',
-        gap: 1, background: C.borderSoft, border: `0.5px solid ${C.borderSoft}`,
+        gap: 1, background: C.borderSoft, padding: 1, boxSizing: 'border-box',
       }}>
         {channels.map(c => (
           <a key={c.k} href={c.href}
