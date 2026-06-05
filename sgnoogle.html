@@ -3337,8 +3337,11 @@ function VideoCard({ v, L, delay = 0 }) {
       position: 'relative', textDecoration: 'none', color: 'inherit',
       background: C.white, border: `0.5px solid ${C.borderSoft}`,
       opacity: inView ? 1 : 0,
-      transform: inView ? 'translateY(0)' : 'translateY(16px)',
-      transition: `opacity 400ms linear ${delay}ms, transform 400ms cubic-bezier(0.2,0,0,1) ${delay}ms`,
+      // Solo fade, niente translateY: la slide portava la card a una Y
+      // frazionaria durante l'animazione e il bordo hairline 0.5px spariva per
+      // anti-aliasing, ricomparendo a fine corsa (lo "scatto"). Senza movimento
+      // il bordo resta sempre a posizione intera → nitido per tutta l'entrata.
+      transition: `opacity 400ms linear ${delay}ms`,
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
       padding: 'clamp(6px, 0.7vw, 10px)',
@@ -3400,8 +3403,9 @@ function MoreVideosCard({ lang, delay = 0 }) {
       position: 'relative',
       background: C.paper, border: `0.5px solid ${C.border}`,
       opacity: inView ? 1 : 0,
-      transform: inView ? 'translateY(0)' : 'translateY(16px)',
-      transition: `opacity 400ms linear ${delay}ms, transform 400ms cubic-bezier(0.2,0,0,1) ${delay}ms`,
+      // Solo fade (vedi nota in VideoCard): niente translateY, così il bordo
+      // hairline non sparisce durante l'entrata.
+      transition: `opacity 400ms linear ${delay}ms`,
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       padding: 'clamp(14px, 1.4vw, 20px)', gap: 14, minHeight: 0,
       boxSizing: 'border-box', aspectRatio: '16 / 11',
