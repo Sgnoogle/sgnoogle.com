@@ -323,13 +323,27 @@ body {
     margin: 0 auto;
   }
   .sgn-frame {
+    --frame-gap: clamp(12px, 2vh, 24px);
     max-width: 1400px;
     margin: 0 auto;
     height: 100%;
     display: grid;
     grid-template-rows: 44px 1fr clamp(140px, 24vh, 200px);
-    gap: clamp(12px, 2vh, 24px);
+    gap: var(--frame-gap);
     box-sizing: border-box;
+  }
+  /* ── Home-merge: in home (nessuna tab attiva) la TopBar si fonde con la
+        view. Niente bordo proprio + una "gonna" bianca che copre il gap
+        verso il display → un'unica superficie bianca. Il logo piccolo è
+        nascosto nel JSX (ridondante col logo gigante al centro). La gonna e
+        la "linguetta" della tab attiva usano la stessa --frame-gap così
+        restano allineate al gap reale della griglia a ogni breakpoint. ── */
+  .sgn-topbar--home { border-color: transparent !important; }
+  .sgn-topbar-skirt {
+    position: absolute; top: 100%; left: 0; right: 0;
+    height: calc(var(--frame-gap, 16px) + 1px);
+    background: var(--white);
+    pointer-events: none;
   }
   .sgn-display {
     position: relative;
@@ -927,8 +941,9 @@ body {
       padding-bottom: max(clamp(8px, 1.5vh, 14px), env(safe-area-inset-bottom));
     }
     .sgn-frame {
+      --frame-gap: clamp(8px, 1.4vh, 14px);
       grid-template-rows: 40px 1fr clamp(92px, 22vh, 150px);
-      gap: clamp(8px, 1.4vh, 14px);
+      gap: var(--frame-gap);
     }
     /* la barra è già nascosta <760, ma su landscape larghi va comunque tolta */
     .sgn-footer { display: none; }
@@ -939,8 +954,9 @@ body {
         così il display respira nelle finestre intermedie. ── */
   @media (min-width: 761px) and (max-width: 1024px) {
     .sgn-frame {
+      --frame-gap: clamp(12px, 1.8vh, 18px);
       grid-template-rows: 44px 1fr clamp(132px, 21vh, 176px);
-      gap: clamp(12px, 1.8vh, 18px);
+      gap: var(--frame-gap);
     }
   }
 
@@ -4831,7 +4847,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
 function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, sound, idle }) {
   const L = I18N[lang];
   return (
-    <header style={{
+    <header className={!current ? 'sgn-topbar--home' : undefined} style={{
       position: 'relative', zIndex: 60,
       height: 44, background: C.white,
       border: `0.5px solid ${C.borderSoft}`,
@@ -4840,6 +4856,12 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       fontFamily: 'IBM Plex Mono, monospace',
       gap: 10, flexShrink: 0,
     }}>
+      {/* Home-merge: la "gonna" bianca copre il gap topbar↔view (vedi CSS). */}
+      {!current && <span aria-hidden="true" className="sgn-topbar-skirt" />}
+      {/* Logo+wordmark: nascosti in home (ridondanti col logo gigante al
+         centro); in un modulo restano e fanno da tasto "torna alla home".
+         Lo span vuoto tiene i controlli a destra (justify-content space-between). */}
+      {current ? (
       <button onClick={onHome} className="sgn-hot" style={{
         display: 'inline-flex', alignItems: 'center', gap: 10,
         background: 'transparent', border: 'none', padding: 0,
@@ -4858,6 +4880,9 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
           fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', color: C.ink,
         }}>{BRAND.product}</span>
       </button>
+      ) : (
+        <span aria-hidden="true" />
+      )}
 
       {!mobile && (
         <StatusReadout lang={lang} current={current} direction={direction} variant={variant} idle={idle}/>
@@ -5731,14 +5756,27 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear',
         minHeight: 62,
       }}>
-      {/* Top-rail giallo sulla key attiva — identico al desktop ModuleTab */}
-      <span style={{
-        position: 'absolute', top: -0.5, left: -0.5, right: -0.5,
-        height: 2, background: C.yellow,
-        transform: active ? 'scaleX(1)' : 'scaleX(0)',
-        transformOrigin: 'left',
-        transition: 'transform 280ms cubic-bezier(0.2,0,0,1)',
-      }}/>
+      {/* Tab attiva → "linguetta" bianca che raccorda la key alla view:
+         colma il gap reale della frame (--frame-gap) con una superficie
+         bianca continua (key↔view = un'unica forma), bordata da una hairline
+         ai lati come una linguetta di cartella. Piccola tacca gialla alla
+         base, sul bordo alto della key. Le key inattive restano staccate. */}
+      {active && (
+        <span aria-hidden="true" style={{
+          position: 'absolute', bottom: 'calc(100% - 1px)',
+          left: '22%', right: '22%',
+          height: 'calc(var(--frame-gap, 12px) + 2px)',
+          background: C.white,
+          borderLeft: `0.5px solid ${C.border}`,
+          borderRight: `0.5px solid ${C.border}`,
+          boxSizing: 'border-box',
+        }}>
+          <span style={{
+            position: 'absolute', left: 0, right: 0, bottom: 0,
+            height: 2, background: C.yellow,
+          }}/>
+        </span>
+      )}
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
           10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
