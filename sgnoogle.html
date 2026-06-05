@@ -564,10 +564,6 @@ body {
      che hanno priorità sulle regole :hover — servono !important per
      far emergere lo stato hover. */
   .sgn-topctl { transition: border-color 120ms linear, background 120ms linear; }
-  .sgn-topctl:hover {
-    border-color: var(--ink) !important;
-    background: #FFFFFF !important;
-  }
   /* l'icona audio si "arma": la freccia gialla resta, ma il bordo si fa ink */
   .sgn-topctl:active { background: #ECEBE7 !important; }
 
@@ -578,15 +574,26 @@ body {
      il caret ruota. Nessun giallo coinvolto.
      ══════════════════════════════════════════════════════════════ */
   .sgn-langbtn { transition: border-color 120ms linear; }
-  .sgn-langbtn:hover { border-color: var(--ink) !important; }
-  /* la cella valore (IT/EN) si accende a ink+paper anche al solo hover,
-     non solo da aperta — feedback "sta per selezionare". */
-  .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
   .sgn-langbtn__val { transition: background 120ms linear, color 120ms linear; }
   .sgn-langbtn.is-open { border-color: var(--ink); }
   .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
   .sgn-caret { transition: transform 160ms cubic-bezier(0.2,0,0,1); }
   .sgn-langbtn.is-open .sgn-caret { transform: rotate(180deg); }
+
+  /* Hover SOLO su dispositivi con puntatore fine (mouse). Sul touch un
+     :hover resta "incollato" dopo il tap — es. dopo aver aperto e chiuso il
+     menu lingua la cella valore restava ink. Lo stato is-open (sopra) NON è
+     hover, quindi il feedback "aperto" continua a valere anche sul dito. */
+  @media (hover: hover) and (pointer: fine) {
+    .sgn-topctl:hover {
+      border-color: var(--ink) !important;
+      background: #FFFFFF !important;
+    }
+    .sgn-langbtn:hover { border-color: var(--ink) !important; }
+    /* la cella valore (IT/EN) si accende a ink+paper anche al solo hover,
+       non solo da aperta — feedback "sta per selezionare". */
+    .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
+  }
 
   /* ── Footer minimale sul paper, sotto la frame.
         Tre celle equidistanti, hairline divisori, non interattivo
