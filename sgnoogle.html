@@ -7058,8 +7058,12 @@ function App() {
   const [lang, setLang] = useState(tweaks.language || 'it');
   const [current, setCurrent] = useState(null);
   const [focused, setFocused] = useState(null);
-  const [started, setStarted] = useState(false);
-  const [booted, setBooted] = useState(false);
+  // Boot persiste PER SESSIONE: la prima visita vede TapToStart + boot, i
+  // reload successivi (stessa scheda/sessione) entrano diretti. Una nuova
+  // sessione rivede l'esperienza completa.
+  const bootedBefore = (() => { try { return sessionStorage.getItem('sgnBooted') === '1'; } catch (e) { return false; } })();
+  const [started, setStarted] = useState(bootedBefore);
+  const [booted, setBooted] = useState(bootedBefore);
   const [langOpen, setLangOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [transKey, setTransKey] = useState(0);
@@ -7270,7 +7274,7 @@ function App() {
           : (lang === 'it' ? 'Menu principale' : 'Main menu')}
       </p>
       {!started && <TapToStart lang={lang} onStart={() => setStarted(true)} sound={sound}/>}
-      {started && !booted && <BootScreen lang={lang} onDone={() => setBooted(true)} sound={sound}/>}
+      {started && !booted && <BootScreen lang={lang} onDone={() => { setBooted(true); try { sessionStorage.setItem('sgnBooted', '1'); } catch (e) {} }} sound={sound}/>}
 
       <Cursor enabled={!!tweaks.crosshair && !mobile} sound={sound}/>
       <ClickRipple enabled={!!tweaks.ripple}/>
