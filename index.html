@@ -2346,16 +2346,21 @@ function STLLab({ lang }) {
   const mountRef = React.useRef(null);
   const stateRef = React.useRef(null);
   const [ready, setReady] = React.useState(typeof window !== 'undefined' && !!window.THREE);
+  const [loadError, setLoadError] = React.useState(false);
   const [currentId, setCurrentId] = React.useState(OBJECTS[0]?.id || '01');
   const current = OBJECTS.find(o => o.id === currentId) || OBJECTS[0];
 
-  // Wait for THREE (loaded as static async script in <head>)
+  // Wait for THREE (loaded as static script in <head>). Se dopo ~10s non è
+  // ancora disponibile (CDN giù/bloccato), esci dal polling e mostra un errore
+  // invece di restare su "LOADING" all'infinito.
   React.useEffect(() => {
     if (ready) return undefined;
     let cancelled = false;
+    const started = Date.now();
     const t = setInterval(() => {
       if (cancelled) return;
       if (window.THREE) { setReady(true); clearInterval(t); }
+      else if (Date.now() - started > 10000) { setLoadError(true); clearInterval(t); }
     }, 80);
     return () => { cancelled = true; clearInterval(t); };
   }, [ready]);
@@ -2532,12 +2537,37 @@ function STLLab({ lang }) {
           position: 'absolute', inset: 0,
           touchAction: 'none', cursor: 'grab',
         }}/>
-        {!ready && (
+        {!ready && !loadError && (
           <div style={{
             position: 'absolute', inset: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 10, letterSpacing: '0.22em', color: C.faint,
           }}>LOADING · THREE.JS</div>
+        )}
+        {loadError && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', flexDirection: 'column', gap: 14,
+            alignItems: 'center', justifyContent: 'center', padding: 24,
+            textAlign: 'center', fontFamily: 'IBM Plex Mono, monospace',
+          }}>
+            <span style={{ fontSize: 10, letterSpacing: '0.2em', color: C.ink, fontWeight: 700 }}>
+              {lang === 'it' ? 'VISUALIZZATORE 3D NON DISPONIBILE' : '3D VIEWER UNAVAILABLE'}
+            </span>
+            <span style={{ fontSize: 10, letterSpacing: '0.04em', color: C.grey, lineHeight: 1.6, maxWidth: 280 }}>
+              {lang === 'it'
+                ? 'Impossibile caricare il motore 3D. Controlla la connessione e riprova.'
+                : 'Could not load the 3D engine. Check your connection and retry.'}
+            </span>
+            <button onClick={() => { setLoadError(false); setReady(!!window.THREE); }}
+              style={{
+                border: `0.5px solid ${C.ink}`, background: 'transparent', color: C.ink,
+                fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, letterSpacing: '0.2em',
+                fontWeight: 700, padding: '8px 18px', cursor: 'pointer',
+              }}>
+              {lang === 'it' ? 'RIPROVA' : 'RETRY'}
+            </button>
+          </div>
         )}
         <div style={{
           position: 'absolute', bottom: 10, right: 10,
@@ -5283,6 +5313,9 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
       onPointerUp={onUp}
       onPointerCancel={onCancel}
       onBlur={onCancel}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick && onClick(); } }}
+      aria-current={active ? 'true' : undefined}
+      aria-label={label + (sub ? ' — ' + sub : '')}
       style={{
         position: 'relative',
         background: expanded ? C.white : C.paper,
@@ -5503,10 +5536,12 @@ function GameBoyKey({ id, n, label, active, onPress }) {
   return (
     <button
       aria-label={label}
+      aria-current={active ? 'true' : undefined}
       onPointerDown={() => setPressed(true)}
       onPointerUp={() => { setPressed(false); onPress?.(); }}
       onPointerLeave={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPress?.(); } }}
       style={{
         position: 'relative',
         // Stessa lingua del desktop: la tab attiva diventa BIANCA, le inattive
