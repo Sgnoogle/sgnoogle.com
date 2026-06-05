@@ -1,0 +1,12 @@
+# Cloudflare Pages response headers.
+# Static brand assets change rarely → cache a long time.
+/assets/*
+  Cache-Control: public, max-age=2592000
+
+# HTML must revalidate so deploys reach returning visitors immediately.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/sgnoogle.html
+  Cache-Control: public, max-age=0, must-revalidate

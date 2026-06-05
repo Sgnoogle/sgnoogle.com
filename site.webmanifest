@@ -1,0 +1,16 @@
+{
+  "name": "SGNOOGLE · SGN-OS",
+  "short_name": "SGNOOGLE",
+  "description": "Il sito-OS di Francesco Sgnaolin (@sgnoogle): video e recensioni tech, oggetti 3D stampabili, app e collaborazioni.",
+  "lang": "it-IT",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F0F1F2",
+  "theme_color": "#F0F1F2",
+  "icons": [
+    { "src": "/assets/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/assets/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/assets/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}
