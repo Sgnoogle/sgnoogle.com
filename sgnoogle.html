@@ -1192,6 +1192,9 @@ body {
       { freq: 480,  dur: 0.070, vol: 0.035, type: 'triangle', when: 0.045 },
     ],
     boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
+    // skill — variazione del 'boot' per il riempimento delle barre competenze:
+    // stesso click meccanico, timbro un filo più brillante (triangle, +pitch).
+    skill: [{ freq: 1500, dur: 0.016, vol: 0.020, type: 'triangle' }],
     bootReady: [
       { freq:  880, dur: 0.055, vol: 0.050, type: 'triangle', bend: 0.99, when: 0    },
       { freq: 1319, dur: 0.065, vol: 0.055, type: 'triangle', bend: 0.99, when: 0.06 },
@@ -1804,11 +1807,13 @@ function BarHeader({ children, tick = C.yellow, color = C.ink, size = 9, style }
 /* ───────── Bar — segmented 10-block stat bar.
    `value` 0-10. `active` controls fill animation timing. */
 
-function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay = 0 }) {
+function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay = 0, sound = false }) {
   const [filled, setFilled] = useState(active ? 0 : value);
+  const blockRef = React.useRef(0);
   useEffect(() => {
     if (!active) return;
     setFilled(0);
+    blockRef.current = 0;
     const start = performance.now();
     const dur = 700;
     let raf;
@@ -1817,7 +1822,14 @@ function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay 
       if (elapsed < 0) { raf = requestAnimationFrame(tick); return; }
       const p = Math.min(1, elapsed / dur);
       const eased = 1 - Math.pow(1 - p, 3);
-      setFilled(value * eased);
+      const next = value * eased;
+      setFilled(next);
+      // Un click per ogni tacca che si accende — stesso feel del contatore di boot.
+      const blocks = Math.floor(next);
+      if (sound && blocks > blockRef.current) {
+        blockRef.current = blocks;
+        if (window.sgnTick) window.sgnTick('skill');
+      }
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -2412,6 +2424,7 @@ Object.assign(window, { Hero3DMark, FWireframe });
 function STLLab({ lang }) {
   const mountRef = React.useRef(null);
   const stateRef = React.useRef(null);
+  const spinRef = React.useRef({ autoSpin: true });
   const [ready, setReady] = React.useState(typeof window !== 'undefined' && !!window.THREE);
   const [loadError, setLoadError] = React.useState(false);
   const [currentId, setCurrentId] = React.useState(OBJECTS[0]?.id || '01');
@@ -2470,11 +2483,25 @@ function STLLab({ lang }) {
 
     // ── Interaction
     let rotX = -0.25, rotY = 0.3;
-    let autoSpin = true;
     let dragging = false, dragSx = 0, dragSy = 0, dragRx = 0, dragRy = 0;
+    spinRef.current.autoSpin = true;
+
+    // La rotazione automatica si ferma quando l'utente tocca/trascina o usa le
+    // frecce, e riparte da sola qualche secondo dopo l'ultima interazione.
+    // Durante il drag il timer resta sospeso (riparte al rilascio).
+    const RESUME_DELAY = 2600;
+    let resumeTimer = null;
+    const pauseSpin = () => {
+      spinRef.current.autoSpin = false;
+      if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
+    };
+    const scheduleResume = () => {
+      if (resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { spinRef.current.autoSpin = true; resumeTimer = null; }, RESUME_DELAY);
+    };
 
     const onDown = (e) => {
-      dragging = true; autoSpin = false;
+      dragging = true; pauseSpin();
       const p = e.touches ? e.touches[0] : e;
       dragSx = p.clientX; dragSy = p.clientY;
       dragRx = rotX;      dragRy = rotY;
@@ -2487,7 +2514,7 @@ function STLLab({ lang }) {
       rotY = dragRy + dx * 0.01;
       rotX = Math.max(-1.2, Math.min(1.2, dragRx + dy * 0.01));
     };
-    const onUp = () => { dragging = false; };
+    const onUp = () => { if (dragging) { dragging = false; scheduleResume(); } };
 
     // Rotazione da tastiera: frecce orbitano (il mount è focusabile).
     const onKey = (e) => {
@@ -2500,7 +2527,7 @@ function STLLab({ lang }) {
         case 'ArrowDown':  rotX = Math.min(1.2,  rotX + step); break;
         default: handled = false;
       }
-      if (handled) { autoSpin = false; e.preventDefault(); }
+      if (handled) { pauseSpin(); scheduleResume(); e.preventDefault(); }
     };
 
     el.addEventListener('pointerdown', onDown);
@@ -2511,7 +2538,7 @@ function STLLab({ lang }) {
     let raf;
     const tick = () => {
       raf = requestAnimationFrame(tick);
-      if (autoSpin) rotY += 0.0035;
+      if (spinRef.current.autoSpin) rotY += 0.0035;
       holder.rotation.x = rotX;
       holder.rotation.y = rotY;
       renderer.render(scene, camera);
@@ -2532,6 +2559,7 @@ function STLLab({ lang }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      if (resumeTimer) clearTimeout(resumeTimer);
       ro.disconnect();
       el.removeEventListener('pointerdown', onDown);
       el.removeEventListener('keydown', onKey);
@@ -2546,6 +2574,9 @@ function STLLab({ lang }) {
   React.useEffect(() => {
     if (!stateRef.current) return;
     const { THREE, holder } = stateRef.current;
+
+    // Nuovo modello selezionato → riparte subito la rotazione automatica.
+    spinRef.current.autoSpin = true;
 
     // Clear previous children
     while (holder.children.length) {
@@ -4395,7 +4426,7 @@ function AboutSkillsPage({ L }) {
                 )}
               </div>
               {numeric ? (
-                <Bar value={s.v} gold={s.v >= 9} active={inView} delay={i * 60} height={8}/>
+                <Bar value={s.v} gold={s.v >= 9} active={inView} delay={i * 60} height={8} sound/>
               ) : (
                 <span style={{
                   alignSelf: 'flex-start',
@@ -4564,29 +4595,19 @@ function ProfileCard({ L }) {
             position: 'absolute', right: 10, bottom: 10, zIndex: 4,
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: C.ink, color: C.white,
-            padding: '7px 9px 7px 7px',
+            padding: '7px 10px 7px 7px',
             border: 'none', cursor: 'pointer',
             fontFamily: 'IBM Plex Mono, monospace',
           }}>
-          <span style={{
+          <span aria-hidden="true" style={{
             width: 18, height: 18, display: 'inline-flex',
             alignItems: 'center', justifyContent: 'center',
             background: C.white, color: C.ink,
-            fontWeight: 700, fontSize: 11, lineHeight: 1,
+            fontWeight: 700, fontSize: 12, lineHeight: 1,
             fontFamily: 'IBM Plex Mono, monospace',
-          }}>Y</span>
+          }}>⇄</span>
           <span style={{ fontSize: 9, letterSpacing: '0.2em', fontWeight: 700 }}>
             {isReal ? L.self.viewToggleAvatar : L.self.viewToggleReal}
-          </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, marginLeft: 2 }}>
-            <span style={{
-              width: 0, height: 0, borderTop: '4px solid transparent',
-              borderBottom: '4px solid transparent', borderRight: `5px solid ${C.white}`,
-            }}/>
-            <span style={{
-              width: 0, height: 0, borderTop: '4px solid transparent',
-              borderBottom: '4px solid transparent', borderLeft: `5px solid ${C.white}`,
-            }}/>
           </span>
         </button>
       </div>
