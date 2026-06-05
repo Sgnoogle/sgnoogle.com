@@ -5723,18 +5723,18 @@ function TapToStart({ lang = 'it', onStart, sound }) {
           {BRAND.product}
         </span>
 
-        {/* Barra segmentata. Le linee NON sono border da 0.5px (su certi
-            telefoni il bordo esterno cade a metà pixel e l'antialiasing lo fa
-            sparire): sono lo SFONDO solido del contenitore (C.border) che
-            traspare da gap+padding da 1px. Le celle sono color paper, quindi
-            sul fondo paper "spariscono" e restano visibili solo le linee.
-            Uno sfondo pieno da 1px non può essere anti-aliasato via. */}
-        <div style={{
-          display: 'flex', gap: '1px', width: '100%', boxSizing: 'border-box',
-          background: C.border, padding: '1px',
-        }}>
+        {/* Barra segmentata: tacche SEPARATE in sequenza, ognuna con la sua
+            cornice. Bordo a 1px (non 0.5px): un mezzo pixel cadeva su confini
+            sub-pixel e si anti-aliasava via (la prima tacca senza lato sx); 1px
+            ha massa sufficiente per restare nitido su qualsiasi densità. */}
+        <div style={{ display: 'flex', gap: 2, width: '100%', boxSizing: 'border-box' }}>
           {Array.from({ length: SEGMENTS }, (_, i) => (
-            <div key={i} style={{ flex: 1, minWidth: 0, height: 9, background: C.paper }}/>
+            <div key={i} style={{
+              flex: 1, minWidth: 0, height: 9,
+              background: 'transparent',
+              border: `1px solid ${C.border}`,
+              boxSizing: 'border-box',
+            }}/>
           ))}
         </div>
 
@@ -5881,19 +5881,18 @@ function BootScreen({ lang = 'it', onDone, sound }) {
           fontSize: 11, letterSpacing: '0.32em', color: C.ink, fontWeight: 700,
         }}>{BRAND.product}</span>
 
-        {/* segmented bar — linee come sfondo solido (vedi nota in TapToStart):
-            riempimento giallo a contatore meccanico, celle vuote color paper. */}
-        <div style={{
-          display: 'flex', gap: '1px', width: '100%', boxSizing: 'border-box',
-          background: C.border, padding: '1px',
-        }}>
+        {/* segmented bar — tacche SEPARATE in sequenza (vedi nota in TapToStart
+            sul bordo a 1px), riempimento giallo a contatore meccanico. */}
+        <div style={{ display: 'flex', gap: 2, width: '100%', boxSizing: 'border-box' }}>
           {Array.from({ length: SEGMENTS }, (_, i) => {
             const on = i < filled;
             return (
               <div key={i} style={{
                 flex: 1, minWidth: 0, height: 9,
-                background: on ? C.yellow : C.paper,
-                transition: 'background 80ms cubic-bezier(0.4,0,0.2,1)',
+                background: on ? C.yellow : 'transparent',
+                border: `1px solid ${on ? C.yellow : C.border}`,
+                boxSizing: 'border-box',
+                transition: 'background 80ms cubic-bezier(0.4,0,0.2,1), border-color 80ms cubic-bezier(0.4,0,0.2,1)',
               }}/>
             );
           })}
