@@ -4710,11 +4710,15 @@ function ProfileCard({ L }) {
       border: `0.5px solid ${C.border}`,
       padding: 'clamp(9px, 1vw, 13px)',
     }}>
-      {/* FINESTRA AVATAR — passe-partout + corner-tick gialli */}
+      {/* FINESTRA AVATAR — passe-partout + corner-tick gialli. La finestra
+          MORPHA: quadrata per l'avatar (1:1), verticale per la foto (~5:6),
+          con transizione su padding-bottom sincronizzata col flip 3D. */}
       <div style={{
-        position: 'relative', aspectRatio: '1 / 1',
+        position: 'relative',
+        height: 0, paddingBottom: isReal ? '122%' : '100%',
         border: `0.5px solid ${C.border}`,
         perspective: '1200px', overflow: 'hidden',
+        transition: 'padding-bottom 540ms cubic-bezier(0.2,0,0,1)',
       }}>
         <div style={{
           position: 'absolute', inset: 0,
@@ -4759,43 +4763,40 @@ function ProfileCard({ L }) {
         <span style={{ ...tickBase, ...ticks.bl }}/>
         <span style={{ ...tickBase, ...ticks.br }}/>
 
-        {/* TOGGLE BUTTON — bottom-right, gamepad-style */}
+        {/* TOGGLE — switch segmentato AVATAR / REAL, gamepad-style.
+            Traccia ink, "knob" giallo che scorre sotto l'etichetta attiva
+            (che diventa scura per contrasto): mostra entrambe le opzioni,
+            così è chiaro dove sei e dove vai. */}
         <button
           onClick={flip}
           className="sgn-hot"
           title={L.self.viewHint}
+          aria-label={`${L.self.viewToggleAvatar} / ${L.self.viewToggleReal}`}
           style={{
             position: 'absolute', right: 10, bottom: 10, zIndex: 4,
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: C.ink, color: C.white,
-            padding: '7px 10px 7px 7px',
-            border: 'none', cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'stretch',
+            background: C.ink, border: 'none', cursor: 'pointer', padding: 2,
             fontFamily: 'IBM Plex Mono, monospace',
           }}>
-          <span aria-hidden="true" style={{
-            width: 18, height: 18, display: 'inline-flex',
-            alignItems: 'center', justifyContent: 'center',
-            background: C.white,
-          }}>
-            {/* Switch "due facce" della card: quadrato (linguaggio squadrato
-                del sito, eco dei corner-tick) con metà accesa in giallo che
-                scivola dal lato della faccia attiva — avatar a sx, foto a dx.
-                Disegnato in CSS: nessuna dipendenza dal glyph del font. */}
+          <span style={{ position: 'relative', display: 'inline-flex' }}>
+            <span aria-hidden="true" style={{
+              position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%',
+              background: C.yellow,
+              transform: isReal ? 'translateX(100%)' : 'translateX(0)',
+              transition: 'transform 260ms cubic-bezier(0.2,0,0,1)',
+            }}/>
             <span style={{
-              position: 'relative', width: 11, height: 11,
-              border: `1.5px solid ${C.ink}`, boxSizing: 'border-box',
-              overflow: 'hidden',
-            }}>
-              <span style={{
-                position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%',
-                background: C.yellow,
-                transform: isReal ? 'translateX(100%)' : 'translateX(0)',
-                transition: 'transform 220ms cubic-bezier(0.2,0,0,1)',
-              }}/>
-            </span>
-          </span>
-          <span style={{ fontSize: 9, letterSpacing: '0.2em', fontWeight: 700 }}>
-            {isReal ? L.self.viewToggleAvatar : L.self.viewToggleReal}
+              position: 'relative', zIndex: 1, width: 54, textAlign: 'center',
+              padding: '6px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+              color: isReal ? 'rgba(255,255,255,0.55)' : C.ink,
+              transition: 'color 260ms linear',
+            }}>{L.self.viewToggleAvatar}</span>
+            <span style={{
+              position: 'relative', zIndex: 1, width: 54, textAlign: 'center',
+              padding: '6px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+              color: isReal ? C.ink : 'rgba(255,255,255,0.55)',
+              transition: 'color 260ms linear',
+            }}>{L.self.viewToggleReal}</span>
           </span>
         </button>
       </div>
@@ -5166,9 +5167,9 @@ function IdleDisplay({ lang, mobile, focused }) {
             {mobile ? (
               <>
                 <span style={{
-                  fontSize: 10, color: C.faint,
+                  fontSize: 10, color: C.grey,
                   animation: 'sgnBlink 1.4s step-start infinite',
-                }}>←</span>
+                }}>◀</span>
                 <span style={{
                   fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
                   fontFamily: 'IBM Plex Mono, monospace',
@@ -5176,9 +5177,9 @@ function IdleDisplay({ lang, mobile, focused }) {
                   {lang === 'it' ? 'SCORRI TRA I MODULI' : 'SWIPE TO BROWSE'}
                 </span>
                 <span style={{
-                  fontSize: 10, color: C.faint,
+                  fontSize: 10, color: C.grey,
                   animation: 'sgnBlink 1.4s step-start infinite', animationDelay: '0.7s',
-                }}>→</span>
+                }}>▶</span>
               </>
             ) : (
               <>
