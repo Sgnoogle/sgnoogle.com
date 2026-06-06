@@ -7516,11 +7516,13 @@ function App() {
     if (tweaks.sound && window.sgnTick) window.sgnTick(kind);
   }, [tweaks.sound]);
 
-  const select = useCallback((id) => {
+  const select = useCallback((id, dirOverride) => {
     if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico (Android; iOS ignora)
     setCurrent(prev => {
       const next = prev === id ? null : id;
-      const dir = computeDirection(prev, next);
+      // dirOverride: usato dallo swipe per far animare il wrap del carosello
+      // nel verso del gesto (altrimenti la giunzione 05↔home scivola al contrario).
+      const dir = dirOverride != null ? dirOverride : computeDirection(prev, next);
       setDirection(dir);
       prevRef.current = prev;
       if (next) { setTransKey(k => k + 1); sound('confirm'); }
@@ -7529,11 +7531,11 @@ function App() {
     });
   }, [sound]);
 
-  const goHome = useCallback(() => {
+  const goHome = useCallback((dirOverride) => {
     if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico
     setCurrent(prev => {
       if (!prev) return prev;
-      setDirection(computeDirection(prev, null));
+      setDirection(typeof dirOverride === 'number' ? dirOverride : computeDirection(prev, null));
       prevRef.current = prev;
       sound('back');
       return null;
@@ -7542,9 +7544,10 @@ function App() {
 
   // Swipe orizzontale (solo mobile) per scorrere tra i moduli, riusando la
   // stessa select/goHome → suono, direzione e animazione restano coerenti.
-  // Sequenza [home, 01..05] con clamp ai bordi. Si escludono lo STL (drag per
-  // ruotare), gli iframe e gli scroller orizzontali; i drag verticali restano
-  // scroll normale (mai preventDefault → il paging verticale non è toccato).
+  // Carosello CIRCOLARE su [home, 01..05]: nessun bordo, si gira all'infinito
+  // (così i due triangoli ◀▶ del prompt sono entrambi onesti). Si escludono lo
+  // STL (drag per ruotare), gli iframe e gli scroller orizzontali; i drag
+  // verticali restano scroll normale (mai preventDefault → paging intatto).
   useEffect(() => {
     if (!mobile) return undefined;
     const el = displaySectionRef.current;
@@ -7589,10 +7592,11 @@ function App() {
       if (Math.abs(dx) < THRESH) return;
       const cur = current ?? null;
       const i = ORDER.indexOf(cur);
-      const ni = Math.max(0, Math.min(ORDER.length - 1, i + (dx < 0 ? 1 : -1)));
+      const step = dx < 0 ? 1 : -1;                          // swipe-sinistra = avanti
+      const ni = (i + step + ORDER.length) % ORDER.length;   // wrap-around: carosello circolare
       const target = ORDER[ni];
-      if (target === cur) return;
-      if (target === null) goHome(); else select(target);
+      // passo la direzione del gesto: la giunzione 05↔home anima nel verso giusto
+      if (target === null) goHome(step); else select(target, step);
     };
     const onCancel = () => { tracking = false; };
     const opt = { passive: true };
@@ -7755,7 +7759,7 @@ function App() {
             onPickLang={onPickLang}
             onCloseLang={() => setLangOpen(false)}
             sound={sound}
-            onHome={goHome}
+            onHome={() => goHome()}
             current={current}
             direction={direction}
             variant="topbar"
