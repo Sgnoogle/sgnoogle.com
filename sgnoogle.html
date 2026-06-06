@@ -2488,6 +2488,9 @@ function STLLab({ lang }) {
   // l'effetto che carica la geometria deve aspettarlo, altrimenti al primo
   // mount stateRef è ancora null e il modello iniziale non verrebbe caricato.
   const [booted, setBooted] = React.useState(false);
+  // Modello pronto in scena: finché è false mostriamo il LOADING (init WebGL
+  // differito + fetch dell'STL), come nell'anteprima video ma su fondo bianco.
+  const [modelReady, setModelReady] = React.useState(false);
   const current = OBJECTS.find(o => o.id === currentId) || OBJECTS[0];
 
   // Wait for THREE (loaded as static script in <head>). Timeout ~10s → errore.
@@ -2666,6 +2669,8 @@ function STLLab({ lang }) {
 
     // Nuovo modello selezionato → riparte subito la rotazione automatica.
     spinRef.current.autoSpin = true;
+    // Mostra il LOADING finché il (nuovo) modello non è davvero in scena.
+    setModelReady(false);
 
     // Clear previous children
     while (holder.children.length) {
@@ -2708,14 +2713,16 @@ function STLLab({ lang }) {
           const maxDim = Math.max(size.x, size.y, size.z);
           if (maxDim > 0) group.scale.setScalar(180 / maxDim);
           holder.add(group);
+          setModelReady(true);
         },
         undefined,
-        () => { if (!cancelled) holder.add(buildProceduralModel(THREE, currentId)); }
+        () => { if (!cancelled) { holder.add(buildProceduralModel(THREE, currentId)); setModelReady(true); } }
       );
       return () => { cancelled = true; };
     }
 
     holder.add(buildProceduralModel(THREE, currentId));
+    setModelReady(true);
   }, [currentId, ready, booted]);
 
   return (
@@ -2746,6 +2753,26 @@ function STLLab({ lang }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 10, letterSpacing: '0.22em', color: C.faint,
           }}>LOADING · THREE.JS</div>
+        )}
+        {/* LOADING durante l'init differito del viewer + il fetch dell'STL.
+            Stesso linguaggio dell'anteprima video (rail giallo + ▸ LOADING _
+            lampeggiante), ma su fondo bianco come il visualizzatore. */}
+        {ready && !loadError && !modelReady && (
+          <div aria-hidden="true" style={{
+            position: 'absolute', inset: 0, background: C.white,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none',
+          }}>
+            <span style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: C.yellow }}/>
+            <span style={{
+              fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.22em', color: C.grey,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+            }}>
+              <span style={{ color: C.yellow }}>▸</span>LOADING
+              <span style={{ animation: 'sgnBlink 1s steps(1) infinite' }}>_</span>
+            </span>
+          </div>
         )}
         {loadError && (
           <div style={{
