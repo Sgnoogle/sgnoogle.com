@@ -2467,6 +2467,10 @@ function STLLab({ lang }) {
   // differito + fetch dell'STL), come nell'anteprima video ma su fondo bianco.
   const [modelReady, setModelReady] = React.useState(false);
   const current = OBJECTS.find(o => o.id === currentId) || OBJECTS[0];
+  // Device a puntatore "grosso" (touch) → l'hint dice "pizzica"; col mouse "rotella".
+  const coarse = React.useMemo(() => {
+    try { return window.matchMedia('(pointer: coarse)').matches; } catch (e) { return false; }
+  }, []);
 
   // Wait for THREE (loaded as static script in <head>). Se dopo ~10s non è
   // ancora disponibile (CDN giù/bloccato), esci dal polling e mostra un errore
@@ -2618,6 +2622,15 @@ function STLLab({ lang }) {
     el.addEventListener('touchend',   onTouchEnd);
     el.addEventListener('touchcancel', onTouchEnd);
 
+    // ── Wheel-to-zoom (desktop): stessa logica del pinch, sulla rotella.
+    const onWheel = (e) => {
+      e.preventDefault();
+      pauseSpin();
+      camera.position.z = Math.max(MIN_Z, Math.min(MAX_Z, camera.position.z * Math.exp(e.deltaY * 0.0012)));
+      scheduleResume();
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+
     let raf;
     const tick = () => {
       raf = requestAnimationFrame(tick);
@@ -2652,6 +2665,7 @@ function STLLab({ lang }) {
       el.removeEventListener('touchmove',  onTouchMove);
       el.removeEventListener('touchend',   onTouchEnd);
       el.removeEventListener('touchcancel', onTouchEnd);
+      el.removeEventListener('wheel', onWheel);
       // La canvas si stacca subito (cheap) e il loop è già fermo. Ma
       // renderer.dispose() libera la GPU in modo SINCRONO: girando dentro il
       // commit di React mentre la top bar anima height/margin (layout →
@@ -2833,7 +2847,13 @@ function STLLab({ lang }) {
           position: 'absolute', bottom: 10, right: 10,
           fontSize: 9, letterSpacing: '0.2em', color: C.faint,
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 600,
-        }}>{lang === 'it' ? 'TRASCINA PER RUOTARE' : 'DRAG TO ROTATE'}</div>
+          textAlign: 'right', lineHeight: 1.5, pointerEvents: 'none',
+        }}>
+          <div>{lang === 'it' ? 'TRASCINA PER RUOTARE' : 'DRAG TO ROTATE'}</div>
+          <div>{coarse
+            ? (lang === 'it' ? 'PIZZICA PER ZOOM' : 'PINCH TO ZOOM')
+            : (lang === 'it' ? 'ROTELLA PER ZOOM' : 'SCROLL TO ZOOM')}</div>
+        </div>
       </div>
 
       {/* Side panel — un'unica regione scrollabile: header sticky + lista STL
