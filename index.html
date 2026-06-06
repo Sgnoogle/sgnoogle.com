@@ -4291,7 +4291,7 @@ function ContactCard({ L, lang }) {
         minWidth: 'clamp(240px, 30vw, 360px)',
         scrollSnapAlign: 'start',
         background: C.white, textDecoration: 'none', color: C.ink,
-        border: `0.5px solid ${C.border}`,
+        border: `0.5px solid ${C.borderSoft}`,
         boxSizing: 'border-box', overflow: 'hidden',
         padding: 'clamp(20px, 2.4vw, 32px)',
         paddingLeft: 'clamp(24px, 2.6vw, 38px)',
@@ -4562,7 +4562,7 @@ function AboutProfilePage({ L, lang }) {
               fontFamily: 'IBM Plex Mono, monospace', fontSize: 8.5,
               letterSpacing: '0.22em', color: C.faint, fontWeight: 700,
               border: `0.5px solid ${C.borderSoft}`, padding: '2px 6px',
-            }}>{isIt ? 'ALIAS' : 'ALIAS'}</span>
+            }}>ALIAS</span>
           </div>
         </div>
 
@@ -4815,6 +4815,8 @@ function ProfileCard({ L }) {
           className="sgn-hot"
           title={L.self.viewHint}
           aria-label={`${L.self.viewToggleAvatar} / ${L.self.viewToggleReal}`}
+          role="switch"
+          aria-checked={isReal}
           style={{
             position: 'absolute', right: 10, bottom: 10, zIndex: 4,
             display: 'inline-flex', alignItems: 'stretch',
@@ -4848,26 +4850,6 @@ function ProfileCard({ L }) {
   );
 }
 
-function ViewBadge({ label, view }) {
-  return (
-    <div style={{
-      position: 'absolute', top: 10, left: 10,
-      display: 'inline-flex', alignItems: 'stretch', gap: 0,
-      background: 'rgba(40,40,44,0.78)', color: '#fff',
-      fontFamily: 'IBM Plex Mono, monospace',
-    }}>
-      <span style={{
-        padding: '4px 6px', fontSize: 9, fontWeight: 700,
-        letterSpacing: '0.18em', background: C.white, color: C.ink,
-      }}>{view}</span>
-      <span style={{
-        padding: '4px 8px', fontSize: 9, fontWeight: 700,
-        letterSpacing: '0.22em',
-      }}>{label}</span>
-    </div>
-  );
-}
-
 Object.assign(window, { VideoModule, ObjectsModule, AppsModule, LinkModule, SelfModule, ProfileCard, HoverCornerMarks, CTA, PageHeader, AboutProfilePage, AboutSkillsPage, AboutContactPage, AppPage, AppIcon, AppMetaBand });
 
 </script>
@@ -4895,6 +4877,14 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
   React.useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
+  }, []);
+  // Fuso del visitatore (l'orologio mostra l'ora LOCALE): niente più "CET"
+  // fisso, che mentiva fuori dall'Europa centrale.
+  const tz = React.useMemo(() => {
+    try {
+      return new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
+        .formatToParts(new Date()).find(p => p.type === 'timeZoneName')?.value || 'LOCAL';
+    } catch (e) { return 'LOCAL'; }
   }, []);
 
   /* ── Route takeover ───────────────────────────────────────────
@@ -4988,7 +4978,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
               }}>{hh}:{mm}<span style={{ color: C.faint }}>:{ss}</span></span>
               <span style={{
                 fontSize: 8, fontWeight: 700, letterSpacing: '0.22em', color: C.faint,
-              }}>CET</span>
+              }}>{tz}</span>
             </span>
           )}
         </span>
