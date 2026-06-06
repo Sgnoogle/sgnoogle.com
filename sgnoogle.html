@@ -2484,6 +2484,10 @@ function STLLab({ lang }) {
   const [ready, setReady] = React.useState(typeof window !== 'undefined' && !!window.THREE);
   const [loadError, setLoadError] = React.useState(false);
   const [currentId, setCurrentId] = React.useState(OBJECTS[0]?.id || '01');
+  // Si attiva quando il viewer è davvero montato (init differito, vedi sotto):
+  // l'effetto che carica la geometria deve aspettarlo, altrimenti al primo
+  // mount stateRef è ancora null e il modello iniziale non verrebbe caricato.
+  const [booted, setBooted] = React.useState(false);
   const current = OBJECTS.find(o => o.id === currentId) || OBJECTS[0];
 
   // Wait for THREE (loaded as static script in <head>). Timeout ~10s → errore.
@@ -2502,6 +2506,14 @@ function STLLab({ lang }) {
   // Scene setup + interaction loop — runs once when THREE is ready.
   React.useEffect(() => {
     if (!ready || !mountRef.current) return undefined;
+    let cancelled = false, innerCleanup = null;
+    // Differiamo la creazione del contesto WebGL (costosa, main-thread) oltre
+    // l'animazione di separazione della top bar: aprendo questa tab, l'init
+    // della GPU girava nel frame del morph (height/margin = layout) e lo
+    // faceva scattare. Lasciamo prima respirare la transizione, poi montiamo.
+    const startTimer = setTimeout(() => {
+      if (cancelled || !mountRef.current) return;
+      innerCleanup = (() => {
     const THREE = window.THREE;
     const el = mountRef.current;
     // Guardia: se il layout non ha ancora dato dimensioni al contenitore,
@@ -2641,6 +2653,10 @@ function STLLab({ lang }) {
         } catch (e) {}
       }, 0));
     };
+      })();
+      setBooted(true);
+    }, 360);
+    return () => { cancelled = true; clearTimeout(startTimer); if (innerCleanup) innerCleanup(); };
   }, [ready]);
 
   // Swap geometry when currentId changes
@@ -2700,7 +2716,7 @@ function STLLab({ lang }) {
     }
 
     holder.add(buildProceduralModel(THREE, currentId));
-  }, [currentId, ready]);
+  }, [currentId, ready, booted]);
 
   return (
     <div style={{
