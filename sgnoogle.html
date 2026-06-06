@@ -2971,21 +2971,6 @@ function STLListItem({ o, active, onSelect }) {
   );
 }
 
-function StlSpec({ k, v }) {
-  return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: '60px 1fr',
-      gap: 10, fontSize: 10,
-      fontFamily: 'IBM Plex Mono, monospace',
-      paddingBottom: 6,
-      borderBottom: `0.5px dashed rgba(120,122,124,0.18)`,
-    }}>
-      <span style={{ color: C.faint, letterSpacing: '0.18em', fontWeight: 600 }}>{k}</span>
-      <span style={{ color: C.ink, fontWeight: 700 }}>{v}</span>
-    </div>
-  );
-}
-
 /* ──────────────────────────────────────────────────────────────────
    buildProceduralModel — geometrie procedurali per ogni voce della
    lista. Sostituire con STLLoader.load(path) appena gli .stl reali
@@ -3028,7 +3013,7 @@ function buildProceduralModel(THREE, id) {
   return wrapper;
 }
 
-Object.assign(window, { STLLab, StlSpec, STLListItem, buildProceduralModel });
+Object.assign(window, { STLLab, STLListItem, buildProceduralModel });
 
 </script>
 
@@ -3730,38 +3715,6 @@ function ObjectsModule({ lang }) {
         </div>
       </Page>
     </PageDeck>
-  );
-}
-
-function SpecRow({ k, v }) {
-  return (
-    <div style={{ display: 'flex', gap: 8, fontFamily: 'IBM Plex Mono, monospace', fontSize: 10 }}>
-      <span style={{ color: C.faint, width: 44, letterSpacing: '0.14em' }}>{k}</span>
-      <span style={{ color: C.ink, fontWeight: 600 }}>{v}</span>
-    </div>
-  );
-}
-
-function Wireframe() {
-  return (
-    <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: '100%' }}>
-      <g stroke={C.grey} strokeWidth="0.5" fill="none">
-        <rect x="50" y="30" width="100" height="70"/>
-        <rect x="70" y="14" width="100" height="70"/>
-        <line x1="50" y1="30" x2="70" y2="14"/>
-        <line x1="150" y1="30" x2="170" y2="14"/>
-        <line x1="50" y1="100" x2="70" y2="84"/>
-        <line x1="150" y1="100" x2="170" y2="84"/>
-        <line x1="70" y1="14" x2="170" y2="14" strokeDasharray="1.5 1.5"/>
-        <line x1="170" y1="14" x2="170" y2="84" strokeDasharray="1.5 1.5"/>
-        <line x1="70" y1="84" x2="170" y2="84" strokeDasharray="1.5 1.5"/>
-        <line x1="70" y1="14" x2="70" y2="84" strokeDasharray="1.5 1.5"/>
-      </g>
-      <g stroke={C.yellow} strokeWidth="0.7" fill="none">
-        <circle cx="100" cy="65" r="3"/>
-        <line x1="100" y1="65" x2="186" y2="65"/>
-      </g>
-    </svg>
   );
 }
 
@@ -5382,48 +5335,6 @@ function PreviewCornerMarks() {
   );
 }
 
-/* PreviewStatusChip — pill rettangolare gialla/grigia in alto a destra
-   della card. LIVE / SOON / OPEN / YOU. La dot pulsa quando LIVE. */
-function PreviewStatusChip({ status }) {
-  const isLive = status === 'LIVE';
-  const isSoon = status === 'SOON';
-  const bg = isLive ? C.yellow : (isSoon ? C.paper : C.white);
-  const fg = C.ink;
-  const border = isLive ? C.yellow : C.border;
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6,
-      background: bg, color: fg,
-      border: `0.5px solid ${border}`,
-      padding: '5px 9px',
-      fontSize: 9, fontWeight: 700, letterSpacing: '0.22em',
-      flexShrink: 0,
-    }}>
-      <span style={{
-        width: 5, height: 5, background: C.ink, display: 'inline-block',
-        animation: isLive ? 'sgnpulse 1.6s linear infinite' : 'none',
-        opacity: isLive ? 1 : 0.5,
-      }}/>
-      {status}
-    </span>
-  );
-}
-
-/* FrameTicks — 4 corner-tick gialli per un riquadro media non quadrato
-   (riusa il linguaggio di PreviewViewport). */
-function FrameTicks() {
-  const tick = 8, t = 1.2, off = -0.5;
-  const base = { position: 'absolute', width: tick, height: tick, pointerEvents: 'none' };
-  return (
-    <>
-      <span style={{ ...base, top: off, left: off, borderTop: `${t}px solid ${C.yellow}`, borderLeft: `${t}px solid ${C.yellow}` }}/>
-      <span style={{ ...base, top: off, right: off, borderTop: `${t}px solid ${C.yellow}`, borderRight: `${t}px solid ${C.yellow}` }}/>
-      <span style={{ ...base, bottom: off, left: off, borderBottom: `${t}px solid ${C.yellow}`, borderLeft: `${t}px solid ${C.yellow}` }}/>
-      <span style={{ ...base, bottom: off, right: off, borderBottom: `${t}px solid ${C.yellow}`, borderRight: `${t}px solid ${C.yellow}` }}/>
-    </>
-  );
-}
-
 /* PreviewAmbient — fondale vivo che riempie il compartimento ANTEPRIMA.
    UNIFICATO (v3.8): ogni sezione parla la STESSA lingua della 04 — una
    griglia di "oggetti" hairline grigi che deriva in diagonale (sgnDrift,
@@ -5500,92 +5411,32 @@ function PreviewAmbient({ id }) {
   );
 }
 
-/* PreviewViewport — quadratino bianco incorniciato con corner-tick,
-   per dare presenza ai marchi piccoli (icona app / logo) sulla griglia. */
-function PreviewViewport({ size, children }) {
-  const tick = 8, t = 1.2, off = -0.5;
-  const base = { position: 'absolute', width: tick, height: tick, pointerEvents: 'none' };
-  return (
-    <div style={{
-      width: size, aspectRatio: '1 / 1',
-      background: C.white, border: `0.5px solid ${C.border}`,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      position: 'relative', flexShrink: 0,
-    }}>
-      {children}
-      <span style={{ ...base, top: off, left: off, borderTop: `${t}px solid ${C.yellow}`, borderLeft: `${t}px solid ${C.yellow}` }}/>
-      <span style={{ ...base, top: off, right: off, borderTop: `${t}px solid ${C.yellow}`, borderRight: `${t}px solid ${C.yellow}` }}/>
-      <span style={{ ...base, bottom: off, left: off, borderBottom: `${t}px solid ${C.yellow}`, borderLeft: `${t}px solid ${C.yellow}` }}/>
-      <span style={{ ...base, bottom: off, right: off, borderBottom: `${t}px solid ${C.yellow}`, borderRight: `${t}px solid ${C.yellow}` }}/>
-    </div>
-  );
-}
-
-/* buildPreviewMeta — restituisce status + 3 righe key/value per modulo.
-   Dati live quando esistono, fallback "—" se la sezione è vuota. */
+/* buildPreviewMeta — tag + titolo dell'header della card preview di ogni
+   modulo (l'unico dato consumato da ModulePreview). Live quando esiste,
+   fallback se la sezione è vuota. */
 function buildPreviewMeta(id, lang) {
   const isIt = lang === 'it';
   if (id === '01') {
     const v = (VIDEOS && VIDEOS[0]) || {};
-    return {
-      status: 'LIVE',
-      head: { tag: isIt ? 'ULTIMO VIDEO' : 'LATEST VIDEO', title: v.title || (isIt ? 'Nessun video' : 'No video') },
-      rows: [
-        { k: isIt ? 'CANALE'  : 'CHANNEL', v: CHANNEL.subs.synced ? '67K SUBS' : '—' },
-        { k: isIt ? 'ULTIMO'  : 'LATEST',  v: v.title || '—' },
-        { k: isIt ? 'PUBBL.'  : 'PUBL.',   v: v.date ? `${v.date} · ${v.views || '—'}` : '—' },
-      ],
-    };
+    return { head: { tag: isIt ? 'ULTIMO VIDEO' : 'LATEST VIDEO', title: v.title || (isIt ? 'Nessun video' : 'No video') } };
   }
   if (id === '02') {
     const o = (OBJECTS && OBJECTS[0]) || {};
-    return {
-      status: OBJECTS && OBJECTS.length ? 'LIVE' : 'SOON',
-      head: { tag: isIt ? 'ULTIMO OGGETTO' : 'LATEST OBJECT', title: o.name || (isIt ? 'In arrivo' : 'Coming soon') },
-      rows: [
-        { k: 'FILES',  v: `${(OBJECTS||[]).length.toString().padStart(2,'0')} STL` },
-        { k: isIt ? 'ULTIMO' : 'LATEST', v: o.name || '—' },
-        { k: isIt ? 'DIM.'   : 'SIZE',   v: o.size ? `${o.size} mm` : '—' },
-      ],
-    };
+    return { head: { tag: isIt ? 'ULTIMO OGGETTO' : 'LATEST OBJECT', title: o.name || (isIt ? 'In arrivo' : 'Coming soon') } };
   }
   if (id === '03') {
     const a = (typeof APPS !== 'undefined' && APPS[0]) || {};
-    return {
-      status: typeof APPS !== 'undefined' && APPS.length ? 'LIVE' : 'SOON',
-      head: { tag: isIt ? 'PIÙ SCARICATA' : 'TOP DOWNLOAD', title: a.name || (isIt ? 'In arrivo' : 'Coming soon') },
-      rows: [
-        { k: 'APPS',  v: `${(typeof APPS !== 'undefined' ? APPS : []).length.toString().padStart(2,'0')} ANDROID` },
-        { k: isIt ? 'TOP'    : 'TOP',    v: a.name || '—' },
-        { k: isIt ? 'VOTO'   : 'RATING', v: a.rating ? `${a.rating} ★ · ${a.downloads}` : '—' },
-      ],
-    };
+    return { head: { tag: isIt ? 'PIÙ SCARICATA' : 'TOP DOWNLOAD', title: a.name || (isIt ? 'In arrivo' : 'Coming soon') } };
   }
   if (id === '04') {
     const hasLinks = typeof LINKS !== 'undefined' && LINKS.length > 0;
     const f = hasLinks ? LINKS[0] : null;
-    return {
-      status: hasLinks ? 'LIVE' : 'OPEN',
-      head: { tag: isIt ? 'STATO' : 'STATUS', title: hasLinks ? (f.name || '—') : (isIt ? 'Aperto a collaborazioni' : 'Open for collabs') },
-      rows: [
-        { k: isIt ? 'COLLAB.' : 'COLLABS', v: hasLinks ? String(LINKS.length).padStart(2, '0') : '00' },
-        { k: isIt ? 'ATTIVE' : 'ACTIVE',  v: hasLinks ? (f.name || '—') : (isIt ? 'IN ATTESA' : 'AWAITING') },
-        { k: 'TAG',  v: hasLinks ? 'ACTIVE' : 'OPEN FOR' },
-      ],
-    };
+    return { head: { tag: isIt ? 'STATO' : 'STATUS', title: hasLinks ? (f.name || '—') : (isIt ? 'Aperto a collaborazioni' : 'Open for collabs') } };
   }
   if (id === '05') {
-    return {
-      status: 'YOU',
-      head: { tag: isIt ? 'PROFILO' : 'PROFILE', title: 'SGNOOGLE' },
-      rows: [
-        { k: isIt ? 'CLASSE' : 'CLASS', v: 'TECH CREATOR' },
-        { k: isIt ? 'DAL'    : 'SINCE', v: String(CHANNEL.startYear || '—') },
-        { k: 'BASE', v: 'IT · MILAN' },
-      ],
-    };
+    return { head: { tag: isIt ? 'PROFILO' : 'PROFILE', title: 'SGNOOGLE' } };
   }
-  return { status: '·', head: { tag: '', title: '' }, rows: [] };
+  return { head: { tag: '', title: '' } };
 }
 
 function LiveBadge({ armed, dimmed }) {
