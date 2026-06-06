@@ -971,6 +971,40 @@ body {
     }
   }
 
+  /* ── Focus da tastiera (desktop): il linguaggio di selezione del sito vive
+        tutto su hover/active, e le regole :focus-visible stavano SOLO dentro
+        @media (hover:none) → tabulando sul desktop non si accendeva nulla.
+        Qui le replichiamo a livello globale. :focus-visible scatta solo da
+        tastiera, quindi mouse e look "a riposo" non cambiano. ── */
+  .sgn-card-hover:focus-visible {
+    border-color: var(--grey);
+    background: var(--paper);
+    outline: 0.5px solid var(--yellow);
+    outline-offset: -1px;
+  }
+  .sgn-card-hover--media:focus-visible { background: var(--white); }
+  .sgn-card-hover:focus-visible .sgn-cm {
+    opacity: 1; width: 16px; height: 16px;
+  }
+  .sgn-cta:focus-visible {
+    background: var(--ink); border-color: var(--ink);
+    outline: 0.5px solid var(--yellow); outline-offset: 2px;
+  }
+  .sgn-cta:focus-visible .sgn-cta__icon { background: var(--ink); border-right-color: var(--ink); }
+  .sgn-cta:focus-visible .sgn-cta__icon > span { background-color: var(--paper) !important; }
+  .sgn-cta:focus-visible .sgn-cta__label { color: var(--ink) !important; }
+  .sgn-stl-item:focus-visible:not(.is-active) { background: var(--paper); }
+  .sgn-stl-item:focus-visible:not(.is-active) .sgn-stl-rail { background: rgba(255,194,0,0.45); }
+  /* baseline per ogni altro controllo interattivo (tab, toggle .sgn-hot,
+     StripArrow, bottoni topbar, link): outline giallo sottile su bianco. */
+  a:focus-visible,
+  button:focus-visible,
+  .sgn-hot:focus-visible,
+  .sgn-tab:focus-visible {
+    outline: 0.5px solid var(--yellow);
+    outline-offset: 2px;
+  }
+
   /* ── Touch (nessun hover): il linguaggio di selezione del sito è tutto a
         hover (corner-mark gialli, ignite del CTA, rail STL). Sul dito non
         scatta e, peggio, un hover può "restare incollato" dopo il tap.
@@ -1119,7 +1153,6 @@ body {
     padding: 6px 11px 6px 9px;
     font-family: var(--font-mono); font-size: 9px; font-weight: 700;
     letter-spacing: 0.2em; text-transform: uppercase;
-    box-shadow: 0 2px 10px rgba(40,40,44,0.12);
     pointer-events: none;
     animation: sgnHintIn 200ms cubic-bezier(0.2,0,0,1);
   }
@@ -4776,7 +4809,6 @@ function ProfileCard({ L }) {
             display: 'inline-flex', alignItems: 'stretch',
             background: C.white, border: `0.5px solid ${C.border}`,
             cursor: 'pointer', padding: 0,
-            boxShadow: '0 2px 8px rgba(40,40,44,0.12)',
             fontFamily: 'IBM Plex Mono, monospace',
           }}>
           <span style={{ position: 'relative', display: 'inline-flex' }}>
