@@ -5796,26 +5796,39 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear',
         minHeight: 62,
       }}>
-      {/* Tab attiva → la "linguetta" bianca raccorda la key alla view: una
-         superficie bianca a TUTTA LARGHEZZA che colma il gap stage↔strip
-         (= --frame-gap), così key + linguetta + view diventano un'unica forma
-         continua. Sempre montata: morpha in altezza (scaleY dal basso) quando
-         la tab diventa attiva/inattiva → si allunga verso la view comparendo e
-         si riaccorcia sparendo. Niente giallo: il raccordo bianco È l'indizio. */}
+      {/* Tab attiva → la "linguetta" bianca raccorda la key alla view: colma
+         il gap stage↔strip (= --frame-gap) così key + linguetta + view sono una
+         forma continua. Sempre montata: morpha in altezza (scaleY dal basso).
+         È in DUE parti per evitare che i bordi grigi sconfinino oltre la
+         cornice della view (il "saltino"):
+         · riempimento bianco — sconfina 1px DENTRO la view per cancellarne la
+           hairline inferiore localmente (merge senza cuciture); nessun bordo;
+         · bordi laterali — si fermano ESATTAMENTE alla cornice della view
+           (height = gap+1, dove l'1px è solo la sovrapposizione sulla key in
+           basso), quindi NON spuntano sopra il bordo della view. */}
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
         left: -0.5, right: -0.5,
         height: 'calc(var(--frame-gap, 16px) + 2px)',
-        // Stesso fondo (e stesso fade 160ms) del tasto: mentre la linguetta
-        // cresce NON è più bianca "solid" rispetto al tasto ancora in
-        // dissolvenza — i due viaggiano insieme da paper a white.
+        // Stesso fondo (e fade 160ms) del tasto: i due viaggiano insieme da
+        // paper a white mentre la linguetta cresce.
         background: active ? C.white : C.paper,
-        borderLeft: `0.5px solid ${C.border}`,
-        borderRight: `0.5px solid ${C.border}`,
-        boxSizing: 'border-box',
+        boxSizing: 'border-box', pointerEvents: 'none',
         transformOrigin: 'bottom',
         transform: active ? 'scaleY(1)' : 'scaleY(0)',
         transition: 'transform 340ms cubic-bezier(0.2,0,0,1), background 160ms linear',
+      }}/>
+      <span aria-hidden="true" style={{
+        position: 'absolute', bottom: 'calc(100% - 1px)',
+        left: -0.5, right: -0.5,
+        height: 'calc(var(--frame-gap, 16px) + 1px)',
+        borderLeft: `0.5px solid ${C.border}`,
+        borderRight: `0.5px solid ${C.border}`,
+        background: 'transparent',
+        boxSizing: 'border-box', pointerEvents: 'none',
+        transformOrigin: 'bottom',
+        transform: active ? 'scaleY(1)' : 'scaleY(0)',
+        transition: 'transform 340ms cubic-bezier(0.2,0,0,1)',
       }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
