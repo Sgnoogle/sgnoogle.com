@@ -2512,11 +2512,14 @@ function STLLab({ lang }) {
     if (!ready || !mountRef.current) return undefined;
     let cancelled = false, innerCleanup = null;
     // Differiamo la creazione del contesto WebGL (costosa, main-thread) oltre
-    // l'animazione di separazione della top bar: aprendo questa tab, l'init
+    // l'animazione di separazione della top bar: aprendo questa tab l'init
     // della GPU girava nel frame del morph (height/margin = layout) e lo
-    // faceva scattare. Lasciamo prima respirare la transizione, poi montiamo.
-    const startTimer = setTimeout(() => {
-      if (cancelled || !mountRef.current) return;
+    // faceva scattare. Avviamo quando la top bar ha FINITO di animare
+    // (transitionend), con un fallback a tempo se non c'è transizione.
+    let started = false;
+    const begin = () => {
+      if (started || cancelled || !mountRef.current) return;
+      started = true;
       innerCleanup = (() => {
     const THREE = window.THREE;
     const el = mountRef.current;
@@ -2659,8 +2662,21 @@ function STLLab({ lang }) {
     };
       })();
       setBooted(true);
-    }, 360);
-    return () => { cancelled = true; clearTimeout(startTimer); if (innerCleanup) innerCleanup(); };
+    };
+    // Parte allo stacco completato della top bar; fallback a tempo per
+    // reduced-motion, cambio modulo→modulo (nessuna transizione) o evento perso.
+    const topbar = document.querySelector('.sgn-topbar');
+    const onEnd = (e) => {
+      if (e.target === topbar && (e.propertyName === 'height' || e.propertyName === 'margin-bottom')) begin();
+    };
+    if (topbar) topbar.addEventListener('transitionend', onEnd);
+    const startTimer = setTimeout(begin, 380);
+    return () => {
+      cancelled = true;
+      clearTimeout(startTimer);
+      if (topbar) topbar.removeEventListener('transitionend', onEnd);
+      if (innerCleanup) innerCleanup();
+    };
   }, [ready]);
 
   // Swap geometry when currentId changes
@@ -7456,6 +7472,7 @@ function App() {
   }, [tweaks.sound]);
 
   const select = useCallback((id) => {
+    if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico (Android; iOS ignora)
     setCurrent(prev => {
       const next = prev === id ? null : id;
       const dir = computeDirection(prev, next);
@@ -7468,6 +7485,7 @@ function App() {
   }, [sound]);
 
   const goHome = useCallback(() => {
+    if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico
     setCurrent(prev => {
       if (!prev) return prev;
       setDirection(computeDirection(prev, null));
@@ -7476,6 +7494,74 @@ function App() {
       return null;
     });
   }, [sound]);
+
+  // Swipe orizzontale (solo mobile) per scorrere tra i moduli, riusando la
+  // stessa select/goHome → suono, direzione e animazione restano coerenti.
+  // Sequenza [home, 01..05] con clamp ai bordi. Si escludono lo STL (drag per
+  // ruotare), gli iframe e gli scroller orizzontali; i drag verticali restano
+  // scroll normale (mai preventDefault → il paging verticale non è toccato).
+  useEffect(() => {
+    if (!mobile) return undefined;
+    const el = displaySectionRef.current;
+    if (!el) return undefined;
+    const ORDER = [null, '01', '02', '03', '04', '05'];
+    const SLOP = 12, THRESH = 60;
+    let sx = 0, sy = 0, tracking = false, axis = null;
+    const onInteractive = (t) => {
+      if (!t || !t.closest) return false;
+      if (t.closest('.sgn-stl-viewer') || t.closest('iframe')) return true;
+      let n = t;
+      while (n && n !== el) {
+        if (n.scrollWidth - n.clientWidth > 2) {
+          const ox = getComputedStyle(n).overflowX;
+          if (ox === 'auto' || ox === 'scroll') return true;
+        }
+        n = n.parentElement;
+      }
+      return false;
+    };
+    const onStart = (e) => {
+      if ((e.touches && e.touches.length > 1) || onInteractive(e.target)) { tracking = false; return; }
+      const p = e.touches ? e.touches[0] : e;
+      sx = p.clientX; sy = p.clientY; tracking = true; axis = null;
+    };
+    const onMove = (e) => {
+      if (!tracking) return;
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - sx, dy = p.clientY - sy;
+      if (!axis) {
+        if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      }
+      if (axis === 'v') tracking = false;   // lascia scorrere in verticale
+    };
+    const onEnd = (e) => {
+      if (!tracking) { return; }
+      tracking = false;
+      if (axis !== 'h') return;
+      const p = e.changedTouches ? e.changedTouches[0] : e;
+      const dx = p.clientX - sx;
+      if (Math.abs(dx) < THRESH) return;
+      const cur = current ?? null;
+      const i = ORDER.indexOf(cur);
+      const ni = Math.max(0, Math.min(ORDER.length - 1, i + (dx < 0 ? 1 : -1)));
+      const target = ORDER[ni];
+      if (target === cur) return;
+      if (target === null) goHome(); else select(target);
+    };
+    const onCancel = () => { tracking = false; };
+    const opt = { passive: true };
+    el.addEventListener('touchstart', onStart, opt);
+    el.addEventListener('touchmove', onMove, opt);
+    el.addEventListener('touchend', onEnd, opt);
+    el.addEventListener('touchcancel', onCancel, opt);
+    return () => {
+      el.removeEventListener('touchstart', onStart);
+      el.removeEventListener('touchmove', onMove);
+      el.removeEventListener('touchend', onEnd);
+      el.removeEventListener('touchcancel', onCancel);
+    };
+  }, [mobile, current, select, goHome]);
 
   const onPickLang = useCallback((v) => {
     setLang(v); setTweak('language', v);
