@@ -3352,9 +3352,11 @@ function FeaturedVideo({ v, L, lang }) {
         position: 'relative', minWidth: 0, minHeight: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
+        {/* Desktop: il player riempie la colonna A FILO della cornice (è già
+           cover → nessuna banda). Su mobile l'override @media lo riporta a
+           18:9 in riga auto, anch'esso flush. Niente più "cornice esterna". */}
         <div className="sgn-feat-vid" style={{
-          position: 'relative', width: '100%', aspectRatio: '18 / 9',
-          maxHeight: '100%', margin: '0 auto',
+          position: 'relative', width: '100%', height: '100%',
           overflow: 'hidden',
         }}>
           {v.youtubeId || v.playlistId || meta?.videoId
@@ -7568,7 +7570,7 @@ function App() {
       {!started && <TapToStart lang={lang} onStart={() => setStarted(true)} sound={sound}/>}
       {started && !booted && <BootScreen lang={lang} onDone={() => { setBooted(true); try { sessionStorage.setItem('sgnBooted', '1'); } catch (e) {} }} sound={sound}/>}
 
-      <Cursor enabled={!!tweaks.crosshair && !mobile} sound={sound}/>
+      <Cursor enabled={!!tweaks.crosshair && !mobile && booted} sound={sound}/>
       <ClickRipple enabled={!!tweaks.ripple}/>
 
       <div className="sgn-page">
