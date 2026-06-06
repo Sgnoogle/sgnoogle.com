@@ -157,6 +157,10 @@
 }
 
 html { -webkit-text-size-adjust: 100%; }
+/* Niente flash azzurro al tap su mobile: il sito ha già il proprio feedback di
+   pressione (micro-scala + cambio sfondo). Qui spegniamo l'overlay di default
+   del browser, che altrimenti lampeggia in contrasto con la linguetta bianca. */
+* { -webkit-tap-highlight-color: transparent; }
 body {
   background: var(--bg-outer);
   color: var(--fg);
