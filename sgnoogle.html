@@ -2621,8 +2621,25 @@ function STLLab({ lang }) {
       el.removeEventListener('keydown', onKey);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup',   onUp);
-      renderer.dispose();
+      // La canvas si stacca subito (cheap) e il loop è già fermo. Ma
+      // renderer.dispose() libera la GPU in modo SINCRONO: girando dentro il
+      // commit di React mentre la top bar anima height/margin (layout →
+      // main-thread), ruba i primi frame e il ritorno alla home scatta SOLO da
+      // questa tab. Lo rimandiamo a dopo il primo paint della transizione →
+      // morph fluido, GPU liberata un attimo dopo (impercettibile).
       if (renderer.domElement.parentNode === el) el.removeChild(renderer.domElement);
+      const gpu = renderer, root = holder;
+      requestAnimationFrame(() => setTimeout(() => {
+        try {
+          root && root.traverse(o => {
+            o.geometry && o.geometry.dispose && o.geometry.dispose();
+            const m = o.material;
+            if (m) (Array.isArray(m) ? m : [m]).forEach(x => x && x.dispose && x.dispose());
+          });
+          gpu.dispose();
+          gpu.forceContextLoss && gpu.forceContextLoss();
+        } catch (e) {}
+      }, 0));
     };
   }, [ready]);
 
