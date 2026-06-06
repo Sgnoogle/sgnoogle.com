@@ -3318,6 +3318,35 @@ function FeaturedVideo({ v, L, lang }) {
   const displayTitle = meta?.title || v.title;
   const displayDate  = meta ? fmtPubDate(meta.publishedAt, lang) : null;
 
+  // La descrizione è un "cuscinetto" flessibile: il flex le assegna un'altezza
+  // qualsiasi (non multipla della riga) e overflow:hidden tagliava l'ultima
+  // riga a metà. Qui agganciamo il clip a righe INTERE: misuriamo lo spazio
+  // assegnato e fissiamo line-clamp + max-height all'ultima riga che ci sta
+  // tutta → meglio fermarsi una riga prima che mostrarne mezza.
+  const descRef = React.useRef(null);
+  const snapDesc = React.useCallback(() => {
+    const p = descRef.current;
+    if (!p) return;
+    p.style.removeProperty('max-height');           // torna all'altezza piena del flex…
+    const cs = getComputedStyle(p);
+    let lh = parseFloat(cs.lineHeight);
+    if (cs.lineHeight.indexOf('px') === -1 || !lh) lh = parseFloat(cs.fontSize) * 1.6;
+    if (!lh) return;
+    const lines = Math.max(1, Math.floor(p.clientHeight / lh + 0.05)); // …righe intere che entrano
+    p.style.setProperty('-webkit-line-clamp', String(lines), 'important');
+    p.style.maxHeight = (lines * lh) + 'px';         // clip esatto sull'ultima riga intera
+  }, []);
+  React.useLayoutEffect(() => { snapDesc(); });       // riapplica dopo ogni render (React resetta gli inline)
+  React.useEffect(() => {
+    const p = descRef.current;
+    if (!p) return undefined;
+    const box = p.closest('.sgn-feat-info') || p;     // altezza fissata dal grid → niente loop col maxHeight
+    const ro = new ResizeObserver(() => snapDesc());
+    ro.observe(box);
+    window.addEventListener('resize', snapDesc);
+    return () => { ro.disconnect(); window.removeEventListener('resize', snapDesc); };
+  }, [snapDesc, meta && meta.description]);
+
   return (
     <div ref={ref} className="sgn-card-hover sgn-card-hover--media sgn-featured" style={{
       position: 'relative',
@@ -3383,7 +3412,7 @@ function FeaturedVideo({ v, L, lang }) {
         </div>
 
         {meta?.description && (
-          <p className="sgn-feat-desc" style={{
+          <p className="sgn-feat-desc" ref={descRef} style={{
             margin: 0, fontFamily: 'IBM Plex Mono, monospace',
             fontSize: 'clamp(11px, 0.85vw, 13px)', color: C.grey, lineHeight: 1.6,
             display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical',
