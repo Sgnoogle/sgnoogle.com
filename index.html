@@ -328,22 +328,27 @@ body {
     margin: 0 auto;
     height: 100%;
     display: grid;
-    grid-template-rows: 44px 1fr clamp(140px, 24vh, 200px);
+    grid-template-rows: 1fr clamp(140px, 24vh, 200px);
     gap: var(--frame-gap);
     box-sizing: border-box;
   }
-  /* ── Home-merge: in home (nessuna tab attiva) la TopBar si fonde con la
-        view. Niente bordo proprio + una "gonna" bianca che copre il gap
-        verso il display → un'unica superficie bianca. Il logo piccolo è
-        nascosto nel JSX (ridondante col logo gigante al centro). La gonna e
-        la "linguetta" della tab attiva usano la stessa --frame-gap così
-        restano allineate al gap reale della griglia a ogni breakpoint. ── */
-  .sgn-topbar--home { border-color: transparent !important; }
-  .sgn-topbar-skirt {
-    position: absolute; top: 100%; left: 0; right: 0;
-    height: calc(var(--frame-gap, 16px) + 1px);
-    background: var(--white);
-    pointer-events: none;
+  /* ── Stage = TopBar + display impilati in colonna. NON c'è gap di griglia
+        tra loro: lo stacco è una margin-bottom della TopBar (= --frame-gap),
+        così in home può collassare a 0 e i due pannelli diventano un'unica
+        superficie bianca — merge strutturale, niente "gonna" che copre il gap
+        a pixel (era quella a lasciare la riga di separazione). L'unico gap di
+        griglia rimasto è stage↔strip, quello che la linguetta raccorda. ── */
+  .sgn-stage { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  .sgn-topbar {
+    margin-bottom: var(--frame-gap);
+    transition: height 320ms cubic-bezier(0.2,0,0,1),
+                margin-bottom 320ms cubic-bezier(0.2,0,0,1),
+                border-color 220ms linear;
+  }
+  .sgn-topbar--home {
+    margin-bottom: 0;
+    border-color: transparent !important;
+    height: clamp(54px, 8vh, 66px) !important;
   }
   .sgn-display {
     position: relative;
@@ -354,6 +359,7 @@ body {
   /* ── Display area = display + (optional) side pager card ── */
   .sgn-display-area {
     display: grid;
+    flex: 1 1 auto;
     grid-template-columns: 1fr;
     gap: clamp(8px, 1vw, 14px);
     min-height: 0; min-width: 0;
@@ -775,8 +781,9 @@ body {
   @media (max-width: 760px) {
     .sgn-page { padding: clamp(8px, 2vh, 16px) clamp(10px, 3vw, 20px) max(20px, env(safe-area-inset-bottom, 0px)); }
     .sgn-frame {
-      grid-template-rows: 44px 1fr auto;
-      gap: clamp(12px, 2.5vh, 20px);
+      --frame-gap: clamp(12px, 2.5vh, 20px);
+      grid-template-rows: 1fr auto;
+      gap: var(--frame-gap);
     }
     .sgn-self-grid { grid-template-columns: 1fr !important; justify-items: center; text-align: center; }
     .sgn-self-grid > div:first-child { width: clamp(160px, 52vw, 240px) !important; }
@@ -942,7 +949,7 @@ body {
     }
     .sgn-frame {
       --frame-gap: clamp(8px, 1.4vh, 14px);
-      grid-template-rows: 40px 1fr clamp(92px, 22vh, 150px);
+      grid-template-rows: 1fr clamp(92px, 22vh, 150px);
       gap: var(--frame-gap);
     }
     /* la barra è già nascosta <760, ma su landscape larghi va comunque tolta */
@@ -955,7 +962,7 @@ body {
   @media (min-width: 761px) and (max-width: 1024px) {
     .sgn-frame {
       --frame-gap: clamp(12px, 1.8vh, 18px);
-      grid-template-rows: 44px 1fr clamp(132px, 21vh, 176px);
+      grid-template-rows: 1fr clamp(132px, 21vh, 176px);
       gap: var(--frame-gap);
     }
   }
@@ -4850,7 +4857,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
 function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, sound, idle }) {
   const L = I18N[lang];
   return (
-    <header className={!current ? 'sgn-topbar--home' : undefined} style={{
+    <header className={`sgn-topbar${!current ? ' sgn-topbar--home' : ''}`} style={{
       position: 'relative', zIndex: 60,
       height: 44, background: C.white,
       border: `0.5px solid ${C.borderSoft}`,
@@ -4859,8 +4866,6 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       fontFamily: 'IBM Plex Mono, monospace',
       gap: 10, flexShrink: 0,
     }}>
-      {/* Home-merge: la "gonna" bianca copre il gap topbar↔view (vedi CSS). */}
-      {!current && <span aria-hidden="true" className="sgn-topbar-skirt" />}
       {/* Logo+wordmark: nascosti in home (ridondanti col logo gigante al
          centro); in un modulo restano e fanno da tasto "torna alla home".
          Lo span vuoto tiene i controlli a destra (justify-content space-between). */}
@@ -5759,27 +5764,24 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear',
         minHeight: 62,
       }}>
-      {/* Tab attiva → "linguetta" bianca che raccorda la key alla view:
-         colma il gap reale della frame (--frame-gap) con una superficie
-         bianca continua (key↔view = un'unica forma), bordata da una hairline
-         ai lati come una linguetta di cartella. Piccola tacca gialla alla
-         base, sul bordo alto della key. Le key inattive restano staccate. */}
-      {active && (
-        <span aria-hidden="true" style={{
-          position: 'absolute', bottom: 'calc(100% - 1px)',
-          left: '22%', right: '22%',
-          height: 'calc(var(--frame-gap, 12px) + 2px)',
-          background: C.white,
-          borderLeft: `0.5px solid ${C.border}`,
-          borderRight: `0.5px solid ${C.border}`,
-          boxSizing: 'border-box',
-        }}>
-          <span style={{
-            position: 'absolute', left: 0, right: 0, bottom: 0,
-            height: 2, background: C.yellow,
-          }}/>
-        </span>
-      )}
+      {/* Tab attiva → la "linguetta" bianca raccorda la key alla view: una
+         superficie bianca a TUTTA LARGHEZZA che colma il gap stage↔strip
+         (= --frame-gap), così key + linguetta + view diventano un'unica forma
+         continua. Sempre montata: morpha in altezza (scaleY dal basso) quando
+         la tab diventa attiva/inattiva → si allunga verso la view comparendo e
+         si riaccorcia sparendo. Niente giallo: il raccordo bianco È l'indizio. */}
+      <span aria-hidden="true" style={{
+        position: 'absolute', bottom: 'calc(100% - 1px)',
+        left: -0.5, right: -0.5,
+        height: 'calc(var(--frame-gap, 16px) + 2px)',
+        background: C.white,
+        borderLeft: `0.5px solid ${C.border}`,
+        borderRight: `0.5px solid ${C.border}`,
+        boxSizing: 'border-box',
+        transformOrigin: 'bottom',
+        transform: active ? 'scaleY(1)' : 'scaleY(0)',
+        transition: 'transform 340ms cubic-bezier(0.2,0,0,1)',
+      }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
           10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
@@ -7520,6 +7522,7 @@ function App() {
 
       <div className="sgn-page">
         <div className="sgn-frame">
+          <div className="sgn-stage">
           <TopBar
             lang={lang}
             langOpen={langOpen}
@@ -7582,6 +7585,7 @@ function App() {
                 sound={sound}
               />
             )}
+          </div>
           </div>
 
           <ModuleStrip
