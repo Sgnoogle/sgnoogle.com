@@ -4763,10 +4763,9 @@ function ProfileCard({ L }) {
         <span style={{ ...tickBase, ...ticks.bl }}/>
         <span style={{ ...tickBase, ...ticks.br }}/>
 
-        {/* TOGGLE — switch segmentato AVATAR / REAL, gamepad-style.
-            Traccia ink, "knob" giallo che scorre sotto l'etichetta attiva
-            (che diventa scura per contrasto): mostra entrambe le opzioni,
-            così è chiaro dove sei e dove vai. */}
+        {/* TOGGLE — switch segmentato AVATAR / REAL. Fondo bianco, etichette
+            ink, sottolineatura GIALLA che scorre sotto l'attiva: il giallo sta
+            sempre su bianco e mai a contatto col nero (regola del sito). */}
         <button
           onClick={flip}
           className="sgn-hot"
@@ -4775,26 +4774,28 @@ function ProfileCard({ L }) {
           style={{
             position: 'absolute', right: 10, bottom: 10, zIndex: 4,
             display: 'inline-flex', alignItems: 'stretch',
-            background: C.ink, border: 'none', cursor: 'pointer', padding: 2,
+            background: C.white, border: `0.5px solid ${C.border}`,
+            cursor: 'pointer', padding: 0,
+            boxShadow: '0 2px 8px rgba(40,40,44,0.12)',
             fontFamily: 'IBM Plex Mono, monospace',
           }}>
           <span style={{ position: 'relative', display: 'inline-flex' }}>
             <span aria-hidden="true" style={{
-              position: 'absolute', top: 0, bottom: 0, left: 0, width: '50%',
+              position: 'absolute', left: 0, bottom: 0, width: '50%', height: 3,
               background: C.yellow,
               transform: isReal ? 'translateX(100%)' : 'translateX(0)',
               transition: 'transform 260ms cubic-bezier(0.2,0,0,1)',
             }}/>
             <span style={{
               position: 'relative', zIndex: 1, width: 54, textAlign: 'center',
-              padding: '6px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
-              color: isReal ? 'rgba(255,255,255,0.55)' : C.ink,
+              padding: '6px 0 8px', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+              color: isReal ? C.faint : C.ink,
               transition: 'color 260ms linear',
             }}>{L.self.viewToggleAvatar}</span>
             <span style={{
               position: 'relative', zIndex: 1, width: 54, textAlign: 'center',
-              padding: '6px 0', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
-              color: isReal ? C.ink : 'rgba(255,255,255,0.55)',
+              padding: '6px 0 8px', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+              color: isReal ? C.ink : C.faint,
               transition: 'color 260ms linear',
             }}>{L.self.viewToggleReal}</span>
           </span>
