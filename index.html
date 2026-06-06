@@ -5778,13 +5778,16 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         position: 'absolute', bottom: 'calc(100% - 1px)',
         left: -0.5, right: -0.5,
         height: 'calc(var(--frame-gap, 16px) + 2px)',
-        background: C.white,
+        // Stesso fondo (e stesso fade 160ms) del tasto: mentre la linguetta
+        // cresce NON è più bianca "solid" rispetto al tasto ancora in
+        // dissolvenza — i due viaggiano insieme da paper a white.
+        background: active ? C.white : C.paper,
         borderLeft: `0.5px solid ${C.border}`,
         borderRight: `0.5px solid ${C.border}`,
         boxSizing: 'border-box',
         transformOrigin: 'bottom',
         transform: active ? 'scaleY(1)' : 'scaleY(0)',
-        transition: 'transform 340ms cubic-bezier(0.2,0,0,1)',
+        transition: 'transform 340ms cubic-bezier(0.2,0,0,1), background 160ms linear',
       }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
