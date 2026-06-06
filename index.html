@@ -5820,7 +5820,7 @@ function GameBoyStrip({ ids, L, current, onSelect, sound }) {
           n={i + 1}
           label={L.modules[id].label}
           active={current === id}
-          onPress={() => { onSelect(id); sound && sound('confirm'); }}
+          onPress={() => onSelect(id)}
         />
       ))}
     </div>
