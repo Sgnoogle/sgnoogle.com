@@ -2585,6 +2585,38 @@ function STLLab({ lang }) {
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup',   onUp);
 
+    // ── Pinch-to-zoom (mobile, due dita): varia la distanza della camera tra
+    // limiti. `el` ha già touch-action:none → il gesto non zooma la pagina. Un
+    // solo dito resta drag-per-ruotare (pointer events sopra); col secondo dito
+    // si annulla il drag e si entra in pinch, così non ruota mentre zoomi.
+    const MIN_Z = 150, MAX_Z = 700;
+    let pinching = false, pinchStartDist = 0, pinchStartZ = 0;
+    const touchDist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        pinching = true; dragging = false; pauseSpin();
+        pinchStartDist = touchDist(e.touches);
+        pinchStartZ = camera.position.z;
+        e.preventDefault();
+      }
+    };
+    const onTouchMove = (e) => {
+      if (!pinching || e.touches.length < 2) return;
+      const d = touchDist(e.touches);
+      if (d > 0 && pinchStartDist > 0) {
+        // dita che si allargano → distanza maggiore → camera più vicina → zoom in
+        camera.position.z = Math.max(MIN_Z, Math.min(MAX_Z, pinchStartZ * (pinchStartDist / d)));
+      }
+      e.preventDefault();
+    };
+    const onTouchEnd = (e) => {
+      if (pinching && e.touches.length < 2) { pinching = false; scheduleResume(); }
+    };
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+    el.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    el.addEventListener('touchend',   onTouchEnd);
+    el.addEventListener('touchcancel', onTouchEnd);
+
     let raf;
     const tick = () => {
       raf = requestAnimationFrame(tick);
@@ -2615,6 +2647,10 @@ function STLLab({ lang }) {
       el.removeEventListener('keydown', onKey);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup',   onUp);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove',  onTouchMove);
+      el.removeEventListener('touchend',   onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
       // La canvas si stacca subito (cheap) e il loop è già fermo. Ma
       // renderer.dispose() libera la GPU in modo SINCRONO: girando dentro il
       // commit di React mentre la top bar anima height/margin (layout →
