@@ -734,6 +734,7 @@ body {
     .sgn-self-grid > div:first-child { width: clamp(160px, 52vw, 240px) !important; }
     .sgn-self-grid > div:last-child { width: 100%; text-align: left; }
     .sgn-stl-grid  { grid-template-columns: 1fr !important; }
+    .sgn-skill-grid { grid-template-columns: 1fr !important; }
     /* App hero: l'icona e il blocco testo restano in riga, il bottone
        INSTALLA va a capo a tutta larghezza (flex-wrap nel componente). */
     /* App body su mobile: NIENTE scroll interno alla pagina (richiesta esplicita).
@@ -3536,6 +3537,11 @@ function VideoPreview({ youtubeId, playlistId, title }) {
           transform: 'translate(-50%, -50%) scale(1.02)',
           width: 'max(100%, calc(100cqh * 16 / 9))',
           height: 'max(100%, calc(100cqw * 9 / 16))',
+          // Annulla il clamp globale (.sgn-page iframe{max-w/h:100%}): il cover
+          // DEVE poter sforare il contenitore, sennò l'iframe prende l'aspect
+          // della cella e YouTube (16:9) mostra le bande nere. overflow:hidden
+          // del wrapper ritaglia l'eccesso.
+          maxWidth: 'none', maxHeight: 'none',
           border: 0, display: 'block',
           pointerEvents: 'none',
           opacity: loaded ? 1 : 0,
@@ -3831,13 +3837,13 @@ function AppPage({ app, lang }) {
         {/* sinistra: descrizione + features */}
         <div className="sgn-app-textcol sgn-stl-scroll" style={{
           minHeight: 0, overflowY: 'auto',
-          display: 'flex', flexDirection: 'column', gap: 'clamp(14px, 1.8vh, 20px)',
+          display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 3.4vh, 40px)',
           paddingRight: 6, paddingBottom: 2,
           WebkitMaskImage: 'linear-gradient(to bottom, #000 calc(100% - 18px), transparent)',
           maskImage: 'linear-gradient(to bottom, #000 calc(100% - 18px), transparent)',
         }}>
           <div className="sgn-app-about">
-            <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 6 }}>
+            <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 10 }}>
               {lang === 'it' ? 'DESCRIZIONE' : 'ABOUT'}
             </Label>
             <p style={{
@@ -3848,12 +3854,12 @@ function AppPage({ app, lang }) {
           </div>
           {features.length > 0 && (
             <div className="sgn-app-features">
-              <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 8 }}>
+              <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 12 }}>
                 {lang === 'it' ? 'CARATTERISTICHE' : 'FEATURES'}
               </Label>
               <ul style={{
                 listStyle: 'none', margin: 0, padding: 0,
-                display: 'flex', flexDirection: 'column', gap: 7,
+                display: 'flex', flexDirection: 'column', gap: 10,
               }}>
                 {features.map((f, i) => (
                   <li key={i} style={{
@@ -4567,10 +4573,10 @@ function AboutSkillsPage({ L }) {
       display: 'flex', flexDirection: 'column',
       gap: 'clamp(16px, 2.4vh, 26px)',
     }}>
-      <div style={{
+      <div className="sgn-skill-grid" style={{
         flex: 1, minHeight: 0,
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gridTemplateColumns: 'repeat(3, 1fr)',
         gridAutoRows: 'minmax(0, 1fr)',
         gap: 'clamp(14px, 2.2vh, 30px) clamp(20px, 3vw, 48px)',
       }}>
