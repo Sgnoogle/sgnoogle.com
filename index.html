@@ -5159,16 +5159,41 @@ function IdleDisplay({ lang, mobile, focused }) {
             transition: 'opacity 700ms linear 500ms',
             whiteSpace: 'nowrap',
           }}>
-            <span style={{
-              fontSize: 9, color: C.faint,
-              animation: 'sgnBlink 1.4s step-start infinite',
-            }}>↓</span>
-            <span style={{
-              fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
-              fontFamily: 'IBM Plex Mono, monospace',
-            }}>
-              {lang === 'it' ? 'SELEZIONA MODULO' : 'SELECT MODULE'}
-            </span>
+            {/* Mobile: il prompt insegna lo swipe ORIZZONTALE tra i moduli
+                (frecce ←/→ ai lati, shimmer alternato), così smette di
+                impersonare un lockscreen con la freccia verticale. Desktop:
+                resta ↓ "seleziona modulo", che indica la strip di tab sotto. */}
+            {mobile ? (
+              <>
+                <span style={{
+                  fontSize: 10, color: C.faint,
+                  animation: 'sgnBlink 1.4s step-start infinite',
+                }}>←</span>
+                <span style={{
+                  fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
+                  fontFamily: 'IBM Plex Mono, monospace',
+                }}>
+                  {lang === 'it' ? 'SCORRI TRA I MODULI' : 'SWIPE TO BROWSE'}
+                </span>
+                <span style={{
+                  fontSize: 10, color: C.faint,
+                  animation: 'sgnBlink 1.4s step-start infinite', animationDelay: '0.7s',
+                }}>→</span>
+              </>
+            ) : (
+              <>
+                <span style={{
+                  fontSize: 9, color: C.faint,
+                  animation: 'sgnBlink 1.4s step-start infinite',
+                }}>↓</span>
+                <span style={{
+                  fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
+                  fontFamily: 'IBM Plex Mono, monospace',
+                }}>
+                  {lang === 'it' ? 'SELEZIONA MODULO' : 'SELECT MODULE'}
+                </span>
+              </>
+            )}
           </div>
         )}
 
