@@ -1,7 +1,9 @@
 # Cloudflare Pages response headers.
-# Static brand assets change rarely → cache a long time.
-/assets/*
-  Cache-Control: public, max-age=2592000
+# Keep HTML fresh, cache static assets aggressively, and add lightweight security headers.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
 
 # HTML must revalidate so deploys reach returning visitors immediately.
 /
@@ -10,3 +12,15 @@
   Cache-Control: public, max-age=0, must-revalidate
 /sgnoogle.html
   Cache-Control: public, max-age=0, must-revalidate
+
+# Static brand/media assets change rarely. File names should change when assets change.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# PWA/search helper files can be cached briefly, but should update within a day.
+/site.webmanifest
+  Cache-Control: public, max-age=86400
+/robots.txt
+  Cache-Control: public, max-age=86400
+/sitemap.xml
+  Cache-Control: public, max-age=86400
