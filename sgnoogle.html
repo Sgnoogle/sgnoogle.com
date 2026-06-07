@@ -1376,12 +1376,12 @@ const I18N = {
     self: {
       sub: 'Chi sono, come lavoro, dove trovarmi.',
       realName: 'Francesco Sgnaolin',
-      classTag: 'CLASSE',
-      classVal: 'TECH CREATOR',
-      origin: 'BASE',
-      originVal: 'ITALIA',
-      since: 'DAL',
-      sinceVal: String(CHANNEL.startYear),
+      classTag: 'OUTPUT',
+      classVal: 'VIDEOS',
+      origin: 'TOOLS',
+      originVal: 'APPS',
+      since: 'SYSTEM',
+      sinceVal: BRAND.os,
       skillsLabel: 'SKILL TREE',
       contactLabel: 'CONTATTI',
       bio: 'Storie, idee e making in italiano dal 2013. Studio minimal, monitor gialli, telaio metallico. Zero filler. Solo quello che serve, ben fatto.',
@@ -1488,12 +1488,12 @@ const I18N = {
     self: {
       sub: 'Who I am, how I work, where to find me.',
       realName: 'Francesco Sgnaolin',
-      classTag: 'CLASS',
-      classVal: 'TECH CREATOR',
-      origin: 'BASED',
-      originVal: 'ITALY',
-      since: 'SINCE',
-      sinceVal: String(CHANNEL.startYear),
+      classTag: 'OUTPUT',
+      classVal: 'VIDEOS',
+      origin: 'TOOLS',
+      originVal: 'APPS',
+      since: 'SYSTEM',
+      sinceVal: BRAND.os,
       skillsLabel: 'SKILL TREE',
       contactLabel: 'CONTACT',
       bio: 'Stories, ideas and making in Italian since 2013. Minimal studio, yellow monitors, metal ceiling rig. Zero filler. Only what\'s needed, done well.',
@@ -5135,7 +5135,27 @@ function IdleDisplay({ lang, mobile, focused }) {
           <span style={{ color: C.yellow }}>SGN</span>OOGLE
         </h1>
 
-        {!preview && <LiveBadge armed={armed} dimmed={idleMode}/>}
+        {!preview && (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            gap: 'clamp(5px, 0.8vh, 8px)',
+          }}>
+            <LiveBadge armed={armed} dimmed={idleMode}/>
+            <div style={{
+              fontFamily: 'IBM Plex Mono, monospace',
+              fontSize: 'clamp(7px, 2vw, 10px)',
+              fontWeight: 700,
+              letterSpacing: 'clamp(0.12em, 0.55vw, 0.24em)',
+              lineHeight: 1,
+              color: C.faint,
+              opacity: armed ? (idleMode ? 0.28 : 0.72) : 0,
+              transform: armed ? 'translateY(0)' : 'translateY(6px)',
+              transition: 'opacity 600ms linear 760ms, transform 600ms cubic-bezier(0.2,0,0,1) 760ms',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+            }}>VIDEOS · APPS · OBJECTS · EXPERIMENTS</div>
+          </div>
+        )}
 
         {!preview && (
           <div aria-hidden style={{
