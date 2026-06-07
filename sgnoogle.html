@@ -6278,9 +6278,8 @@ Object.assign(window, { LangPopover });
 <script type="text/babel">
 /* Crosshair cursor — desktop only.
    Only mounts when (hover: hover) AND (pointer: fine) — never on touch / mobile.
-   Renders a yellow + that follows the mouse, expands to a target bracket
-   on hover over interactive elements. Plays a discreet "tick" on press
-   when audio is enabled. */
+   Hairline geometric sight: quiet cross at rest, sharp corner/tick marks on
+   hover. No heavy ring; the target state stays delicate and technical. */
 
 function Cursor({ enabled = true, sound }) {
   const [pos, setPos] = React.useState({ x: -100, y: -100 });
@@ -6369,9 +6368,9 @@ function Cursor({ enabled = true, sound }) {
 
   if (!active || !visible) return null;
 
-  const size = hot ? 28 : 18;
-  const stroke = hot ? 1.5 : 1;
-  const opacity = pressed ? 0.55 : 1;
+  const size = hot ? 26 : 18;
+  const stroke = hot ? 1.15 : 0.95;
+  const opacity = pressed ? 0.62 : 1;
 
   return (
     <div
@@ -6390,27 +6389,27 @@ function Cursor({ enabled = true, sound }) {
       className="sgn-cursor"
     >
       {hot ? (
-        <svg viewBox="0 0 28 28" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-          <g stroke="#FFC200" strokeWidth={stroke} fill="none">
-            {/* corner brackets — gaming target */}
-            <path d="M 1 6 L 1 1 L 6 1"/>
-            <path d="M 22 1 L 27 1 L 27 6"/>
-            <path d="M 27 22 L 27 27 L 22 27"/>
-            <path d="M 6 27 L 1 27 L 1 22"/>
-            <circle cx="14" cy="14" r="9.5" opacity="0.34" style={{ animation: 'sgnpulse 900ms linear infinite' }}/>
-            <path d="M 14 4.5 L 14 8 M 14 20 L 14 23.5 M 4.5 14 L 8 14 M 20 14 L 23.5 14" opacity="0.75"/>
+        <svg viewBox="0 0 26 26" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+          <g stroke="#FFC200" strokeWidth={stroke} fill="none" strokeLinecap="square" strokeLinejoin="miter">
+            {/* corner blades — geometric target, no heavy ring */}
+            <path d="M 2 7 L 2 2 L 7 2"/>
+            <path d="M 19 2 L 24 2 L 24 7"/>
+            <path d="M 24 19 L 24 24 L 19 24"/>
+            <path d="M 7 24 L 2 24 L 2 19"/>
+            {/* micro alignment ticks */}
+            <path d="M 13 4.5 L 13 7.2 M 13 18.8 L 13 21.5 M 4.5 13 L 7.2 13 M 18.8 13 L 21.5 13" opacity="0.72"/>
+            <path d="M 11.4 13 L 13 11.4 L 14.6 13 L 13 14.6 Z" opacity="0.9"/>
           </g>
-          <circle cx="14" cy="14" r={pressed ? 2.3 : 1.6} fill="#FFC200"/>
         </svg>
       ) : (
         <svg viewBox="0 0 18 18" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-          <g stroke="#FFC200" strokeWidth={stroke} fill="none">
-            <line x1="9" y1="1" x2="9" y2="6.5"/>
-            <line x1="9" y1="11.5" x2="9" y2="17"/>
-            <line x1="1" y1="9" x2="6.5" y2="9"/>
-            <line x1="11.5" y1="9" x2="17" y2="9"/>
+          <g stroke="#FFC200" strokeWidth={stroke} fill="none" strokeLinecap="square">
+            <line x1="9" y1="1.5" x2="9" y2="6"/>
+            <line x1="9" y1="12" x2="9" y2="16.5"/>
+            <line x1="1.5" y1="9" x2="6" y2="9"/>
+            <line x1="12" y1="9" x2="16.5" y2="9"/>
+            <path d="M 8.2 9 L 9 8.2 L 9.8 9 L 9 9.8 Z" opacity="0.86"/>
           </g>
-          <circle cx="9" cy="9" r="1" fill="#FFC200"/>
         </svg>
       )}
     </div>
