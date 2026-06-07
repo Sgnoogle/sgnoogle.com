@@ -1591,9 +1591,8 @@ const VIDEOS = [
     youtubeId: '4g1rF1OsKdY', url: 'https://www.youtube.com/watch?v=4g1rF1OsKdY' },
 ];
 
-/* OBJECTS — placeholder STL sheets. Replace mat/desc/link when real STL
-   files land in /assets/models/. Until then the viewer renders a procedural
-   geometry keyed off `id` so each entry still feels distinct. */
+/* OBJECTS — modelli STL reali in /assets/models/. Le voci con `real: true`
+   vengono caricate via THREE.STLLoader; altrimenti fallback procedurale. */
 const OBJECTS = [
   { id: '01', name: 'CMF GameBoy Slide', file: 'topslide.stl', real: true, mat: 'PLA · Bambu A1', setup: '0.20mm · 15%', units: 'mm (1:1)',
     desc: { it: 'Modulo Game Boy per CMF Phone 1/2 Pro. Meccanismo a scorrimento superiore con pulsante fisico integrato.', en: 'Game Boy module for CMF Phone 1/2 Pro. Top sliding mechanism with integrated physical button.' },
@@ -2474,7 +2473,9 @@ function STLLab({ lang }) {
     try { return window.matchMedia('(pointer: coarse)').matches; } catch (e) { return false; }
   }, []);
 
-  // Wait for THREE (loaded as static script in <head>). Timeout ~10s → errore.
+  // Wait for THREE (loaded as static script in <head>). Se dopo ~10s non è
+  // ancora disponibile (CDN giù/bloccato), esci dal polling e mostra un errore
+  // invece di restare su "LOADING" all'infinito.
   React.useEffect(() => {
     if (ready) return undefined;
     let cancelled = false;
@@ -2571,7 +2572,7 @@ function STLLab({ lang }) {
     };
     const onUp = () => { if (dragging) { dragging = false; scheduleResume(); } };
 
-    // Rotazione da tastiera: frecce orbitano (il mount è focusabile).
+    // Rotazione da tastiera: frecce orbitano, +/- ... (il mount è focusabile).
     const onKey = (e) => {
       const step = 0.18;
       let handled = true;
@@ -2729,6 +2730,7 @@ function STLLab({ lang }) {
     const obj = OBJECTS.find(o => o.id === currentId);
 
     if (obj?.real && THREE.STLLoader) {
+      // Phase 2: load real STL file
       let cancelled = false;
       const loader = new THREE.STLLoader();
       const fillMat = new THREE.MeshLambertMaterial({ color: 0xEDB200 }); // ambra brand leggermente smorzato per il 3D (meno flashy del giallo #FFC200)
@@ -2751,6 +2753,7 @@ function STLLab({ lang }) {
           const group = new THREE.Group();
           group.add(mesh);
           group.add(lines);
+          // Scale to fit ~180 units (geometria già centrata sull'origine)
           const box3   = new THREE.Box3().setFromObject(group);
           const size   = box3.getSize(new THREE.Vector3());
           const maxDim = Math.max(size.x, size.y, size.z);
@@ -5852,7 +5855,9 @@ Object.assign(window, { TopBar, IdleDisplay, ModuleTab, ModuleStrip,
 
 <script type="text/babel">
 /* TapToStart — stessa estetica del BootScreen (sfondo paper, logo, barra
-   vuota), ma statica. Un tap sblocca l'AudioContext e avvia il boot. */
+   vuota), ma statica. Un tap sblocca l'AudioContext e avvia il boot.
+   Niente fade-out: onStart() è sincrono così non c'è mai un frame
+   in cui né TapToStart né BootScreen sono visibili. */
 
 function TapToStart({ lang = 'it', onStart, sound }) {
   const SEGMENTS = 24;
