@@ -24,3 +24,7 @@
   Cache-Control: public, max-age=86400
 /sitemap.xml
   Cache-Control: public, max-age=86400
+
+# YouTube proxy JSON is cached at the edge but refreshed often.
+/api/youtube
+  Cache-Control: public, max-age=300, s-maxage=900, stale-while-revalidate=3600
