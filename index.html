@@ -2546,6 +2546,39 @@ function loadThreeSTL() {
   return sgnThreePromise;
 }
 
+const sgnSTLGeometryCache = new Map();
+const sgnSTLGeometryPath = (obj) => obj?.file ? `/assets/models/${obj.file}` : '';
+function ensureSTLGeometry(THREE, obj) {
+  const path = sgnSTLGeometryPath(obj);
+  if (!path || !THREE?.STLLoader) return Promise.reject(new Error('STL_NOT_AVAILABLE'));
+  const cached = sgnSTLGeometryCache.get(path);
+  if (cached?.geometry) return Promise.resolve(cached.geometry);
+  if (cached?.promise) return cached.promise;
+  const loader = new THREE.STLLoader();
+  const promise = new Promise((resolve, reject) => {
+    loader.load(path, (geometry) => {
+      geometry.center();
+      geometry.computeVertexNormals();
+      sgnSTLGeometryCache.set(path, { geometry });
+      resolve(geometry);
+    }, undefined, reject);
+  });
+  sgnSTLGeometryCache.set(path, { promise });
+  return promise;
+}
+function loadCachedSTLGeometry(THREE, obj) {
+  return ensureSTLGeometry(THREE, obj).then(g => g.clone());
+}
+function hasCachedSTLGeometry(obj) {
+  return !!sgnSTLGeometryCache.get(sgnSTLGeometryPath(obj))?.geometry;
+}
+function preloadAllSTLGeometries(THREE) {
+  if (!THREE?.STLLoader) return;
+  OBJECTS.filter(o => o.real && o.file).forEach(o => {
+    ensureSTLGeometry(THREE, o).catch(() => {});
+  });
+}
+
 function STLLab({ lang }) {
   const mountRef = React.useRef(null);
   const stateRef = React.useRef(null);
@@ -2579,6 +2612,14 @@ function STLLab({ lang }) {
     const t = setTimeout(() => { if (!cancelled && !window.THREE?.STLLoader) setLoadError(true); }, 10000);
     return () => { cancelled = true; clearTimeout(t); };
   }, [viewerRequested, ready]);
+
+  // Dopo il primo boot del viewer, scaldiamo in background tutti gli STL:
+  // il primo modello può ancora mostrare LOADING, ma i cambi successivi usano
+  // geometrie già in cache e possono transizionare senza nuovo gate visivo.
+  React.useEffect(() => {
+    if (!ready || !window.THREE?.STLLoader) return;
+    preloadAllSTLGeometries(window.THREE);
+  }, [ready]);
 
   // Scene setup + interaction loop — runs once when THREE is ready.
   React.useEffect(() => {
@@ -2800,106 +2841,126 @@ function STLLab({ lang }) {
 
   // Swap geometry when currentId changes
   React.useEffect(() => {
-    if (!stateRef.current) return;
+    if (!stateRef.current) return undefined;
     const { THREE, holder } = stateRef.current;
+    let cancelled = false;
 
     // Nuovo modello selezionato → riparte subito la rotazione automatica.
     spinRef.current.autoSpin = true;
-    // Mostra il LOADING finché il (nuovo) modello non è davvero in scena.
-    setModelReady(false);
-
-    // Clear previous children
-    while (holder.children.length) {
-      const c = holder.children[0];
-      holder.remove(c);
-      c.geometry?.dispose?.();
-      if (c.material) {
-        if (Array.isArray(c.material)) c.material.forEach(m => m.dispose());
-        else c.material.dispose?.();
-      }
-    }
 
     const obj = OBJECTS.find(o => o.id === currentId);
-
-    if (obj?.real && THREE.STLLoader) {
-      // Phase 2: load real STL file
-      let cancelled = false;
-      const loader = new THREE.STLLoader();
-      const reduceRevealMotion = (() => {
-        try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
-      })();
-      const revealModel = (group, materials = []) => {
-        if (reduceRevealMotion) {
-          materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
-          setModelReady(true);
-          return;
-        }
-        const start = performance.now();
-        const duration = 560;
-        const finalScale = group.scale.x || 1;
-        const startScale = finalScale * 0.965;
-        group.scale.setScalar(startScale);
-        materials.forEach(m => { if (m) { m.transparent = true; m.opacity = 0; } });
-        setModelReady(true);
-        const ease = t => 1 - Math.pow(1 - t, 3);
-        const tick = (now) => {
-          if (cancelled) return;
-          const p = Math.min(1, (now - start) / duration);
-          const e = ease(p);
-          group.scale.setScalar(startScale + (finalScale - startScale) * e);
-          materials.forEach(m => { if (m) m.opacity = e; });
-          if (p < 1) requestAnimationFrame(tick);
-          else materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
-        };
-        requestAnimationFrame(tick);
+    const previous = holder.children.slice();
+    const reduceRevealMotion = (() => {
+      try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+    })();
+    const collectMaterials = (group) => {
+      const mats = [];
+      group.traverse?.(o => {
+        if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => mats.push(m));
+      });
+      return mats;
+    };
+    const disposeGroup = (group) => {
+      group.traverse?.(o => {
+        o.geometry?.dispose?.();
+        if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m?.dispose?.());
+      });
+    };
+    const removeGroup = (group) => {
+      if (group.parent === holder) holder.remove(group);
+      disposeGroup(group);
+    };
+    const fadeOutGroup = (group) => {
+      if (reduceRevealMotion) { removeGroup(group); return; }
+      const mats = collectMaterials(group);
+      mats.forEach(m => { if (m) m.transparent = true; });
+      const start = performance.now();
+      const duration = 220;
+      const initialScale = group.scale.x || 1;
+      const targetScale = initialScale * 0.985;
+      const ease = t => 1 - Math.pow(1 - t, 3);
+      const tick = (now) => {
+        if (!group.parent) return;
+        const p = Math.min(1, (now - start) / duration);
+        const e = ease(p);
+        group.scale.setScalar(initialScale + (targetScale - initialScale) * e);
+        mats.forEach(m => { if (m) m.opacity = 1 - e; });
+        if (p < 1) requestAnimationFrame(tick);
+        else removeGroup(group);
       };
+      requestAnimationFrame(tick);
+    };
+    const revealModel = (group, materials = []) => {
+      if (reduceRevealMotion) {
+        materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
+        setModelReady(true);
+        return;
+      }
+      const start = performance.now();
+      const duration = 560;
+      const finalScale = group.scale.x || 1;
+      const startScale = finalScale * 0.965;
+      group.scale.setScalar(startScale);
+      materials.forEach(m => { if (m) { m.transparent = true; m.opacity = 0; } });
+      setModelReady(true);
+      const ease = t => 1 - Math.pow(1 - t, 3);
+      const tick = (now) => {
+        if (cancelled || !group.parent) return;
+        const p = Math.min(1, (now - start) / duration);
+        const e = ease(p);
+        group.scale.setScalar(startScale + (finalScale - startScale) * e);
+        materials.forEach(m => { if (m) m.opacity = e; });
+        if (p < 1) requestAnimationFrame(tick);
+        else materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
+      };
+      requestAnimationFrame(tick);
+    };
+    const buildSTLGroup = (geometry) => {
       const fillMat = new THREE.MeshLambertMaterial({ color: 0xEDB200, transparent: true, opacity: 0 }); // ambra brand leggermente smorzato per il 3D (meno flashy del giallo #FFC200)
       const edgeMat = new THREE.LineBasicMaterial({ color: 0x28282C, linewidth: 1, transparent: true, opacity: 0 });
+      const mesh  = new THREE.Mesh(geometry, fillMat);
+      const edges = new THREE.EdgesGeometry(geometry, 15);
+      const lines = new THREE.LineSegments(edges, edgeMat);
+      const group = new THREE.Group();
+      group.add(mesh);
+      group.add(lines);
+      // Scale to fit ~180 units (geometria già centrata sull'origine)
+      const box3   = new THREE.Box3().setFromObject(group);
+      const size   = box3.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      if (maxDim > 0) group.scale.setScalar(180 / maxDim);
+      return { group, materials: [fillMat, edgeMat] };
+    };
 
-      loader.load(
-        `/assets/models/${obj.file}`,
-        (geometry) => {
-          if (cancelled) return;
-          // Centra la GEOMETRIA all'origine PRIMA di scalare: gli STL di
-          // MakerWorld hanno spesso l'origine in un angolo / sul piano di
-          // stampa. Centrare la geometria (non la posizione del gruppo) fa sì
-          // che lo scaling avvenga attorno al baricentro → il modello resta
-          // al centro del piano e ruota su se stesso.
-          geometry.center();
-          geometry.computeVertexNormals();
-          const mesh  = new THREE.Mesh(geometry, fillMat);
-          const edges = new THREE.EdgesGeometry(geometry, 15);
-          const lines = new THREE.LineSegments(edges, edgeMat);
-          const group = new THREE.Group();
-          group.add(mesh);
-          group.add(lines);
-          // Scale to fit ~180 units (geometria già centrata sull'origine)
-          const box3   = new THREE.Box3().setFromObject(group);
-          const size   = box3.getSize(new THREE.Vector3());
-          const maxDim = Math.max(size.x, size.y, size.z);
-          if (maxDim > 0) group.scale.setScalar(180 / maxDim);
+    previous.forEach(fadeOutGroup);
+    // Dopo il preload iniziale, il cambio modello non deve più mostrare LOADING:
+    // il vecchio oggetto fa fade-out mentre quello nuovo entra. Se il modello non
+    // è ancora in cache, lasciamo comunque il precedente in uscita e mostriamo il
+    // gate solo se non c'è nulla in scena (primo load / rete lenta).
+    setModelReady(previous.length > 0 || (obj?.real && hasCachedSTLGeometry(obj)));
+
+    if (obj?.real && THREE.STLLoader) {
+      loadCachedSTLGeometry(THREE, obj)
+        .then((geometry) => {
+          if (cancelled) { geometry.dispose?.(); return; }
+          const { group, materials } = buildSTLGroup(geometry);
           holder.add(group);
-          revealModel(group, [fillMat, edgeMat]);
-        },
-        undefined,
-        () => {
+          revealModel(group, materials);
+        })
+        .catch(() => {
           if (!cancelled) {
             const fallback = buildProceduralModel(THREE, currentId);
             holder.add(fallback);
-            const mats = [];
-            fallback.traverse?.(o => {
-              if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => mats.push(m));
-            });
-            revealModel(fallback, mats);
+            revealModel(fallback, collectMaterials(fallback));
           }
-        }
-      );
+        });
       return () => { cancelled = true; };
     }
 
     const fallback = buildProceduralModel(THREE, currentId);
     holder.add(fallback);
-    setModelReady(true);
+    revealModel(fallback, collectMaterials(fallback));
+    return () => { cancelled = true; };
   }, [currentId, ready, booted]);
 
   return (
