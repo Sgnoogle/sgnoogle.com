@@ -1165,6 +1165,10 @@ body {
     margin-left: 0.08em;
     animation: sgnModuleCursor 1s steps(1) infinite;
   }
+  @media (max-width: 760px) {
+    .sgn-home-module-cycle { min-width: 0; }
+    .sgn-home-module-cycle__word { min-width: 0; }
+  }
   @keyframes sgnModuleCursor { 0%, 48% { opacity: 1; } 50%, 100% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
     .sgn-home-module-cycle { min-width: auto; }
