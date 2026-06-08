@@ -850,10 +850,13 @@ body {
       gap: 0 !important;
     }
     .sgn-feat-vid-col {
+      display: none !important;
+    }
+    .sgn-feat-inline-vid-col {
+      display: flex !important;
       min-height: 0 !important;
       box-sizing: border-box !important;
-      padding: clamp(8px, 1.1vh, 12px) clamp(12px, 3.5vw, 16px) clamp(12px, 1.8vh, 16px) !important;
-      border-top: none !important;
+      padding: clamp(6px, 0.9vh, 10px) 0 clamp(4px, 0.65vh, 8px) !important;
       align-items: center !important;
       justify-content: center !important;
     }
@@ -3656,6 +3659,23 @@ function FeaturedVideo({ v, L, lang }) {
   const displayDate  = meta ? fmtPubDate(meta.publishedAt, lang) : null;
 
   const displayDescription = meta?.description || v.description?.[lang] || v.description?.it || '';
+  const videoHref = meta?.videoId
+    ? `https://www.youtube.com/watch?v=${meta.videoId}`
+    : 'https://www.youtube.com/c/FrancescoSgnaolin/videos';
+
+  const renderFeaturedMedia = () => (
+    <div className="sgn-feat-vid" style={{
+      position: 'relative', width: '100%', height: '100%',
+      overflow: 'hidden',
+    }}>
+      {v.youtubeId || v.playlistId || meta?.videoId
+        ? <VideoPreview
+            youtubeId={meta?.videoId || v.youtubeId}
+            playlistId={meta?.videoId ? undefined : v.playlistId}
+            title={displayTitle}/>
+        : <VideoArt v={v} big fill/>}
+    </div>
+  );
 
   return (
     <div ref={ref} className="sgn-card-hover sgn-card-hover--media sgn-featured" style={{
@@ -3675,19 +3695,9 @@ function FeaturedVideo({ v, L, lang }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         {/* Desktop: il player riempie la colonna A FILO della cornice (è già
-           cover → nessuna banda). Su mobile l'override @media lo riporta a
-           18:9 in riga auto, anch'esso flush. Niente più "cornice esterna". */}
-        <div className="sgn-feat-vid" style={{
-          position: 'relative', width: '100%', height: '100%',
-          overflow: 'hidden',
-        }}>
-          {v.youtubeId || v.playlistId || meta?.videoId
-            ? <VideoPreview
-                youtubeId={meta?.videoId || v.youtubeId}
-                playlistId={meta?.videoId ? undefined : v.playlistId}
-                title={displayTitle}/>
-            : <VideoArt v={v} big fill/>}
-        </div>
+           cover → nessuna banda). Su mobile l'override lo sposta nel flusso
+           editoriale, subito sotto titolo/meta, mantenendo il 18:9 reale. */}
+        {renderFeaturedMedia()}
       </div>
 
       {/* INFO: desktop col2 | mobile row2. Pannello editoriale: badge, titolo,
@@ -3713,6 +3723,13 @@ function FeaturedVideo({ v, L, lang }) {
           <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
             FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ''}
           </Label>
+        </div>
+
+        <div className="sgn-feat-inline-vid-col" style={{
+          display: 'none', minHeight: 0, boxSizing: 'border-box',
+          alignItems: 'center', justifyContent: 'center',
+        }}>
+          {renderFeaturedMedia()}
         </div>
 
         {displayDescription && (
@@ -3768,7 +3785,7 @@ function FeaturedVideo({ v, L, lang }) {
         <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(8px, 1.2vh, 14px)' }}>
           {!meta && <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>}
           <CTA
-            href="https://www.youtube.com/c/FrancescoSgnaolin/videos"
+            href={videoHref}
             target="_blank"
             size="sm"
             className="sgn-feat-cta"
