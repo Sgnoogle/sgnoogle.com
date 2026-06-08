@@ -92,8 +92,14 @@ until ready. Loading rules learned the hard way:
   tradeoff the owner has accepted — do NOT suggest migrating to esbuild /
   precompiled JSX / React production builds. The big perf win (the 2.4MB inline
   avatar) is already done.
-- **YouTube API key** is restricted by HTTP referrer in Google Cloud Console.
-  Leave the hardcoded key as-is unless asked; no Cloudflare proxy needed.
+- **YouTube API key / Video module: keep the browser-side key flow.** The key is
+  restricted by HTTP referrer in Google Cloud Console to `sgnoogle.com`, so it
+  must stay in the client where the browser sends the allowed referrer. Do not
+  move video sync back to `/api/youtube`, RSS, username/handle search, or any
+  loose channel resolver. The Video module must call YouTube Data API v3
+  directly with the hardcoded `YT_API_KEY`, `CHANNEL_ID =
+  UCO_SA_eFRJbVyfqWV8BKzCQ`, and `UPLOADS_PID =
+  UUO_SA_eFRJbVyfqWV8BKzCQ`, and must reject items from other channel IDs.
 - Avatar is an external lazy WebP at `/assets/avatar-real.webp` (no longer
   inlined as base64). Favicon/OG art live in `/assets/` (favicon.svg/png,
   apple-touch-icon.png, og-image.jpg) and are generated from the F-monogram.

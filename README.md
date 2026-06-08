@@ -23,3 +23,11 @@ The design medium is **HTML/CSS/JS** — these are prototypes, not production co
 - `README.md` — this file
 - `chats/` — conversation transcripts (read these!)
 - `project/` — the `Sgnaolin Design System` project files (HTML prototypes, assets, components)
+
+## SGNOOGLE production rules for future agents
+
+- The live site is deployed from `index.html`; keep `sgnoogle.html` byte-for-byte in sync whenever `index.html` changes.
+- Every code/content change must be committed and pushed to `main`, because Cloudflare Pages deploys from `main`.
+- **YouTube video sync must keep using the browser-side YouTube Data API key that is restricted in Google Cloud to `sgnoogle.com`.** Do not move the Video module back to a Cloudflare/server proxy, RSS fallback, handle search, username search, or any other loose resolver. The key is intended to be present in the client for HTTP-referrer restrictions to work.
+- The Video module must read the fixed Francesco Sgnaolin channel/upload IDs only: `CHANNEL_ID = UCO_SA_eFRJbVyfqWV8BKzCQ` and `UPLOADS_PID = UUO_SA_eFRJbVyfqWV8BKzCQ`. Reject data from any other channel ID.
+- If the YouTube feed breaks, restore/repair the direct browser calls to `https://www.googleapis.com/youtube/v3/playlistItems` and `https://www.googleapis.com/youtube/v3/videos` before trying architectural changes.
