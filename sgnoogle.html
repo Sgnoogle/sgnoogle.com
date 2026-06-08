@@ -842,20 +842,23 @@ body {
     .sgn-featured {
       grid-template-areas: "info" "vid" !important;
       grid-template-columns: 1fr !important;
-      grid-template-rows: auto auto !important;
-      align-content: start !important;
-      flex: 0 0 auto !important;
-      height: auto !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      align-content: stretch !important;
+      flex: 1 1 auto !important;
+      height: 100% !important;
       max-height: 100% !important;
       gap: 0 !important;
     }
     .sgn-feat-vid-col {
       min-height: 0 !important;
       box-sizing: border-box !important;
-      padding: 0 clamp(12px, 3.5vw, 16px) clamp(14px, 2.2vh, 20px) !important;
+      padding: clamp(18px, 3.2vh, 42px) clamp(12px, 3.5vw, 16px) clamp(14px, 2.2vh, 20px) !important;
       border-top: none !important;
+      align-items: flex-end !important;
+      justify-content: center !important;
     }
     .sgn-feat-vid {
+      flex: 0 0 auto !important;
       height: auto !important;
       width: 100% !important;
       aspect-ratio: 18 / 9 !important;
