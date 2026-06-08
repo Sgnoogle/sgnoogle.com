@@ -1,8 +1,6 @@
-const DEFAULT_CHANNEL_ID = 'UCO_SA_eFRJbVyfqWV8BKzCQ';
-const DEFAULT_HANDLE = '@sgnoogle';
-const DEFAULT_USERNAME = 'FrancescoSgnaolin';
-const DEFAULT_CHANNEL_TITLE = 'Francesco Sgnaolin';
-const DEFAULT_UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ';
+const CHANNEL_ID = 'UCO_SA_eFRJbVyfqWV8BKzCQ';
+const UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ';
+const CHANNEL_TITLE = 'Francesco Sgnaolin';
 const MAX_RESULTS = '13';
 
 const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.stringify(body), {
@@ -31,180 +29,32 @@ const bestThumb = (thumbs = {}) => (
   thumbs.maxres?.url || thumbs.standard?.url || thumbs.high?.url || thumbs.medium?.url || thumbs.default?.url || ''
 );
 
-
-const decodeXml = (value = '') => String(value)
-  .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-  .replace(/&amp;/g, '&')
-  .replace(/&quot;/g, '"')
-  .replace(/&#39;|&apos;/g, "'")
-  .replace(/&lt;/g, '<')
-  .replace(/&gt;/g, '>');
-
-const pickXml = (xml, tag) => {
-  const m = String(xml).match(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`));
-  return decodeXml(m?.[1] || '');
-};
-
-const pickAttr = (xml, tag, attr) => {
-  const m = String(xml).match(new RegExp(`<${tag}[^>]*\\s${attr}="([^"]*)"`, 'i'));
-  return decodeXml(m?.[1] || '');
-};
-
-const fetchRssXml = async (params) => {
-  const url = new URL('https://www.youtube.com/feeds/videos.xml');
-  url.search = new URLSearchParams(params).toString();
-  const res = await fetch(url.toString(), { cf: { cacheTtl: 900, cacheEverything: true } });
-  if (!res.ok) {
-    const err = new Error(`YOUTUBE_RSS_${res.status}`);
-    err.status = res.status;
-    throw err;
-  }
-  return res.text();
-};
-
-const fetchRssUploads = async (channelId = DEFAULT_CHANNEL_ID, username = DEFAULT_USERNAME) => {
-  let xml = '';
-  let source = '';
-  try {
-    xml = await fetchRssXml({ user: username });
-    source = `user:${username}`;
-  } catch (err) {
-    xml = await fetchRssXml({ channel_id: channelId });
-    source = `channel_id:${channelId}`;
-  }
-  const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map((m) => m[1]);
-  const uploads = entries.map((entry) => {
-    const id = pickXml(entry, 'yt:videoId');
-    const title = pickXml(entry, 'title');
-    return {
-      id,
-      youtubeId: id,
-      title,
-      publishedAt: pickXml(entry, 'published'),
-      thumbnail: pickAttr(entry, 'media:thumbnail', 'url') || (id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : ''),
-      cat: 'YOUTUBE',
-      url: id ? `https://www.youtube.com/watch?v=${id}` : '',
-      views: toInt(pickAttr(entry, 'media:statistics', 'views')),
-      likes: 0,
-      duration: '',
-      durationSeconds: 0,
-      description: pickXml(entry, 'media:description'),
-    };
-  }).filter((video) => video.youtubeId && video.title);
-  return { source, uploads };
-};
-
-const rssResponse = async ({ channelId, handle, username, warning } = {}) => {
-  const fallbackId = channelId || DEFAULT_CHANNEL_ID;
-  const feed = await fetchRssUploads(fallbackId, username || DEFAULT_USERNAME);
-  const uploads = feed.uploads;
-  const latest = uploads[0] || null;
-  return json({
-    ok: true,
-    source: 'youtube-rss',
-    rssSource: feed.source,
-    apiKeyConfigured: false,
-    warning,
-    channelId: fallbackId,
-    channelHandle: handle || DEFAULT_HANDLE,
-    channelTitle: DEFAULT_CHANNEL_TITLE,
-    uploadsPlaylistId: fallbackId.replace(/^UC/, 'UU'),
-    fetchedAt: new Date().toISOString(),
-    featured: latest ? {
-      videoId: latest.youtubeId,
-      youtubeId: latest.youtubeId,
-      title: latest.title,
-      publishedAt: latest.publishedAt,
-      views: latest.views,
-      likes: latest.likes,
-      duration: latest.duration,
-      durationSeconds: latest.durationSeconds,
-      description: latest.description,
-      thumbnail: latest.thumbnail,
-      url: latest.url,
-    } : null,
-    uploads: uploads.slice(1, Number(MAX_RESULTS)),
-  });
-};
-
 const apiUrl = (path, params, key) => {
   const url = new URL(`https://www.googleapis.com/youtube/v3/${path}`);
   url.search = new URLSearchParams({ ...params, key }).toString();
   return url.toString();
 };
 
-const fetchJson = async (url) => {
+const fetchJson = async (url, reason) => {
   const res = await fetch(url, { cf: { cacheTtl: 900, cacheEverything: true } });
   if (!res.ok) {
-    const err = new Error(`YOUTUBE_${res.status}`);
+    const err = new Error(`${reason}_${res.status}`);
     err.status = res.status;
     throw err;
   }
   return res.json();
 };
 
-const searchChannelByTitle = async (key, query = DEFAULT_CHANNEL_TITLE) => {
-  const data = await fetchJson(apiUrl('search', {
-    part: 'snippet',
-    type: 'channel',
-    maxResults: '5',
-    q: query,
-  }, key));
-  const items = Array.isArray(data.items) ? data.items : [];
-  const exact = items.find((item) => (item.snippet?.title || '').toLowerCase() === query.toLowerCase()) || items[0];
-  return exact?.snippet?.channelId ? { id: exact.snippet.channelId, snippet: exact.snippet } : null;
-};
-
-const resolveChannel = async (key, handle = DEFAULT_HANDLE, fallbackId = DEFAULT_CHANNEL_ID, username = DEFAULT_USERNAME) => {
-  const byUsername = await fetchJson(apiUrl('channels', {
-    part: 'id,snippet,contentDetails,statistics',
-    forUsername: username,
-  }, key)).catch(() => null);
-  const usernameChannel = Array.isArray(byUsername?.items) && byUsername.items[0]
-    ? byUsername.items[0]
-    : null;
-
-  if (usernameChannel) return { ...usernameChannel, resolvedBy: `forUsername:${username}` };
-
-  const normalizedHandle = handle.startsWith('@') ? handle : `@${handle}`;
-  const byHandle = await fetchJson(apiUrl('channels', {
-    part: 'id,snippet,contentDetails,statistics',
-    forHandle: normalizedHandle,
-  }, key)).catch(() => null);
-  const channel = Array.isArray(byHandle?.items) && byHandle.items[0]
-    ? byHandle.items[0]
-    : null;
-
-  if (channel) return { ...channel, resolvedBy: `forHandle:${normalizedHandle}` };
-
-  const searched = await searchChannelByTitle(key, DEFAULT_CHANNEL_TITLE).catch(() => null);
-  if (searched?.id) {
-    const bySearchId = await fetchJson(apiUrl('channels', {
-      part: 'id,snippet,contentDetails,statistics',
-      id: searched.id,
-    }, key)).catch(() => null);
-    const searchChannel = Array.isArray(bySearchId?.items) && bySearchId.items[0] ? bySearchId.items[0] : null;
-    if (searchChannel) return { ...searchChannel, resolvedBy: `search:${DEFAULT_CHANNEL_TITLE}` };
-  }
-
-  const byId = await fetchJson(apiUrl('channels', {
-    part: 'id,snippet,contentDetails,statistics',
-    id: fallbackId,
-  }, key));
-  const idChannel = Array.isArray(byId.items) ? byId.items[0] : null;
-  return idChannel ? { ...idChannel, resolvedBy: `id:${fallbackId}` } : null;
-};
-
 const mapVideo = (video, playlistItem = {}) => {
   const snippet = video.snippet || playlistItem.snippet || {};
   const stats = video.statistics || {};
   const content = video.contentDetails || {};
-  const id = video.id || playlistItem.snippet?.resourceId?.videoId || '';
+  const id = video.id || playlistItem.contentDetails?.videoId || playlistItem.snippet?.resourceId?.videoId || '';
   return {
     id,
     youtubeId: id,
-    title: snippet.title || '',
-    publishedAt: snippet.publishedAt || playlistItem.snippet?.publishedAt || '',
+    title: snippet.title || playlistItem.snippet?.title || '',
+    publishedAt: snippet.publishedAt || playlistItem.contentDetails?.videoPublishedAt || playlistItem.snippet?.publishedAt || '',
     thumbnail: bestThumb(snippet.thumbnails || playlistItem.snippet?.thumbnails),
     cat: 'YOUTUBE',
     url: `https://www.youtube.com/watch?v=${id}`,
@@ -213,57 +63,72 @@ const mapVideo = (video, playlistItem = {}) => {
     duration: content.duration || '',
     durationSeconds: isoDurationToSeconds(content.duration),
     description: snippet.description || '',
+    channelId: snippet.channelId || CHANNEL_ID,
+    channelTitle: snippet.channelTitle || playlistItem.snippet?.channelTitle || CHANNEL_TITLE,
   };
 };
 
 export async function onRequestGet({ env }) {
   const key = env.YOUTUBE_API_KEY || env.YT_API_KEY;
-  const handle = env.YOUTUBE_CHANNEL_HANDLE || DEFAULT_HANDLE;
-  const fallbackId = env.YOUTUBE_CHANNEL_ID || DEFAULT_CHANNEL_ID;
-  const username = env.YOUTUBE_CHANNEL_USERNAME || DEFAULT_USERNAME;
   if (!key) {
-    try {
-      return await rssResponse({ channelId: fallbackId, handle, username, warning: 'YOUTUBE_API_KEY_NOT_CONFIGURED' });
-    } catch (err) {
-      return json({
-        ok: false,
-        reason: 'YOUTUBE_API_KEY_NOT_CONFIGURED_AND_RSS_FAILED',
-        detail: err?.message || String(err),
-        acceptedEnv: ['YOUTUBE_API_KEY', 'YT_API_KEY'],
-        channelHandle: handle,
-        channelTitle: DEFAULT_CHANNEL_TITLE,
-        channelId: fallbackId,
-      }, 503);
-    }
+    return json({
+      ok: false,
+      reason: 'YOUTUBE_API_KEY_NOT_CONFIGURED',
+      acceptedEnv: ['YOUTUBE_API_KEY', 'YT_API_KEY'],
+      channelId: CHANNEL_ID,
+      channelTitle: CHANNEL_TITLE,
+      uploadsPlaylistId: UPLOADS_PID,
+    }, 503);
   }
 
   try {
-    const channel = await resolveChannel(key, handle, fallbackId, username);
-    const uploadsPlaylistId = channel?.contentDetails?.relatedPlaylists?.uploads || DEFAULT_UPLOADS_PID;
-    if (!uploadsPlaylistId) {
-      return json({ ok: false, reason: 'UPLOADS_PLAYLIST_NOT_FOUND', channelHandle: handle, channelId: channel?.id || fallbackId }, 502);
+    const channelData = await fetchJson(apiUrl('channels', {
+      part: 'snippet,contentDetails,statistics',
+      id: CHANNEL_ID,
+    }, key), 'CHANNEL_FETCH_FAILED');
+    const channel = Array.isArray(channelData.items) ? channelData.items[0] : null;
+    const uploadsPlaylistId = channel?.contentDetails?.relatedPlaylists?.uploads || UPLOADS_PID;
+
+    if (uploadsPlaylistId !== UPLOADS_PID) {
+      return json({
+        ok: false,
+        reason: 'UPLOADS_PLAYLIST_MISMATCH',
+        channelId: CHANNEL_ID,
+        channelTitle: channel?.snippet?.title || CHANNEL_TITLE,
+        expectedUploadsPlaylistId: UPLOADS_PID,
+        receivedUploadsPlaylistId: uploadsPlaylistId,
+      }, 502);
     }
 
-    const playlist = await fetchJson(apiUrl('playlistItems', {
+    const playlistData = await fetchJson(apiUrl('playlistItems', {
       part: 'snippet,contentDetails',
       maxResults: MAX_RESULTS,
-      playlistId: uploadsPlaylistId,
-    }, key));
+      playlistId: UPLOADS_PID,
+    }, key), 'PLAYLIST_FETCH_FAILED');
 
-    const playlistItems = Array.isArray(playlist.items) ? playlist.items : [];
+    const playlistItems = Array.isArray(playlistData.items) ? playlistData.items : [];
     const ids = playlistItems
       .map((item) => item.contentDetails?.videoId || item.snippet?.resourceId?.videoId)
       .filter(Boolean);
 
     if (!ids.length) {
-      return json({ ok: true, channelId: channel?.id || fallbackId, channelHandle: handle, uploadsPlaylistId, featured: null, uploads: [] });
+      return json({
+        ok: true,
+        source: 'youtube-data-api-v3',
+        channelId: CHANNEL_ID,
+        channelTitle: channel?.snippet?.title || CHANNEL_TITLE,
+        uploadsPlaylistId: UPLOADS_PID,
+        fetchedAt: new Date().toISOString(),
+        featured: null,
+        uploads: [],
+      });
     }
 
     const videosData = await fetchJson(apiUrl('videos', {
       part: 'snippet,statistics,contentDetails',
       id: ids.join(','),
       maxResults: MAX_RESULTS,
-    }, key));
+    }, key), 'VIDEOS_FETCH_FAILED');
 
     const playlistById = new Map(playlistItems.map((item) => [
       item.contentDetails?.videoId || item.snippet?.resourceId?.videoId,
@@ -272,7 +137,14 @@ export async function onRequestGet({ env }) {
     const videosById = new Map((Array.isArray(videosData.items) ? videosData.items : []).map((item) => [item.id, item]));
     const uploads = ids
       .map((id) => videosById.has(id) ? mapVideo(videosById.get(id), playlistById.get(id)) : null)
-      .filter((video) => video && video.youtubeId && video.title && video.title !== 'Private video' && video.title !== 'Deleted video');
+      .filter((video) => (
+        video &&
+        video.youtubeId &&
+        video.channelId === CHANNEL_ID &&
+        video.title &&
+        video.title !== 'Private video' &&
+        video.title !== 'Deleted video'
+      ));
 
     const latest = uploads[0] || null;
     const featured = latest ? {
@@ -287,33 +159,28 @@ export async function onRequestGet({ env }) {
       description: latest.description,
       thumbnail: latest.thumbnail,
       url: latest.url,
+      channelId: latest.channelId,
+      channelTitle: latest.channelTitle,
     } : null;
 
     return json({
       ok: true,
       source: 'youtube-data-api-v3',
-      resolvedBy: channel?.resolvedBy || null,
-      channelId: channel?.id || fallbackId,
-      channelHandle: handle,
-      channelTitle: channel?.snippet?.title || DEFAULT_CHANNEL_TITLE,
-      uploadsPlaylistId,
+      channelId: CHANNEL_ID,
+      channelTitle: channel?.snippet?.title || CHANNEL_TITLE,
+      uploadsPlaylistId: UPLOADS_PID,
       fetchedAt: new Date().toISOString(),
       featured,
       uploads: uploads.slice(1),
     });
   } catch (err) {
-    try {
-      return await rssResponse({ channelId: fallbackId, handle, username, warning: err?.message || 'YOUTUBE_DATA_API_FAILED' });
-    } catch (rssErr) {
-      return json({
-        ok: false,
-        reason: 'YOUTUBE_SYNC_FAILED',
-        detail: err?.message || String(err),
-        rssDetail: rssErr?.message || String(rssErr),
-        channelHandle: handle,
-        channelTitle: DEFAULT_CHANNEL_TITLE,
-        channelId: fallbackId,
-      }, 502);
-    }
+    return json({
+      ok: false,
+      reason: 'YOUTUBE_SYNC_FAILED',
+      detail: err?.message || String(err),
+      channelId: CHANNEL_ID,
+      channelTitle: CHANNEL_TITLE,
+      uploadsPlaylistId: UPLOADS_PID,
+    }, 502);
   }
 }

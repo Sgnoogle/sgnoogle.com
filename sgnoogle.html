@@ -3299,15 +3299,17 @@ function fmtPubDate(iso, lang) {
    non è configurato o la quota YouTube non risponde. */
 function useFeaturedVideoMeta() {
   const [meta, setMeta] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem('sgn_feat_v2')) || JSON.parse(localStorage.getItem('sgn_feat_v1')) || null; }
-    catch { return null; }
+    try {
+      const cached = JSON.parse(localStorage.getItem('sgn_feat_v2')) || null;
+      return cached?.channelId === CHANNEL_ID ? cached : null;
+    } catch { return null; }
   });
   React.useEffect(() => {
     let alive = true;
     fetch(YT_FEED_ENDPOINT, { headers: { Accept: 'application/json' } })
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
-        if (!alive || !data?.featured) return;
+        if (!alive || data?.channelId !== CHANNEL_ID || data?.uploadsPlaylistId !== UPLOADS_PID || !data?.featured) return;
         try { localStorage.setItem('sgn_feat_v2', JSON.stringify(data.featured)); } catch {}
         setMeta(data.featured);
       })
@@ -3326,7 +3328,7 @@ function useLatestUploads() {
     fetch(YT_FEED_ENDPOINT, { headers: { Accept: 'application/json' } })
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
-        if (!alive || !Array.isArray(data?.uploads)) return;
+        if (!alive || data?.channelId !== CHANNEL_ID || data?.uploadsPlaylistId !== UPLOADS_PID || !Array.isArray(data?.uploads)) return;
         const mapped = data.uploads.map((it, idx) => ({
           id: it.id || it.youtubeId || `yt-${idx}`,
           youtubeId: it.youtubeId || it.id,
