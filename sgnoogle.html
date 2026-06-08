@@ -1137,6 +1137,40 @@ body {
   @keyframes sgnNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
   @media (prefers-reduced-motion: reduce) { .sgn-swipe-hint .ar { animation: none; } }
 
+  /* Home module cycle — micro status line sotto il badge subscriber.
+     Rotazione sul posto: nessun layout shift, solo cambio di stato SGN-OS. */
+  .sgn-home-module-cycle {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 24ch;
+    height: 1em;
+    font-family: var(--font-mono);
+    font-size: clamp(7px, 2vw, 10px);
+    font-weight: 700;
+    letter-spacing: clamp(0.12em, 0.55vw, 0.24em);
+    line-height: 1;
+    color: var(--faint);
+    white-space: nowrap;
+    text-align: center;
+  }
+  .sgn-home-module-cycle span {
+    grid-area: 1 / 1;
+    opacity: 0;
+    animation: sgnModuleCycle 8s linear infinite;
+  }
+  .sgn-home-module-cycle span:nth-child(2) { animation-delay: 2s; }
+  .sgn-home-module-cycle span:nth-child(3) { animation-delay: 4s; }
+  .sgn-home-module-cycle span:nth-child(4) { animation-delay: 6s; }
+  @keyframes sgnModuleCycle {
+    0%, 21% { opacity: 1; }
+    25%, 100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sgn-home-module-cycle span { display: none; animation: none; }
+    .sgn-home-module-cycle::after { content: 'VIDEOS · APPS · OBJECTS · EXPERIMENTS'; }
+  }
+
   /* ══════════════════════════════════════════════════════════════
      ONBOARDING — micro-coachmark desktop una-tantum che indica la
      riga comandi in topbar (tasti 1–5 · "/" palette). Hairline, niente
@@ -5197,19 +5231,20 @@ function IdleDisplay({ lang, mobile, focused }) {
             gap: 'clamp(5px, 0.8vh, 8px)',
           }}>
             <LiveBadge armed={armed} dimmed={idleMode}/>
-            <div style={{
-              fontFamily: 'IBM Plex Mono, monospace',
-              fontSize: 'clamp(7px, 2vw, 10px)',
-              fontWeight: 700,
-              letterSpacing: 'clamp(0.12em, 0.55vw, 0.24em)',
-              lineHeight: 1,
-              color: C.faint,
-              opacity: armed ? (idleMode ? 0.28 : 0.72) : 0,
-              transform: armed ? 'translateY(0)' : 'translateY(6px)',
-              transition: 'opacity 600ms linear 760ms, transform 600ms cubic-bezier(0.2,0,0,1) 760ms',
-              whiteSpace: 'nowrap',
-              textAlign: 'center',
-            }}>VIDEOS · APPS · OBJECTS · EXPERIMENTS</div>
+            <div
+              className="sgn-home-module-cycle"
+              aria-label="VIDEOS · APPS · OBJECTS · EXPERIMENTS"
+              style={{
+                opacity: armed ? (idleMode ? 0.28 : 0.72) : 0,
+                transform: armed ? 'translateY(0)' : 'translateY(6px)',
+                transition: 'opacity 600ms linear 760ms, transform 600ms cubic-bezier(0.2,0,0,1) 760ms',
+              }}
+            >
+              <span>MODULE / VIDEOS_</span>
+              <span>MODULE / APPS_</span>
+              <span>MODULE / OBJECTS_</span>
+              <span>MODULE / EXPERIMENTS_</span>
+            </div>
           </div>
         )}
 
