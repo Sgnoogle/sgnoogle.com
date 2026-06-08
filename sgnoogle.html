@@ -593,6 +593,10 @@ body {
   .sgn-topctl:active { transform: translateY(1px); }
   /* l'icona audio si "arma": la freccia gialla resta, ma il bordo si fa ink */
   .sgn-topctl:active { background: #ECEBE7 !important; }
+  .sgn-mobilemark, .sgn-ghostctl { background: transparent !important; }
+  .sgn-mobilemark { transition: opacity 120ms linear, transform 90ms ease-out; }
+  .sgn-mobilemark:active { opacity: 0.72; transform: translateY(1px) scale(0.96); }
+  .sgn-ghostctl:active { background: transparent !important; }
   .sgn-homebrand { position: relative; }
   .sgn-homebrand::after {
     content: ''; position: absolute; left: 32px; right: 0; bottom: -7px; height: 2px;
@@ -5219,13 +5223,13 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
          In home è statico; nei moduli è un tasto esplicito per tornare alla home. */}
       {mobile ? (
         current ? (
-          <button onClick={onHome} className="sgn-hot sgn-topctl" aria-label={(lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel} style={{
+          <button onClick={onHome} className="sgn-hot sgn-mobilemark" aria-label={(lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel} style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 34, height: 34, padding: 0,
-            background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+            width: 38, height: 38, padding: 0,
+            border: 'none',
             cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
           }}>
-            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 18, height: 18, display: 'block' }}>
+            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 21, height: 21, display: 'block' }}>
               <g fill={C.yellow}>
                 <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
                 <polygon points="102.79 0 206.1 0 51.35 100.8"/>
@@ -5234,12 +5238,12 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             </svg>
           </button>
         ) : (
-          <span aria-hidden="true" className="sgn-topctl" style={{
+          <span aria-hidden="true" className="sgn-mobilemark" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 34, height: 34, padding: 0,
-            background: C.paper, border: '0.5px solid rgba(120,122,124,0.25)',
+            width: 38, height: 38, padding: 0,
+            border: 'none',
           }}>
-            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 18, height: 18, display: 'block', opacity: 0.86 }}>
+            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 21, height: 21, display: 'block', opacity: 0.86 }}>
               <g fill={C.yellow}>
                 <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
                 <polygon points="102.79 0 206.1 0 51.35 100.8"/>
@@ -5290,9 +5294,9 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             <span style={{ padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em', color: C.grey, fontWeight: 700, alignSelf: 'center' }}>CMD</span>
           </button>
         )}
-        <button onClick={onToggleSound} className="sgn-hot sgn-topctl" title={soundOn ? 'Sound on' : 'Sound off'} style={{
+        <button onClick={onToggleSound} className={`sgn-hot sgn-topctl${mobile ? ' sgn-ghostctl' : ''}`} title={soundOn ? 'Sound on' : 'Sound off'} style={{
           display: 'inline-flex', alignItems: 'stretch',
-          background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+          background: mobile ? 'transparent' : C.paper, border: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
           padding: 0, cursor: 'pointer', fontFamily: 'inherit',
           color: C.ink, minHeight: 34, minWidth: mobile ? 34 : 'auto',
         }}>
@@ -5320,9 +5324,9 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
           </span>
         </button>
         <span style={{ position: 'relative', display: 'inline-flex' }}>
-          <button onClick={onToggleLang} className={`sgn-hot sgn-topctl sgn-langbtn${langOpen ? ' is-open' : ''}`} aria-haspopup="menu" aria-expanded={!!langOpen} style={{
+          <button onClick={onToggleLang} className={`sgn-hot sgn-topctl sgn-langbtn${mobile ? ' sgn-ghostctl' : ''}${langOpen ? ' is-open' : ''}`} aria-haspopup="menu" aria-expanded={!!langOpen} style={{
             display: 'inline-flex', alignItems: 'stretch',
-            background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+            background: mobile ? 'transparent' : C.paper, border: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
           }}>
             {!mobile && <span style={{
@@ -5333,7 +5337,7 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
               padding: '6px 8px', fontSize: 11, fontWeight: 700,
               letterSpacing: '0.18em', color: C.ink,
               borderLeft: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
-              background: C.paper,
+              background: mobile ? 'transparent' : C.paper,
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}>
               {lang.toUpperCase()}
