@@ -1377,7 +1377,7 @@ const I18N = {
       perfLabel: 'VS MEDIA CANALE',
       rating: 'RATING',
       tier: 'TIER',
-      syncNote: 'Feed live dal canale @sgnoogle — il riquadro mostra sempre l\u2019ultimo upload.',
+      syncNote: 'Feed live dal canale Francesco Sgnaolin — il riquadro mostra sempre l\u2019ultimo upload.',
     },
     objects: {
       sub: 'Stampe 3D e modelli. Schede tipo Bambu — STL · materiale · setup.',
@@ -1489,7 +1489,7 @@ const I18N = {
       perfLabel: 'VS CHANNEL AVG',
       rating: 'RATING',
       tier: 'TIER',
-      syncNote: 'Live feed from @sgnoogle \u2014 the panel always shows the latest upload.',
+      syncNote: 'Live feed from Francesco Sgnaolin \u2014 the panel always shows the latest upload.',
     },
     objects: {
       sub: '3D printed and modeled. Bambu-style sheets — STL · material · setup.',
@@ -1579,7 +1579,7 @@ const CHANGELOG = [
 
 /* VIDEOS — placeholder feed; will be replaced by YouTube API later.
    Shown with a "pending sync" banner so it's clear these are samples. */
-/* VIDEOS — feed reale dal canale @sgnoogle.
+/* VIDEOS — feed reale dal canale Francesco Sgnaolin.
    Il featured incorpora la PLAYLIST UPLOADS del canale (UC… → UU…), così
    mostra sempre l'ultimo video caricato senza bisogno di API / chiavi.
    Le card sotto puntano a video reali del canale. */
@@ -1600,9 +1600,9 @@ const UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ'; // uploads playlist = UC→UU
 const YT_FEED_ENDPOINT = '/api/youtube';
 
 const VIDEOS = [
-  { id: '01', title: 'ULTIMO CARICAMENTO', cat: '@SGNOOGLE · FEED LIVE', kind: 'A',
+  { id: '01', title: 'ULTIMO CARICAMENTO', cat: 'FRANCESCO SGNAOLIN · FEED LIVE', kind: 'A',
     playlistId: UPLOADS_PID,
-    url: 'https://www.youtube.com/@sgnoogle/videos' },
+    url: 'https://www.youtube.com/c/FrancescoSgnaolin/videos' },
   /* Fallback curato — usato se /api/youtube non è disponibile. Sono gli upload
      reali più recenti del canale (più nuovo → più vecchio); il #01 di cui
      sopra (live) li precede sempre, quindi qui NON va ripetuto l'ultimissimo. */
@@ -3367,7 +3367,7 @@ function VideoModule({ lang }) {
           {/* Coda: accesso reale al resto del catalogo. La lista hard-coded
              invecchia; il canale e la playlist Hi-Tech sono link veri e
              sempre aggiornati — da qui Claude Code potrà in seguito auto-popolare
-             le card dal feed del canale (channel UCO_SA_eFRJbVyfqWV8BKzCQ). */}
+             le card dal feed del canale (canale Francesco Sgnaolin). */}
           <MoreVideosCard lang={lang} delay={rest.length * 60}/>
         </div>
       </Page>
@@ -3473,7 +3473,7 @@ function FeaturedVideo({ v, L, lang }) {
             overflow: 'hidden',
           }}>{displayTitle}</div>
           <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
-            @sgnoogle{displayDate ? ` · ${displayDate}` : ' · FEED LIVE'}
+            FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ' · FEED LIVE'}
           </Label>
         </div>
 
@@ -3517,7 +3517,7 @@ function FeaturedVideo({ v, L, lang }) {
         <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(8px, 1.2vh, 14px)' }}>
           {!meta && <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>}
           <CTA
-            href="https://www.youtube.com/@sgnoogle/videos"
+            href="https://www.youtube.com/c/FrancescoSgnaolin/videos"
             target="_blank"
             size="sm"
             className="sgn-feat-cta"
@@ -3670,7 +3670,7 @@ function VideoThumb({ id, title }) {
 
 /* MoreVideosCard — coda della griglia "ultimi video": invece di una lista
    hard-coded che invecchia, porta al catalogo reale e sempre aggiornato
-   (canale @sgnoogle + playlist Hi-Tech). Stesso footprint delle VideoCard. */
+   (canale Francesco Sgnaolin + playlist Hi-Tech). Stesso footprint delle VideoCard. */
 function MoreVideosCard({ lang, delay = 0 }) {
   const [ref, inView] = useInView({ threshold: 0.2 });
   const isIt = lang === 'it';
@@ -3701,8 +3701,8 @@ function MoreVideosCard({ lang, delay = 0 }) {
         }}>{isIt ? 'Tutti i video' : 'All videos'}</div>
       </div>
       <div style={{ flexShrink: 0, padding: CARD_PAD }}>
-        <CTA href="https://www.youtube.com/@sgnoogle/videos" target="_blank" size="sm"
-             label={isIt ? 'CANALE @SGNOOGLE' : '@SGNOOGLE CHANNEL'} />
+        <CTA href="https://www.youtube.com/c/FrancescoSgnaolin/videos" target="_blank" size="sm"
+             label={isIt ? 'CANALE FRANCESCO' : 'FRANCESCO CHANNEL'} />
       </div>
       <HoverCornerMarks/>
     </div>

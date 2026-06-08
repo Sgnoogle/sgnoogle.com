@@ -1,5 +1,7 @@
 const DEFAULT_CHANNEL_ID = 'UCO_SA_eFRJbVyfqWV8BKzCQ';
 const DEFAULT_HANDLE = '@sgnoogle';
+const DEFAULT_USERNAME = 'FrancescoSgnaolin';
+const DEFAULT_CHANNEL_TITLE = 'Francesco Sgnaolin';
 const DEFAULT_UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ';
 const MAX_RESULTS = '13';
 
@@ -48,17 +50,30 @@ const pickAttr = (xml, tag, attr) => {
   return decodeXml(m?.[1] || '');
 };
 
-const fetchRssUploads = async (channelId = DEFAULT_CHANNEL_ID) => {
-  const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`;
-  const res = await fetch(url, { cf: { cacheTtl: 900, cacheEverything: true } });
+const fetchRssXml = async (params) => {
+  const url = new URL('https://www.youtube.com/feeds/videos.xml');
+  url.search = new URLSearchParams(params).toString();
+  const res = await fetch(url.toString(), { cf: { cacheTtl: 900, cacheEverything: true } });
   if (!res.ok) {
     const err = new Error(`YOUTUBE_RSS_${res.status}`);
     err.status = res.status;
     throw err;
   }
-  const xml = await res.text();
+  return res.text();
+};
+
+const fetchRssUploads = async (channelId = DEFAULT_CHANNEL_ID, username = DEFAULT_USERNAME) => {
+  let xml = '';
+  let source = '';
+  try {
+    xml = await fetchRssXml({ user: username });
+    source = `user:${username}`;
+  } catch (err) {
+    xml = await fetchRssXml({ channel_id: channelId });
+    source = `channel_id:${channelId}`;
+  }
   const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map((m) => m[1]);
-  return entries.map((entry) => {
+  const uploads = entries.map((entry) => {
     const id = pickXml(entry, 'yt:videoId');
     const title = pickXml(entry, 'title');
     return {
@@ -76,19 +91,23 @@ const fetchRssUploads = async (channelId = DEFAULT_CHANNEL_ID) => {
       description: pickXml(entry, 'media:description'),
     };
   }).filter((video) => video.youtubeId && video.title);
+  return { source, uploads };
 };
 
-const rssResponse = async ({ channelId, handle, warning } = {}) => {
+const rssResponse = async ({ channelId, handle, username, warning } = {}) => {
   const fallbackId = channelId || DEFAULT_CHANNEL_ID;
-  const uploads = await fetchRssUploads(fallbackId);
+  const feed = await fetchRssUploads(fallbackId, username || DEFAULT_USERNAME);
+  const uploads = feed.uploads;
   const latest = uploads[0] || null;
   return json({
     ok: true,
     source: 'youtube-rss',
+    rssSource: feed.source,
     apiKeyConfigured: false,
     warning,
     channelId: fallbackId,
     channelHandle: handle || DEFAULT_HANDLE,
+    channelTitle: DEFAULT_CHANNEL_TITLE,
     uploadsPlaylistId: fallbackId.replace(/^UC/, 'UU'),
     fetchedAt: new Date().toISOString(),
     featured: latest ? {
@@ -124,7 +143,29 @@ const fetchJson = async (url) => {
   return res.json();
 };
 
-const resolveChannel = async (key, handle = DEFAULT_HANDLE, fallbackId = DEFAULT_CHANNEL_ID) => {
+const searchChannelByTitle = async (key, query = DEFAULT_CHANNEL_TITLE) => {
+  const data = await fetchJson(apiUrl('search', {
+    part: 'snippet',
+    type: 'channel',
+    maxResults: '5',
+    q: query,
+  }, key));
+  const items = Array.isArray(data.items) ? data.items : [];
+  const exact = items.find((item) => (item.snippet?.title || '').toLowerCase() === query.toLowerCase()) || items[0];
+  return exact?.snippet?.channelId ? { id: exact.snippet.channelId, snippet: exact.snippet } : null;
+};
+
+const resolveChannel = async (key, handle = DEFAULT_HANDLE, fallbackId = DEFAULT_CHANNEL_ID, username = DEFAULT_USERNAME) => {
+  const byUsername = await fetchJson(apiUrl('channels', {
+    part: 'id,snippet,contentDetails,statistics',
+    forUsername: username,
+  }, key)).catch(() => null);
+  const usernameChannel = Array.isArray(byUsername?.items) && byUsername.items[0]
+    ? byUsername.items[0]
+    : null;
+
+  if (usernameChannel) return { ...usernameChannel, resolvedBy: `forUsername:${username}` };
+
   const normalizedHandle = handle.startsWith('@') ? handle : `@${handle}`;
   const byHandle = await fetchJson(apiUrl('channels', {
     part: 'id,snippet,contentDetails,statistics',
@@ -134,13 +175,24 @@ const resolveChannel = async (key, handle = DEFAULT_HANDLE, fallbackId = DEFAULT
     ? byHandle.items[0]
     : null;
 
-  if (channel) return channel;
+  if (channel) return { ...channel, resolvedBy: `forHandle:${normalizedHandle}` };
+
+  const searched = await searchChannelByTitle(key, DEFAULT_CHANNEL_TITLE).catch(() => null);
+  if (searched?.id) {
+    const bySearchId = await fetchJson(apiUrl('channels', {
+      part: 'id,snippet,contentDetails,statistics',
+      id: searched.id,
+    }, key)).catch(() => null);
+    const searchChannel = Array.isArray(bySearchId?.items) && bySearchId.items[0] ? bySearchId.items[0] : null;
+    if (searchChannel) return { ...searchChannel, resolvedBy: `search:${DEFAULT_CHANNEL_TITLE}` };
+  }
 
   const byId = await fetchJson(apiUrl('channels', {
     part: 'id,snippet,contentDetails,statistics',
     id: fallbackId,
   }, key));
-  return Array.isArray(byId.items) ? byId.items[0] : null;
+  const idChannel = Array.isArray(byId.items) ? byId.items[0] : null;
+  return idChannel ? { ...idChannel, resolvedBy: `id:${fallbackId}` } : null;
 };
 
 const mapVideo = (video, playlistItem = {}) => {
@@ -168,9 +220,10 @@ export async function onRequestGet({ env }) {
   const key = env.YOUTUBE_API_KEY || env.YT_API_KEY;
   const handle = env.YOUTUBE_CHANNEL_HANDLE || DEFAULT_HANDLE;
   const fallbackId = env.YOUTUBE_CHANNEL_ID || DEFAULT_CHANNEL_ID;
+  const username = env.YOUTUBE_CHANNEL_USERNAME || DEFAULT_USERNAME;
   if (!key) {
     try {
-      return await rssResponse({ channelId: fallbackId, handle, warning: 'YOUTUBE_API_KEY_NOT_CONFIGURED' });
+      return await rssResponse({ channelId: fallbackId, handle, username, warning: 'YOUTUBE_API_KEY_NOT_CONFIGURED' });
     } catch (err) {
       return json({
         ok: false,
@@ -178,13 +231,14 @@ export async function onRequestGet({ env }) {
         detail: err?.message || String(err),
         acceptedEnv: ['YOUTUBE_API_KEY', 'YT_API_KEY'],
         channelHandle: handle,
+        channelTitle: DEFAULT_CHANNEL_TITLE,
         channelId: fallbackId,
       }, 503);
     }
   }
 
   try {
-    const channel = await resolveChannel(key, handle, fallbackId);
+    const channel = await resolveChannel(key, handle, fallbackId, username);
     const uploadsPlaylistId = channel?.contentDetails?.relatedPlaylists?.uploads || DEFAULT_UPLOADS_PID;
     if (!uploadsPlaylistId) {
       return json({ ok: false, reason: 'UPLOADS_PLAYLIST_NOT_FOUND', channelHandle: handle, channelId: channel?.id || fallbackId }, 502);
@@ -238,8 +292,10 @@ export async function onRequestGet({ env }) {
     return json({
       ok: true,
       source: 'youtube-data-api-v3',
+      resolvedBy: channel?.resolvedBy || null,
       channelId: channel?.id || fallbackId,
       channelHandle: handle,
+      channelTitle: channel?.snippet?.title || DEFAULT_CHANNEL_TITLE,
       uploadsPlaylistId,
       fetchedAt: new Date().toISOString(),
       featured,
@@ -247,7 +303,7 @@ export async function onRequestGet({ env }) {
     });
   } catch (err) {
     try {
-      return await rssResponse({ channelId: fallbackId, handle, warning: err?.message || 'YOUTUBE_DATA_API_FAILED' });
+      return await rssResponse({ channelId: fallbackId, handle, username, warning: err?.message || 'YOUTUBE_DATA_API_FAILED' });
     } catch (rssErr) {
       return json({
         ok: false,
@@ -255,6 +311,7 @@ export async function onRequestGet({ env }) {
         detail: err?.message || String(err),
         rssDetail: rssErr?.message || String(rssErr),
         channelHandle: handle,
+        channelTitle: DEFAULT_CHANNEL_TITLE,
         channelId: fallbackId,
       }, 502);
     }
