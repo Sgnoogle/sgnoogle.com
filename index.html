@@ -836,25 +836,29 @@ body {
        colonne collassano a 1; gli scroll interni già presenti (catalogo,
        descrizione app) restano tali. */
 
-    /* 01 · Video featured → mobile: player sopra, pannello info sotto.
-       La descrizione diventa un blocco tecnico tagliato a righe, così
-       titoli/CTA/metadati restano sempre leggibili anche con copy lunghi. */
+    /* 01 · Video featured → mobile: cover editoriale prima, player sotto.
+       Il contenuto SGNOOGLE apre la schermata; il video diventa preview/asset
+       e occupa lo spazio residuo, evitando il grande vuoto sotto la CTA. */
     .sgn-featured {
-      grid-template-areas: "vid" "info" !important;
+      grid-template-areas: "info" "vid" !important;
       grid-template-columns: 1fr !important;
-      grid-template-rows: auto minmax(0, 1fr) !important;
+      grid-template-rows: auto minmax(190px, 1fr) !important;
       gap: 0 !important;
     }
+    .sgn-feat-vid-col {
+      min-height: clamp(190px, 31vh, 290px) !important;
+      border-top: 0.5px solid var(--border) !important;
+    }
     .sgn-feat-vid {
-      height: auto !important;
+      height: 100% !important;
       width: 100% !important;
-      aspect-ratio: 18 / 9 !important;
+      aspect-ratio: auto !important;
       margin: 0 !important;
     }
     /* Impilato: niente divisore verticale, pannello info compatto e gerarchico. */
     .sgn-feat-info {
       justify-content: flex-start !important;
-      padding: clamp(10px, 1.6vh, 14px) clamp(12px, 3.5vw, 16px) clamp(10px, 1.8vh, 14px) !important;
+      padding: clamp(12px, 1.8vh, 16px) clamp(12px, 3.5vw, 16px) clamp(12px, 1.8vh, 16px) !important;
       gap: clamp(8px, 1.2vh, 12px) !important;
       border-left: none !important;
     }
