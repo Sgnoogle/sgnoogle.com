@@ -284,6 +284,21 @@ body {
     from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
     to   { transform: rotateX(0deg) rotateY(360deg) rotateZ(0deg); }
   }
+  .sgn-wire-node {
+    opacity: 0.72;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sgnWireNodePulse 6.4s cubic-bezier(0.2,0,0,1) infinite;
+  }
+  .sgn-wire-node--b { animation-delay: 0.45s; }
+  .sgn-wire-node--c { animation-delay: 0.9s; }
+  .sgn-wire-node--d { animation-delay: 1.35s; }
+  @keyframes sgnWireNodePulse {
+    0%, 58%, 100% { opacity: 0.62; transform: scale(1); }
+    7%  { opacity: 1; transform: scale(1.34); }
+    14% { opacity: 0.78; transform: scale(0.92); }
+    22% { opacity: 0.72; transform: scale(1); }
+  }
 
   /* ── Click ripple sonar */
   .sgn-ripple-ring {
@@ -2518,12 +2533,12 @@ function FWireframe({ color, accent }) {
         <polygon points="102.79 0 206.1 0 51.35 100.8"/>
         <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
       </g>
-      {/* yellow accent corner-dots at the chevron tips */}
+      {/* yellow geometric nodes at the chevron tips */}
       <g fill={accent}>
-        <circle cx="0"     cy="201.44" r="2"/>
-        <circle cx="206.1" cy="0"      r="2"/>
-        <circle cx="154.75" cy="100.64" r="1.5"/>
-        <circle cx="51.44"  cy="100.64" r="1.5"/>
+        <rect className="sgn-wire-node sgn-wire-node--a" x="-2" y="199.44" width="4" height="4"/>
+        <rect className="sgn-wire-node sgn-wire-node--b" x="204.1" y="-2" width="4" height="4"/>
+        <rect className="sgn-wire-node sgn-wire-node--c" x="153.25" y="99.14" width="3" height="3"/>
+        <rect className="sgn-wire-node sgn-wire-node--d" x="49.94" y="99.14" width="3" height="3"/>
       </g>
     </svg>
   );
