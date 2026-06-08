@@ -874,6 +874,30 @@ body {
       min-width: 0 !important;
       flex: 0 0 auto !important;
     }
+    /* La prima card è la hero/azione primaria: stesso contenuto, più respiro. */
+    .sgn-link-hero-card {
+      min-height: clamp(320px, 48vh, 420px) !important;
+      aspect-ratio: auto !important;
+      justify-content: space-between !important;
+      padding: clamp(28px, 7vw, 40px) clamp(28px, 7vw, 40px) clamp(22px, 6vw, 34px) !important;
+      padding-left: clamp(32px, 8vw, 46px) !important;
+      gap: clamp(24px, 4vh, 42px) !important;
+    }
+    .sgn-link-hero-title {
+      font-size: clamp(38px, 11vw, 54px) !important;
+      line-height: 0.92 !important;
+      max-width: 9ch !important;
+      margin-top: clamp(18px, 4vh, 42px) !important;
+    }
+    .sgn-link-hero-cta {
+      width: 100% !important;
+      align-self: stretch !important;
+      margin-top: auto !important;
+    }
+    .sgn-link-hero-cta .sgn-cta__label {
+      flex: 1 1 auto !important;
+      justify-content: center !important;
+    }
 
     /* 05 · Contatti → lista command a una colonna, tap target generoso */
     .sgn-contact-grid {
@@ -4270,7 +4294,7 @@ function ContactCard({ L, lang }) {
     <a
       href={typeof MAILTO !== 'undefined' ? MAILTO : 'mailto:francesco.sgnaolin@gmail.com'}
       data-link-card
-      className="sgn-hot sgn-card-hover"
+      className="sgn-hot sgn-card-hover sgn-link-hero-card"
       style={{
         position: 'relative', flexShrink: 0,
         height: '100%', aspectRatio: '1 / 1',
@@ -4295,7 +4319,7 @@ function ContactCard({ L, lang }) {
           sotto il rail (z) e dietro testo+CTA (che sono relative). */}
       <span className="sgn-ambient sgn-contact-bg" aria-hidden="true"/>
 
-      <div style={{
+      <div className="sgn-link-hero-title" style={{
         position: 'relative', zIndex: 1,
         fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
         fontSize: 'clamp(26px, 3vw, 42px)', letterSpacing: '-0.04em',
@@ -4305,6 +4329,7 @@ function ContactCard({ L, lang }) {
       <CTA
         as="span"
         size="sm"
+        className="sgn-link-hero-cta"
         label={isIt ? 'SCRIVIMI' : 'WRITE ME'}
         style={{ alignSelf: 'flex-start', marginTop: 2, position: 'relative', zIndex: 1 }}
       />
