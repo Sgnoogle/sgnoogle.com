@@ -589,9 +589,16 @@ body {
   /* NB: i bottoni topbar portano stili inline (background:transparent, border)
      che hanno priorità sulle regole :hover — servono !important per
      far emergere lo stato hover. */
-  .sgn-topctl { transition: border-color 120ms linear, background 120ms linear; }
+  .sgn-topctl { transition: border-color 120ms linear, background 120ms linear, transform 90ms ease-out; }
+  .sgn-topctl:active { transform: translateY(1px); }
   /* l'icona audio si "arma": la freccia gialla resta, ma il bordo si fa ink */
   .sgn-topctl:active { background: #ECEBE7 !important; }
+  .sgn-homebrand { position: relative; }
+  .sgn-homebrand::after {
+    content: ''; position: absolute; left: 32px; right: 0; bottom: -7px; height: 2px;
+    background: var(--yellow); transform: scaleX(0); transform-origin: left;
+    transition: transform 180ms cubic-bezier(0.2,0,0,1);
+  }
 
   /* ══════════════════════════════════════════════════════════════
      LANG button (topbar) + popover trigger states.
@@ -599,12 +606,32 @@ body {
      card/CTA). Aperto (is-open): la cella valore si arma a ink+paper e
      il caret ruota. Nessun giallo coinvolto.
      ══════════════════════════════════════════════════════════════ */
-  .sgn-langbtn { transition: border-color 120ms linear; }
+  .sgn-langbtn { position: relative; overflow: hidden; transition: border-color 120ms linear; }
   .sgn-langbtn__val { transition: background 120ms linear, color 120ms linear; }
   .sgn-langbtn.is-open { border-color: var(--ink); }
   .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
   .sgn-caret { transition: transform 160ms cubic-bezier(0.2,0,0,1); }
   .sgn-langbtn.is-open .sgn-caret { transform: rotate(180deg); }
+  .sgn-langbtn.is-open::after {
+    content: ''; position: absolute; left: -0.5px; right: -0.5px; top: -0.5px; height: 2px;
+    background: var(--yellow); transform-origin: left; animation: sgnTopRailIn 160ms cubic-bezier(0.2,0,0,1) both;
+  }
+  @keyframes sgnTopRailIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .sgn-lang-popover {
+    transform-origin: top right;
+    animation: sgnLangPanelIn 150ms cubic-bezier(0.2,0,0,1) both;
+  }
+  .sgn-lang-popover__row { animation: sgnLangRowIn 160ms linear both; }
+  .sgn-lang-popover__row:nth-of-type(2) { animation-delay: 35ms; }
+  .sgn-lang-popover__row:nth-of-type(3) { animation-delay: 70ms; }
+  @keyframes sgnLangPanelIn {
+    from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(-4px); }
+    to   { opacity: 1; clip-path: inset(0); transform: translateY(0); }
+  }
+  @keyframes sgnLangRowIn {
+    from { opacity: 0; transform: translateY(-2px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
   /* Hover SOLO su dispositivi con puntatore fine (mouse). Sul touch un
      :hover resta "incollato" dopo il tap — es. dopo aver aperto e chiuso il
@@ -619,6 +646,7 @@ body {
     /* la cella valore (IT/EN) si accende a ink+paper anche al solo hover,
        non solo da aperta — feedback "sta per selezionare". */
     .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
+    .sgn-homebrand:hover::after { transform: scaleX(1); }
   }
 
   /* ── Command palette overlay ── */
@@ -5174,8 +5202,10 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
   );
 }
 
-function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, sound, idle }) {
+function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, onOpenPalette, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, sound, idle }) {
   const L = I18N[lang];
+  const mobileRoute = current || '00';
+  const mobileRouteLabel = current ? (L.modules[current]?.label || '') : 'HOME';
   return (
     <header className={`sgn-topbar${!current ? ' sgn-topbar--home' : ''}`} style={{
       position: 'relative', zIndex: 60,
@@ -5186,28 +5216,44 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       fontFamily: 'IBM Plex Mono, monospace',
       gap: 10, flexShrink: 0,
     }}>
-      {/* Logo+wordmark: nascosti in home (ridondanti col logo gigante al
-         centro); in un modulo restano e fanno da tasto "torna alla home".
-         Lo span vuoto tiene i controlli a destra (justify-content space-between). */}
-      {current ? (
-      <button onClick={onHome} className="sgn-hot" style={{
-        display: 'inline-flex', alignItems: 'center', gap: 10,
-        background: 'transparent', border: 'none', padding: 0,
-        cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
-      }}>
-        <svg viewBox="0 0 206.1 201.44" aria-hidden style={{
-          width: 22, height: 22, display: 'block', flexShrink: 0,
+      {/* Logo+wordmark: desktop nei moduli; su mobile diventa un route chip
+         00/01..05 per bilanciare la topbar e dare orientamento. */}
+      {mobile ? (
+        current ? (
+          <button onClick={onHome} className="sgn-hot sgn-topctl" aria-label={(lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel} style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            minWidth: 34, height: 34, padding: '0 10px',
+            background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+            cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
+          }}>{mobileRoute}</button>
+        ) : (
+          <span aria-hidden="true" className="sgn-topctl" style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            minWidth: 34, height: 34, padding: '0 10px',
+            background: C.paper, border: '0.5px solid rgba(120,122,124,0.25)',
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: C.grey,
+          }}>{mobileRoute}</span>
+        )
+      ) : current ? (
+        <button onClick={onHome} className="sgn-hot sgn-homebrand" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 10,
+          background: 'transparent', border: 'none', padding: 0,
+          cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
         }}>
-          <g fill={C.yellow}>
-            <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
-            <polygon points="102.79 0 206.1 0 51.35 100.8"/>
-            <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
-          </g>
-        </svg>
-        <span style={{
-          fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', color: C.ink,
-        }}>{BRAND.product}</span>
-      </button>
+          <svg viewBox="0 0 206.1 201.44" aria-hidden style={{
+            width: 22, height: 22, display: 'block', flexShrink: 0,
+          }}>
+            <g fill={C.yellow}>
+              <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
+              <polygon points="102.79 0 206.1 0 51.35 100.8"/>
+              <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
+            </g>
+          </svg>
+          <span style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', color: C.ink,
+          }}>{BRAND.product}</span>
+        </button>
       ) : (
         <span aria-hidden="true" />
       )}
@@ -5217,23 +5263,48 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       )}
 
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 6 }}>
+        {!mobile && (
+          <button onClick={onOpenPalette} className="sgn-hot sgn-topctl" title={lang === 'it' ? 'Apri palette comandi' : 'Open command palette'} style={{
+            display: 'inline-flex', alignItems: 'stretch',
+            background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+            padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
+          }}>
+            <span style={{
+              padding: '6px 8px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em',
+              borderRight: '0.5px solid rgba(120,122,124,0.35)', color: C.yellow,
+              display: 'inline-flex', alignItems: 'center',
+            }}>/</span>
+            <span style={{ padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em', color: C.grey, fontWeight: 700, alignSelf: 'center' }}>CMD</span>
+          </button>
+        )}
         <button onClick={onToggleSound} className="sgn-hot sgn-topctl" title={soundOn ? 'Sound on' : 'Sound off'} style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          display: 'inline-flex', alignItems: 'stretch',
           background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
-          padding: '6px 9px', cursor: 'pointer', fontFamily: 'inherit',
-          color: C.ink,
+          padding: 0, cursor: 'pointer', fontFamily: 'inherit',
+          color: C.ink, minHeight: 34, minWidth: mobile ? 34 : 'auto',
         }}>
-          <svg width="14" height="14" viewBox="0 0 11 11" aria-hidden style={{ display: 'block' }}>
-            <path d="M2 4 L4 4 L6.5 2 L6.5 9 L4 7 L2 7 Z" fill={C.ink}/>
-            {soundOn ? (
-              <>
-                <path d="M7.6 3.6 Q9 5.5 7.6 7.4" stroke={C.yellow} strokeWidth="0.8" fill="none"/>
-                <path d="M8.6 2.6 Q10.3 5.5 8.6 8.4" stroke={C.yellow} strokeWidth="0.8" fill="none"/>
-              </>
-            ) : (
-              <line x1="7" y1="3" x2="10" y2="8" stroke={C.grey} strokeWidth="1"/>
-            )}
-          </svg>
+          {!mobile && <span style={{
+            padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em',
+            color: C.grey, fontWeight: 700, alignSelf: 'center',
+          }}>SND</span>}
+          <span style={{
+            padding: mobile ? '0 9px' : '6px 8px',
+            borderLeft: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.35)',
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden style={{ display: 'block' }}>
+              <path d="M2.2 5.1 H4.7 L7.5 2.9 V11.1 L4.7 8.9 H2.2 Z" fill="none" stroke={C.ink} strokeWidth="1.4" strokeLinejoin="miter"/>
+              {soundOn ? (
+                <>
+                  <path d="M9.1 4.2 L10.3 5.4 L10.3 8.6 L9.1 9.8" stroke={C.yellow} strokeWidth="1.1" fill="none" strokeLinejoin="miter"/>
+                  <path d="M10.9 3.1 L12.4 4.7 L12.4 9.3 L10.9 10.9" stroke={C.yellow} strokeWidth="1.1" fill="none" strokeLinejoin="miter"/>
+                </>
+              ) : (
+                <path d="M9.1 4.2 L12 9.8 M12 4.2 L9.1 9.8" stroke={C.grey} strokeWidth="1.1" fill="none"/>
+              )}
+            </svg>
+            {!mobile && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', color: C.ink }}>{soundOn ? 'ON' : 'OFF'}</span>}
+          </span>
         </button>
         <span style={{ position: 'relative', display: 'inline-flex' }}>
           <button onClick={onToggleLang} className={`sgn-hot sgn-topctl sgn-langbtn${langOpen ? ' is-open' : ''}`} aria-haspopup="menu" aria-expanded={!!langOpen} style={{
@@ -5241,14 +5312,14 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
           }}>
-            <span style={{
+            {!mobile && <span style={{
               padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em',
               color: C.grey, fontWeight: 700, alignSelf: 'center',
-            }}>LANG</span>
+            }}>LANG</span>}
             <span className="sgn-langbtn__val" style={{
               padding: '6px 8px', fontSize: 11, fontWeight: 700,
               letterSpacing: '0.18em', color: C.ink,
-              borderLeft: '0.5px solid rgba(120,122,124,0.45)',
+              borderLeft: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
               background: C.paper,
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}>
@@ -6438,7 +6509,7 @@ function LangPopover({ lang, onPick, onClose, sound }) {
   ];
 
   return (
-    <div ref={ref} role="menu" aria-label="Locale" style={{
+    <div ref={ref} className="sgn-lang-popover" role="menu" aria-label="Locale" style={{
       position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 9000,
       width: 214, background: C.white, border: `0.5px solid ${C.ink}`,
       fontFamily: 'IBM Plex Mono, monospace',
@@ -6460,6 +6531,7 @@ function LangPopover({ lang, onPick, onClose, sound }) {
           <button
             key={r.v}
             role="menuitemradio"
+            className="sgn-lang-popover__row"
             aria-checked={current}
             onMouseEnter={() => { if (hover !== r.v) sound && sound('tick'); setHover(r.v); }}
             onClick={() => onPick && onPick(r.v)}
@@ -7952,6 +8024,7 @@ function App() {
             onToggleLang={() => { setLangOpen(o => !o); sound('tick'); }}
             onPickLang={onPickLang}
             onCloseLang={() => setLangOpen(false)}
+            onOpenPalette={() => { setLangOpen(false); setPaletteOpen(true); sound('tick'); }}
             sound={sound}
             onHome={() => goHome()}
             current={current}
