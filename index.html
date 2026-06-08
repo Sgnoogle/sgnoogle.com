@@ -1138,11 +1138,12 @@ body {
   @media (prefers-reduced-motion: reduce) { .sgn-swipe-hint .ar { animation: none; } }
 
   /* Home module cycle — micro status line sotto il badge subscriber.
-     Rotazione sul posto: nessun layout shift, solo cambio di stato SGN-OS. */
+     Scrittura/descrittura sul posto: footprint fisso, niente layout shift. */
   .sgn-home-module-cycle {
     position: relative;
-    display: inline-grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-width: 24ch;
     height: 1em;
     font-family: var(--font-mono);
@@ -1154,21 +1155,20 @@ body {
     white-space: nowrap;
     text-align: center;
   }
-  .sgn-home-module-cycle span {
-    grid-area: 1 / 1;
-    opacity: 0;
-    animation: sgnModuleCycle 8s linear infinite;
+  .sgn-home-module-cycle__word {
+    display: inline-block;
+    min-width: 11ch;
+    text-align: left;
   }
-  .sgn-home-module-cycle span:nth-child(2) { animation-delay: 2s; }
-  .sgn-home-module-cycle span:nth-child(3) { animation-delay: 4s; }
-  .sgn-home-module-cycle span:nth-child(4) { animation-delay: 6s; }
-  @keyframes sgnModuleCycle {
-    0%, 21% { opacity: 1; }
-    25%, 100% { opacity: 0; }
+  .sgn-home-module-cycle__cursor {
+    display: inline-block;
+    margin-left: 0.08em;
+    animation: sgnModuleCursor 1s steps(1) infinite;
   }
+  @keyframes sgnModuleCursor { 0%, 48% { opacity: 1; } 50%, 100% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
-    .sgn-home-module-cycle span { display: none; animation: none; }
-    .sgn-home-module-cycle::after { content: 'VIDEOS · APPS · OBJECTS · EXPERIMENTS'; }
+    .sgn-home-module-cycle { min-width: auto; }
+    .sgn-home-module-cycle__cursor { display: none; animation: none; }
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -5157,6 +5157,40 @@ function IdleDisplay({ lang, mobile, focused }) {
   const L = I18N[lang];
   const [armed, setArmed] = React.useState(false);
   const [idleMode, setIdleMode] = React.useState(false);
+  const moduleWords = React.useMemo(() => ['VIDEOS', 'APPS', 'OBJECTS', 'EXPERIMENTS'], []);
+  const [moduleIndex, setModuleIndex] = React.useState(0);
+  const [typedModule, setTypedModule] = React.useState('');
+  const [deletingModule, setDeletingModule] = React.useState(false);
+  const [reduceModuleMotion, setReduceModuleMotion] = React.useState(false);
+
+  React.useEffect(() => {
+    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if (!mq) return undefined;
+    const sync = () => setReduceModuleMotion(mq.matches);
+    sync();
+    mq.addEventListener?.('change', sync);
+    return () => mq.removeEventListener?.('change', sync);
+  }, []);
+
+  React.useEffect(() => {
+    if (reduceModuleMotion) return undefined;
+    const full = moduleWords[moduleIndex];
+    const complete = typedModule.length === full.length;
+    const empty = typedModule.length === 0;
+    const delay = deletingModule ? 48 : (complete ? 1050 : 76);
+    const t = setTimeout(() => {
+      if (!deletingModule) {
+        if (!complete) setTypedModule(full.slice(0, typedModule.length + 1));
+        else setDeletingModule(true);
+      } else if (!empty) {
+        setTypedModule(full.slice(0, typedModule.length - 1));
+      } else {
+        setDeletingModule(false);
+        setModuleIndex(i => (i + 1) % moduleWords.length);
+      }
+    }, empty && deletingModule ? 180 : delay);
+    return () => clearTimeout(t);
+  }, [typedModule, deletingModule, moduleIndex, moduleWords, reduceModuleMotion]);
 
   React.useEffect(() => {
     const t = setTimeout(() => setArmed(true), 80);
@@ -5240,10 +5274,15 @@ function IdleDisplay({ lang, mobile, focused }) {
                 transition: 'opacity 600ms linear 760ms, transform 600ms cubic-bezier(0.2,0,0,1) 760ms',
               }}
             >
-              <span>MODULE / VIDEOS_</span>
-              <span>MODULE / APPS_</span>
-              <span>MODULE / OBJECTS_</span>
-              <span>MODULE / EXPERIMENTS_</span>
+              {reduceModuleMotion ? (
+                'VIDEOS · APPS · OBJECTS · EXPERIMENTS'
+              ) : (
+                <>
+                  <span>MODULE / </span>
+                  <span className="sgn-home-module-cycle__word">{typedModule}</span>
+                  <span className="sgn-home-module-cycle__cursor" aria-hidden="true">_</span>
+                </>
+              )}
             </div>
           </div>
         )}
