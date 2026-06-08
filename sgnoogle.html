@@ -612,6 +612,7 @@ body {
   .sgn-mobilemark { transition: opacity 120ms linear, transform 90ms ease-out; }
   .sgn-mobilemark:active { opacity: 0.72; transform: translateY(1px) scale(0.96); }
   .sgn-ghostctl:active { background: transparent !important; }
+  .sgn-feat-desc::-webkit-scrollbar { display: none; }
   .sgn-homebrand { position: relative; }
   .sgn-homebrand::after {
     content: ''; position: absolute; left: 32px; right: 0; bottom: -7px; height: 2px;
@@ -828,14 +829,14 @@ body {
        colonne collassano a 1; gli scroll interni già presenti (catalogo,
        descrizione app) restano tali. */
 
-    /* 01 · Video featured → su mobile: PLAYER a filo in alto, poi l'eyebrow
-       "IN PRIMO PIANO", poi le info. Il video sale a filo della cornice e
-       l'etichetta scende sotto (più equilibrata, gerarchia più pulita). */
+    /* 01 · Video featured → mobile: player sopra, pannello info sotto.
+       La descrizione diventa un blocco tecnico scrollabile e contenuto, così
+       titoli/CTA/metadati restano sempre leggibili anche con copy lunghi. */
     .sgn-featured {
-      grid-template-areas: "vid" "tag" "info" !important;
+      grid-template-areas: "vid" "info" !important;
       grid-template-columns: 1fr !important;
-      grid-template-rows: auto auto minmax(0, 1fr) !important;
-      gap: clamp(6px, 1vh, 10px) !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 0 !important;
     }
     .sgn-feat-vid {
       height: auto !important;
@@ -843,16 +844,11 @@ body {
       aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
     }
-    /* Impilato: niente divisore verticale, padding laterale comodo al dito.
-       Il video resta a filo (full-bleed), label e info rientrano. */
-    .sgn-feat-label-row {
-      border-left: none !important;
-      padding: 0 clamp(12px, 3.5vw, 16px) !important;
-    }
+    /* Impilato: niente divisore verticale, pannello info compatto e gerarchico. */
     .sgn-feat-info {
-      justify-content: space-between !important;
-      padding: clamp(6px, 1.2vh, 10px) clamp(12px, 3.5vw, 16px) clamp(10px, 1.8vh, 14px) !important;
-      gap: clamp(6px, 1.2vh, 10px) !important;
+      justify-content: flex-start !important;
+      padding: clamp(10px, 1.6vh, 14px) clamp(12px, 3.5vw, 16px) clamp(10px, 1.8vh, 14px) !important;
+      gap: clamp(8px, 1.2vh, 12px) !important;
       border-left: none !important;
     }
     .sgn-feat-title {
@@ -860,18 +856,16 @@ body {
       -webkit-line-clamp: 2 !important;
       margin-top: clamp(6px, 1vh, 10px) !important;
     }
-    /* Su mobile la descrizione cede spazio per prima (vedi flexShrink in JS):
-       meno righe = la CTA resta sempre intera, con il suo bordo, su ogni telefono. */
-    /* Descrizione = cuscinetto flessibile. flex-basis 0: su Safari il box
-       -webkit-box con line-clamp altrimenti "fissa" l'altezza a 3 righe e
-       sfora il fondo della card (tagliando la CTA). Con basis 0 mostra solo
-       le righe che entrano nello spazio rimasto e taglia il resto, lasciando
-       sempre intera la CTA sotto. */
-    .sgn-feat-desc {
-      -webkit-line-clamp: 3 !important;
-      flex: 1 1 0 !important;
-      min-height: 0 !important;
+    .sgn-feat-desc-panel {
+      flex: 1 1 auto !important;
+      min-height: 64px !important;
+      max-height: clamp(82px, 18vh, 138px) !important;
     }
+    .sgn-feat-desc {
+      font-size: clamp(10px, 2.9vw, 12px) !important;
+      line-height: 1.45 !important;
+    }
+    .sgn-feat-stats { margin-top: auto !important; }
     .sgn-feat-foot { gap: clamp(10px, 1.6vh, 14px) !important; }
     /* CTA a tutta larghezza = bersaglio tap ampio, label centrata */
     .sgn-feat-cta {
@@ -3609,59 +3603,21 @@ function FeaturedVideo({ v, L, lang }) {
   const displayTitle = meta?.title || v.title;
   const displayDate  = meta ? fmtPubDate(meta.publishedAt, lang) : null;
 
-  // La descrizione è un "cuscinetto" flessibile: il flex le assegna un'altezza
-  // qualsiasi (non multipla della riga) e overflow:hidden tagliava l'ultima
-  // riga a metà. Qui agganciamo il clip a righe INTERE: misuriamo lo spazio
-  // assegnato e fissiamo line-clamp + max-height all'ultima riga che ci sta
-  // tutta → meglio fermarsi una riga prima che mostrarne mezza.
-  const descRef = React.useRef(null);
-  const snapDesc = React.useCallback(() => {
-    const p = descRef.current;
-    if (!p) return;
-    p.style.removeProperty('max-height');           // torna all'altezza piena del flex…
-    const cs = getComputedStyle(p);
-    let lh = parseFloat(cs.lineHeight);
-    if (cs.lineHeight.indexOf('px') === -1 || !lh) lh = parseFloat(cs.fontSize) * 1.6;
-    if (!lh) return;
-    const lines = Math.max(1, Math.floor(p.clientHeight / lh + 0.05)); // …righe intere che entrano
-    p.style.setProperty('-webkit-line-clamp', String(lines), 'important');
-    p.style.maxHeight = (lines * lh) + 'px';         // clip esatto sull'ultima riga intera
-  }, []);
-  React.useLayoutEffect(() => { snapDesc(); });       // riapplica dopo ogni render (React resetta gli inline)
-  React.useEffect(() => {
-    const p = descRef.current;
-    if (!p) return undefined;
-    const box = p.closest('.sgn-feat-info') || p;     // altezza fissata dal grid → niente loop col maxHeight
-    const ro = new ResizeObserver(() => snapDesc());
-    ro.observe(box);
-    window.addEventListener('resize', snapDesc);
-    return () => { ro.disconnect(); window.removeEventListener('resize', snapDesc); };
-  }, [snapDesc, meta && meta.description]);
+  const displayDescription = meta?.description || v.description?.[lang] || v.description?.it || '';
 
   return (
     <div ref={ref} className="sgn-card-hover sgn-card-hover--media sgn-featured" style={{
       position: 'relative',
       height: '100%', overflow: 'hidden',
       display: 'grid',
-      gridTemplateAreas: '"vid tag" "vid info"',
-      gridTemplateColumns: 'minmax(0, 1.55fr) minmax(0, 1fr)',
-      gridTemplateRows: 'auto 1fr',
+      gridTemplateAreas: '"vid info"',
+      gridTemplateColumns: 'minmax(0, 1.68fr) minmax(300px, 0.92fr)',
+      gridTemplateRows: '1fr',
       border: `0.5px solid ${C.border}`,
       background: C.white,
       boxSizing: 'border-box',
     }}>
-      {/* LABEL: desktop col2-row1 | mobile row1 (sopra il player).
-         Su desktop fa parte del pannello info: hairline a sinistra (divisore
-         dal video) + padding condiviso. Su mobile gli override azzerano bordo
-         e padding laterale (vedi @media). */}
-      <div className="sgn-feat-label-row" style={{
-        padding: `${CARD_PAD} ${CARD_PAD} clamp(8px, 1vh, 12px)`,
-        borderLeft: `0.5px solid ${C.border}`,
-      }}>
-        <Tag color={C.yellow}>{L.video.featured}</Tag>
-      </div>
-
-      {/* VIDEO: desktop col1-rows1-2 | mobile row2 */}
+      {/* VIDEO: desktop col1 | mobile row1 */}
       <div className="sgn-feat-vid-col" style={{
         position: 'relative', minWidth: 0, minHeight: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -3682,21 +3638,25 @@ function FeaturedVideo({ v, L, lang }) {
         </div>
       </div>
 
-      {/* INFO: desktop col2-row2 | mobile row3. Stessa hairline-divisore e
-         stesso padding orizzontale della label-row → pannello info coeso a
-         destra del video. Override mobile azzerano bordo e ridanno padding. */}
+      {/* INFO: desktop col2 | mobile row2. Pannello editoriale: badge, titolo,
+         descrizione scrollabile, metadati e CTA in una singola colonna stabile. */}
       <div className="sgn-feat-info" style={{
-        padding: `0 ${CARD_PAD} ${CARD_PAD}`,
+        padding: CARD_PAD,
         borderLeft: `0.5px solid ${C.border}`,
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
+        gap: 'clamp(10px, 1.35vh, 16px)',
         overflow: 'hidden',
       }}>
         <div className="sgn-feat-head" style={{ minHeight: 0, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 'clamp(8px, 1vh, 12px)' }}>
+            <Tag color={C.yellow}>{L.video.featured}</Tag>
+            <Label color={C.faint} size={9}>FEED LIVE</Label>
+          </div>
           <div className="sgn-feat-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
             fontSize: 'clamp(13px, 1.3vw, 19px)', letterSpacing: '-0.02em',
             color: C.ink, lineHeight: 1.2, margin: 0, textTransform: 'uppercase',
-            display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical',
+            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
           }}>{displayTitle}</div>
           <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
@@ -3704,17 +3664,34 @@ function FeaturedVideo({ v, L, lang }) {
           </Label>
         </div>
 
-        {meta?.description && (
-          <p className="sgn-feat-desc" ref={descRef} style={{
-            margin: 0, fontFamily: 'IBM Plex Mono, monospace',
-            fontSize: 'clamp(11px, 0.85vw, 13px)', color: C.grey, lineHeight: 1.6,
-            display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical',
-            overflow: 'hidden', minHeight: 0, flexShrink: 1,
-          }}>{meta.description}</p>
+        {displayDescription && (
+          <div className="sgn-feat-desc-panel" style={{
+            position: 'relative', minHeight: 0, flex: '1 1 auto',
+            display: 'flex', flexDirection: 'column',
+            borderTop: `0.5px solid ${C.borderSoft}`,
+            borderBottom: `0.5px solid ${C.borderSoft}`,
+            padding: 'clamp(9px, 1.1vh, 12px) 0',
+            overflow: 'hidden',
+          }}>
+            <Label color={C.faint} size={9} style={{ display: 'block', marginBottom: 8 }}>
+              {lang === 'it' ? 'DESCRIZIONE' : 'DESCRIPTION'}
+            </Label>
+            <p className="sgn-feat-desc" style={{
+              margin: 0, paddingRight: 6, flex: '1 1 auto', minHeight: 0,
+              overflowY: 'auto', scrollbarWidth: 'none',
+              fontFamily: 'IBM Plex Mono, monospace',
+              fontSize: 'clamp(11px, 0.85vw, 13px)', color: C.grey, lineHeight: 1.55,
+            }}>{displayDescription}</p>
+            <span aria-hidden style={{
+              position: 'absolute', left: 0, right: 0, bottom: 0, height: 18,
+              background: `linear-gradient(to bottom, rgba(255,255,255,0), ${C.white})`,
+              pointerEvents: 'none',
+            }}/>
+          </div>
         )}
 
         {meta && (
-          <div style={{ display: 'flex', flexShrink: 0, borderTop: `0.5px solid ${C.border}`, borderBottom: `0.5px solid ${C.border}` }}>
+          <div className="sgn-feat-stats" style={{ display: 'flex', flexShrink: 0, borderTop: `0.5px solid ${C.border}`, borderBottom: `0.5px solid ${C.border}` }}>
             {[
               { k: lang === 'it' ? 'VISUALIZZAZIONI' : 'VIEWS', v: fmtViews(meta.views) },
               { k: lang === 'it' ? 'DURATA' : 'LENGTH', v: fmtDur(meta.duration) },
@@ -3749,7 +3726,7 @@ function FeaturedVideo({ v, L, lang }) {
             size="sm"
             className="sgn-feat-cta"
             label={lang === 'it' ? 'GUARDA SU YOUTUBE' : 'WATCH ON YOUTUBE'}
-            style={{ alignSelf: 'flex-start' }}
+            style={{ alignSelf: 'stretch' }}
           />
         </div>
       </div>
