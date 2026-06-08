@@ -2870,8 +2870,8 @@ function STLLab({ lang }) {
       if (group.parent === holder) holder.remove(group);
       disposeGroup(group);
     };
-    const fadeOutGroup = (group) => {
-      if (reduceRevealMotion) { removeGroup(group); return; }
+    const fadeOutGroup = (group) => new Promise((resolve) => {
+      if (reduceRevealMotion) { removeGroup(group); resolve(); return; }
       const mats = collectMaterials(group);
       mats.forEach(m => { if (m) m.transparent = true; });
       const start = performance.now();
@@ -2880,16 +2880,16 @@ function STLLab({ lang }) {
       const targetScale = initialScale * 0.985;
       const ease = t => 1 - Math.pow(1 - t, 3);
       const tick = (now) => {
-        if (!group.parent) return;
+        if (!group.parent) { resolve(); return; }
         const p = Math.min(1, (now - start) / duration);
         const e = ease(p);
         group.scale.setScalar(initialScale + (targetScale - initialScale) * e);
         mats.forEach(m => { if (m) m.opacity = 1 - e; });
         if (p < 1) requestAnimationFrame(tick);
-        else removeGroup(group);
+        else { removeGroup(group); resolve(); }
       };
       requestAnimationFrame(tick);
-    };
+    });
     const revealModel = (group, materials = []) => {
       if (reduceRevealMotion) {
         materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
@@ -2932,34 +2932,43 @@ function STLLab({ lang }) {
       return { group, materials: [fillMat, edgeMat] };
     };
 
-    previous.forEach(fadeOutGroup);
+    const exitDone = Promise.all(previous.map(fadeOutGroup));
+    let nextAttached = false;
     // Dopo il preload iniziale, il cambio modello non deve più mostrare LOADING:
-    // il vecchio oggetto fa fade-out mentre quello nuovo entra. Se il modello non
-    // è ancora in cache, lasciamo comunque il precedente in uscita e mostriamo il
-    // gate solo se non c'è nulla in scena (primo load / rete lenta).
+    // il vecchio oggetto fa fade-out da solo; solo dopo entra il nuovo modello.
+    // Se la geometria non è ancora pronta, il gate compare solo quando l'uscita è
+    // finita, evitando sovrapposizioni tra sparizione e comparsa.
     setModelReady(previous.length > 0 || (obj?.real && hasCachedSTLGeometry(obj)));
+    if (previous.length > 0) {
+      exitDone.then(() => { if (!cancelled && !nextAttached) setModelReady(false); });
+    }
 
     if (obj?.real && THREE.STLLoader) {
-      loadCachedSTLGeometry(THREE, obj)
-        .then((geometry) => {
-          if (cancelled) { geometry.dispose?.(); return; }
-          const { group, materials } = buildSTLGroup(geometry);
-          holder.add(group);
-          revealModel(group, materials);
-        })
-        .catch(() => {
-          if (!cancelled) {
+      Promise.all([exitDone, loadCachedSTLGeometry(THREE, obj).catch(() => null)])
+        .then(([, geometry]) => {
+          if (cancelled) { geometry?.dispose?.(); return; }
+          if (geometry) {
+            const { group, materials } = buildSTLGroup(geometry);
+            holder.add(group);
+            nextAttached = true;
+            revealModel(group, materials);
+          } else {
             const fallback = buildProceduralModel(THREE, currentId);
             holder.add(fallback);
+            nextAttached = true;
             revealModel(fallback, collectMaterials(fallback));
           }
         });
       return () => { cancelled = true; };
     }
 
-    const fallback = buildProceduralModel(THREE, currentId);
-    holder.add(fallback);
-    revealModel(fallback, collectMaterials(fallback));
+    exitDone.then(() => {
+      if (cancelled) return;
+      const fallback = buildProceduralModel(THREE, currentId);
+      holder.add(fallback);
+      nextAttached = true;
+      revealModel(fallback, collectMaterials(fallback));
+    });
     return () => { cancelled = true; };
   }, [currentId, ready, booted]);
 
