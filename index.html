@@ -1141,10 +1141,11 @@ body {
      Scrittura/descrittura sul posto: footprint fisso, niente layout shift. */
   .sgn-home-module-cycle {
     position: relative;
-    display: inline-flex;
+    display: inline-grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: center;
-    min-width: 20ch;
+    column-gap: 0.65ch;
+    width: 20ch;
     height: 1em;
     font-family: var(--font-mono);
     font-size: clamp(7px, 2vw, 10px);
@@ -1155,9 +1156,11 @@ body {
     white-space: nowrap;
     text-align: center;
   }
+  .sgn-home-module-cycle__label { text-align: right; }
+  .sgn-home-module-cycle__sep { text-align: center; }
   .sgn-home-module-cycle__word {
     display: inline-block;
-    min-width: 8ch;
+    min-width: 0;
     text-align: left;
   }
   .sgn-home-module-cycle__cursor {
@@ -1166,12 +1169,11 @@ body {
     animation: sgnModuleCursor 1s steps(1) infinite;
   }
   @media (max-width: 760px) {
-    .sgn-home-module-cycle { min-width: 0; }
-    .sgn-home-module-cycle__word { min-width: 0; }
+    .sgn-home-module-cycle { width: min(18ch, 100%); }
   }
   @keyframes sgnModuleCursor { 0%, 48% { opacity: 1; } 50%, 100% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
-    .sgn-home-module-cycle { min-width: auto; }
+    .sgn-home-module-cycle { width: auto; min-width: auto; display: inline-flex; }
     .sgn-home-module-cycle__cursor { display: none; animation: none; }
   }
 
@@ -5407,7 +5409,8 @@ function IdleDisplay({ lang, mobile, focused }) {
                 'VIDEO · OBJECTS · APPS · LINK · ABOUT'
               ) : (
                 <>
-                  <span>MODULE / </span>
+                  <span className="sgn-home-module-cycle__label">MODULE</span>
+                  <span className="sgn-home-module-cycle__sep">/</span>
                   <span className="sgn-home-module-cycle__word">
                     {typedModule}
                     {typedModule && <span className="sgn-home-module-cycle__cursor" aria-hidden="true">_</span>}
