@@ -1590,14 +1590,10 @@ const UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ'; // uploads playlist = UC→UU
    La pagina 2 mostra ESATTAMENTE gli ultimi video del canale, escluso il
    primo (= l'ultimo caricato, già IN PRIMO PIANO a pagina 1).
 
-   Il primo piano (pagina 1) è SEMPRE live a costo zero perché è un EMBED
-   iframe della uploads-playlist: YouTube serve da sé l'ultimo upload, anche
-   quelli del 2026, senza chiave né API.
-
-   La griglia live passa da /api/youtube: la chiave YouTube resta sul
-   Worker/Pages Function (env YOUTUBE_API_KEY/YT_API_KEY), il client riceve solo JSON
-   cacheabile e mantiene fallback curato se l'endpoint non è disponibile. */
-const YT_FEED_ENDPOINT = '/api/youtube';
+   Questa key è quella Google Cloud già limitata al sito sgnoogle.com: deve
+   restare nel client perché la restrizione HTTP referrer funziona dal browser,
+   mentre un proxy server-side può non passare il referrer autorizzato. */
+const YT_API_KEY = 'AIzaSyBqqeQJvz12FXPkL0QsPPDz4W1r_hQ7U_I';
 
 const VIDEOS = [
   { id: '01', title: 'ULTIMO CARICAMENTO', cat: 'FRANCESCO SGNAOLIN · FEED LIVE', kind: 'A',
@@ -3294,24 +3290,48 @@ function fmtPubDate(iso, lang) {
   return `${d.getDate()} ${M[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-/* useFeaturedVideoMeta — recupera metadati reali dell'ultimo upload dal
-   proxy /api/youtube. Nessuna API key nel client; fallback locale se il Worker
-   non è configurato o la quota YouTube non risponde. */
+/* useFeaturedVideoMeta — due fetch dirette a YouTube Data v3 con la key
+   Google Cloud del sito: playlistItems → ultimo upload, poi videos → stats. */
 function useFeaturedVideoMeta() {
   const [meta, setMeta] = React.useState(() => {
     try {
-      const cached = JSON.parse(localStorage.getItem('sgn_feat_v2')) || null;
+      const cached = JSON.parse(localStorage.getItem('sgn_feat_v3')) || null;
       return cached?.channelId === CHANNEL_ID ? cached : null;
     } catch { return null; }
   });
   React.useEffect(() => {
+    if (!YT_API_KEY) return;
     let alive = true;
-    fetch(YT_FEED_ENDPOINT, { headers: { Accept: 'application/json' } })
+    const listUrl = 'https://www.googleapis.com/youtube/v3/playlistItems'
+      + '?part=snippet,contentDetails&maxResults=1&playlistId=' + UPLOADS_PID
+      + '&key=' + YT_API_KEY;
+    fetch(listUrl)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(data => {
-        if (!alive || data?.channelId !== CHANNEL_ID || data?.uploadsPlaylistId !== UPLOADS_PID || !data?.featured) return;
-        try { localStorage.setItem('sgn_feat_v2', JSON.stringify(data.featured)); } catch {}
-        setMeta(data.featured);
+      .then(d => {
+        const item = d?.items?.[0];
+        const sn = item?.snippet || {};
+        const videoId = item?.contentDetails?.videoId || sn.resourceId?.videoId;
+        if (!alive || !videoId || sn.channelId !== CHANNEL_ID) return;
+        return fetch('https://www.googleapis.com/youtube/v3/videos'
+          + '?part=statistics,contentDetails,snippet&id=' + videoId + '&key=' + YT_API_KEY)
+          .then(r => r.ok ? r.json() : Promise.reject(r.status))
+          .then(sd => {
+            const video = sd?.items?.[0];
+            const { statistics: stats = {}, contentDetails: cd = {}, snippet: vs = {} } = video || {};
+            if (!alive || !video || vs.channelId !== CHANNEL_ID) return;
+            const fresh = {
+              videoId, youtubeId: videoId, channelId: CHANNEL_ID, uploadsPlaylistId: UPLOADS_PID,
+              title: vs.title || sn.title, publishedAt: vs.publishedAt || item.contentDetails?.videoPublishedAt || sn.publishedAt,
+              views: parseInt(stats.viewCount || 0, 10),
+              likes: parseInt(stats.likeCount || 0, 10),
+              duration: cd.duration,
+              description: vs.description || '',
+              thumbnail: vs.thumbnails?.maxres?.url || vs.thumbnails?.high?.url || vs.thumbnails?.medium?.url || '',
+              url: 'https://www.youtube.com/watch?v=' + videoId,
+            };
+            try { localStorage.setItem('sgn_feat_v3', JSON.stringify(fresh)); } catch {}
+            if (alive) setMeta(fresh);
+          });
       })
       .catch(() => {});
     return () => { alive = false; };
@@ -3319,26 +3339,35 @@ function useFeaturedVideoMeta() {
   return meta;
 }
 
-/* useLatestUploads — popola la pagina 2 con gli ultimi video dal proxy edge.
-   Se /api/youtube non ha YOUTUBE_API_KEY/YT_API_KEY configurata, resta il fallback curato. */
+/* useLatestUploads — popola la pagina 2 con gli ULTIMI video reali del canale.
+   Usa direttamente la API key Google Cloud limitata a sgnoogle.com. */
 function useLatestUploads() {
   const [rest, setRest] = React.useState(() => VIDEOS.slice(1));
   React.useEffect(() => {
+    if (!YT_API_KEY) return;
     let alive = true;
-    fetch(YT_FEED_ENDPOINT, { headers: { Accept: 'application/json' } })
+    const url = 'https://www.googleapis.com/youtube/v3/playlistItems'
+      + '?part=snippet,contentDetails&maxResults=13&playlistId=' + UPLOADS_PID
+      + '&key=' + YT_API_KEY;
+    fetch(url)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
-        if (!alive || data?.channelId !== CHANNEL_ID || data?.uploadsPlaylistId !== UPLOADS_PID || !Array.isArray(data?.uploads)) return;
-        const mapped = data.uploads.map((it, idx) => ({
-          id: it.id || it.youtubeId || `yt-${idx}`,
-          youtubeId: it.youtubeId || it.id,
-          title: (it.title || '').toUpperCase(),
-          cat: it.cat || 'YOUTUBE',
-          url: it.url || ('https://www.youtube.com/watch?v=' + (it.youtubeId || it.id)),
-        })).filter(v => v.youtubeId && v.title);
-        if (mapped.length) setRest(mapped);
+        if (!alive || !Array.isArray(data?.items)) return;
+        const mapped = data.items.map(it => {
+          const s = it.snippet || {};
+          const vid = it.contentDetails?.videoId || s.resourceId?.videoId;
+          if (!vid || s.channelId !== CHANNEL_ID) return null;
+          return {
+            id: vid, youtubeId: vid,
+            title: (s.title || '').toUpperCase(),
+            cat: 'YOUTUBE',
+            url: 'https://www.youtube.com/watch?v=' + vid,
+          };
+        }).filter(Boolean);
+        // [0] = ultimo upload = già in primo piano → lo escludo dalla griglia
+        if (mapped.length > 1) setRest(mapped.slice(1));
       })
-      .catch(() => { /* fallback curato */ });
+      .catch(() => { /* tiene il fallback curato */ });
     return () => { alive = false; };
   }, []);
   return rest;
