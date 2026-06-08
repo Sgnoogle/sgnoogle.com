@@ -612,7 +612,10 @@ body {
   .sgn-mobilemark { transition: opacity 120ms linear, transform 90ms ease-out; }
   .sgn-mobilemark:active { opacity: 0.72; transform: translateY(1px) scale(0.96); }
   .sgn-ghostctl:active { background: transparent !important; }
-  .sgn-feat-desc::-webkit-scrollbar { display: none; }
+  .sgn-featured:hover .sgn-feat-cta:not(:hover) .sgn-cta__icon {
+    background: transparent !important; border-right-color: var(--border) !important;
+  }
+  .sgn-featured:hover .sgn-feat-cta:not(:hover) .sgn-cta__icon > span { background-color: var(--yellow) !important; }
   .sgn-homebrand { position: relative; }
   .sgn-homebrand::after {
     content: ''; position: absolute; left: 32px; right: 0; bottom: -7px; height: 2px;
@@ -830,7 +833,7 @@ body {
        descrizione app) restano tali. */
 
     /* 01 · Video featured → mobile: player sopra, pannello info sotto.
-       La descrizione diventa un blocco tecnico scrollabile e contenuto, così
+       La descrizione diventa un blocco tecnico tagliato a righe, così
        titoli/CTA/metadati restano sempre leggibili anche con copy lunghi. */
     .sgn-featured {
       grid-template-areas: "vid" "info" !important;
@@ -857,11 +860,15 @@ body {
       margin-top: clamp(6px, 1vh, 10px) !important;
     }
     .sgn-feat-desc-panel {
-      flex: 1 1 auto !important;
-      min-height: 64px !important;
-      max-height: clamp(82px, 18vh, 138px) !important;
+      flex: 0 1 auto !important;
+      min-height: 0 !important;
+      max-height: clamp(74px, 14vh, 112px) !important;
     }
     .sgn-feat-desc {
+      display: -webkit-box !important;
+      -webkit-box-orient: vertical !important;
+      -webkit-line-clamp: 4 !important;
+      overflow: hidden !important;
       font-size: clamp(10px, 2.9vw, 12px) !important;
       line-height: 1.45 !important;
     }
@@ -3639,7 +3646,7 @@ function FeaturedVideo({ v, L, lang }) {
       </div>
 
       {/* INFO: desktop col2 | mobile row2. Pannello editoriale: badge, titolo,
-         descrizione scrollabile, metadati e CTA in una singola colonna stabile. */}
+         descrizione tagliata, metadati e CTA in una singola colonna stabile. */}
       <div className="sgn-feat-info" style={{
         padding: CARD_PAD,
         borderLeft: `0.5px solid ${C.border}`,
@@ -3648,9 +3655,8 @@ function FeaturedVideo({ v, L, lang }) {
         overflow: 'hidden',
       }}>
         <div className="sgn-feat-head" style={{ minHeight: 0, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 'clamp(8px, 1vh, 12px)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, marginBottom: 'clamp(8px, 1vh, 12px)' }}>
             <Tag color={C.yellow}>{L.video.featured}</Tag>
-            <Label color={C.faint} size={9}>FEED LIVE</Label>
           </div>
           <div className="sgn-feat-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
@@ -3660,33 +3666,25 @@ function FeaturedVideo({ v, L, lang }) {
             overflow: 'hidden',
           }}>{displayTitle}</div>
           <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
-            FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ' · FEED LIVE'}
+            FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ''}
           </Label>
         </div>
 
         {displayDescription && (
           <div className="sgn-feat-desc-panel" style={{
-            position: 'relative', minHeight: 0, flex: '1 1 auto',
-            display: 'flex', flexDirection: 'column',
+            position: 'relative', minHeight: 0, flex: '0 1 auto',
             borderTop: `0.5px solid ${C.borderSoft}`,
             borderBottom: `0.5px solid ${C.borderSoft}`,
-            padding: 'clamp(9px, 1.1vh, 12px) 0',
+            padding: 'clamp(10px, 1.2vh, 14px) 0',
             overflow: 'hidden',
           }}>
-            <Label color={C.faint} size={9} style={{ display: 'block', marginBottom: 8 }}>
-              {lang === 'it' ? 'DESCRIZIONE' : 'DESCRIPTION'}
-            </Label>
             <p className="sgn-feat-desc" style={{
-              margin: 0, paddingRight: 6, flex: '1 1 auto', minHeight: 0,
-              overflowY: 'auto', scrollbarWidth: 'none',
+              margin: 0,
+              display: '-webkit-box', WebkitLineClamp: 6, WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
               fontFamily: 'IBM Plex Mono, monospace',
               fontSize: 'clamp(11px, 0.85vw, 13px)', color: C.grey, lineHeight: 1.55,
             }}>{displayDescription}</p>
-            <span aria-hidden style={{
-              position: 'absolute', left: 0, right: 0, bottom: 0, height: 18,
-              background: `linear-gradient(to bottom, rgba(255,255,255,0), ${C.white})`,
-              pointerEvents: 'none',
-            }}/>
           </div>
         )}
 
