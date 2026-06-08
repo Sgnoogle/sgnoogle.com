@@ -613,7 +613,7 @@ body {
   /* l'icona audio si "arma": la freccia gialla resta, ma il bordo si fa ink */
   .sgn-topctl:active { background: #ECEBE7 !important; }
   .sgn-mobilemark, .sgn-ghostctl { background: transparent !important; }
-  .sgn-mobilemark { transition: opacity 120ms linear, transform 90ms ease-out; }
+  .sgn-mobilemark { transition: opacity 180ms linear, transform 180ms cubic-bezier(0.2,0,0,1); }
   .sgn-mobilemark:active { opacity: 0.72; transform: translateY(1px) scale(0.96); }
   .sgn-ghostctl:active { background: transparent !important; }
   .sgn-featured:hover .sgn-feat-cta:not(:hover) .sgn-cta__icon {
@@ -5305,30 +5305,38 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       position: 'relative', zIndex: 60,
       height: 44, background: C.white,
       border: `0.5px solid ${C.borderSoft}`,
-      display: 'flex', alignItems: 'center', justifyContent: mobile && !current ? 'flex-end' : 'space-between',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 clamp(12px, 2vw, 20px)',
       fontFamily: 'IBM Plex Mono, monospace',
       gap: 10, flexShrink: 0,
     }}>
-      {/* Logo+wordmark: desktop nei moduli; su mobile resta il logo mark.
-         In home è statico; nei moduli è un tasto esplicito per tornare alla home. */}
+      {/* Logo+wordmark: desktop nei moduli. Su mobile il mark resta montato
+         ma in home va a opacity 0: sparisce davvero, però può rientrare con
+         un fade leggero quando si apre un modulo. */}
       {mobile ? (
-        current ? (
-          <button onClick={onHome} className="sgn-hot sgn-mobilemark" aria-label={(lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel} style={{
+        <button
+          onClick={current ? onHome : undefined}
+          className="sgn-hot sgn-mobilemark"
+          aria-hidden={!current}
+          aria-label={current ? (lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel : undefined}
+          tabIndex={current ? 0 : -1}
+          style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 38, height: 38, padding: 0,
             border: 'none',
-            cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
+            cursor: current ? 'pointer' : 'default', fontFamily: 'inherit', color: C.ink,
+            opacity: current ? 1 : 0,
+            transform: current ? 'translateY(0) scale(1)' : 'translateY(-2px) scale(0.96)',
+            pointerEvents: current ? 'auto' : 'none',
           }}>
-            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 21, height: 21, display: 'block' }}>
-              <g fill={C.yellow}>
-                <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
-                <polygon points="102.79 0 206.1 0 51.35 100.8"/>
-                <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
-              </g>
-            </svg>
-          </button>
-        ) : null
+          <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 21, height: 21, display: 'block' }}>
+            <g fill={C.yellow}>
+              <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
+              <polygon points="102.79 0 206.1 0 51.35 100.8"/>
+              <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
+            </g>
+          </svg>
+        </button>
       ) : current ? (
         <button onClick={onHome} className="sgn-hot sgn-homebrand" style={{
           display: 'inline-flex', alignItems: 'center', gap: 10,
