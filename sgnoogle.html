@@ -5266,7 +5266,7 @@ function IdleDisplay({ lang, mobile, focused }) {
   const L = I18N[lang];
   const [armed, setArmed] = React.useState(false);
   const [idleMode, setIdleMode] = React.useState(false);
-  const moduleWords = React.useMemo(() => ['VIDEOS', 'APPS', 'OBJECTS', 'EXPERIMENTS'], []);
+  const moduleWords = React.useMemo(() => ['VIDEO', 'OBJECTS', 'APPS', 'LINK', 'ABOUT'], []);
   const [moduleIndex, setModuleIndex] = React.useState(0);
   const [typedModule, setTypedModule] = React.useState('');
   const [deletingModule, setDeletingModule] = React.useState(false);
@@ -5392,7 +5392,7 @@ function IdleDisplay({ lang, mobile, focused }) {
             <LiveBadge armed={armed} dimmed={idleMode}/>
             <div
               className="sgn-home-module-cycle"
-              aria-label="VIDEOS · APPS · OBJECTS · EXPERIMENTS"
+              aria-label="VIDEO · OBJECTS · APPS · LINK · ABOUT"
               style={{
                 opacity: armed ? (idleMode ? 0.28 : 0.72) : 0,
                 transform: armed ? 'translateY(0)' : 'translateY(6px)',
@@ -5400,7 +5400,7 @@ function IdleDisplay({ lang, mobile, focused }) {
               }}
             >
               {reduceModuleMotion ? (
-                'VIDEOS · APPS · OBJECTS · EXPERIMENTS'
+                'VIDEO · OBJECTS · APPS · LINK · ABOUT'
               ) : (
                 <>
                   <span>MODULE / </span>
