@@ -5162,6 +5162,7 @@ function IdleDisplay({ lang, mobile, focused }) {
   const [typedModule, setTypedModule] = React.useState('');
   const [deletingModule, setDeletingModule] = React.useState(false);
   const [reduceModuleMotion, setReduceModuleMotion] = React.useState(false);
+  const [showSideHint, setShowSideHint] = React.useState(false);
 
   React.useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -5215,6 +5216,21 @@ function IdleDisplay({ lang, mobile, focused }) {
       window.removeEventListener('keydown',   reset);
       window.removeEventListener('touchstart',reset);
     };
+  }, [focused]);
+
+  React.useEffect(() => {
+    if (focused) {
+      setShowSideHint(false);
+      try { localStorage.setItem('sgnHomeSideHintSeen', '1'); } catch (e) {}
+      return undefined;
+    }
+    try { if (localStorage.getItem('sgnHomeSideHintSeen')) return undefined; } catch (e) {}
+    const show = setTimeout(() => setShowSideHint(true), 900);
+    const hide = setTimeout(() => {
+      setShowSideHint(false);
+      try { localStorage.setItem('sgnHomeSideHintSeen', '1'); } catch (e) {}
+    }, 5000);
+    return () => { clearTimeout(show); clearTimeout(hide); };
   }, [focused]);
 
   const preview = focused && L.modules[focused];
@@ -5279,15 +5295,17 @@ function IdleDisplay({ lang, mobile, focused }) {
               ) : (
                 <>
                   <span>MODULE / </span>
-                  <span className="sgn-home-module-cycle__word">{typedModule}</span>
-                  <span className="sgn-home-module-cycle__cursor" aria-hidden="true">_</span>
+                  <span className="sgn-home-module-cycle__word">
+                    {typedModule}
+                    {typedModule && <span className="sgn-home-module-cycle__cursor" aria-hidden="true">_</span>}
+                  </span>
                 </>
               )}
             </div>
           </div>
         )}
 
-        {!preview && (
+        {!preview && showSideHint && (
           <div aria-hidden style={{
             position: 'absolute',
             bottom: 'clamp(8px, 1.2vh, 14px)',
@@ -5298,41 +5316,20 @@ function IdleDisplay({ lang, mobile, focused }) {
             transition: 'opacity 700ms linear 500ms',
             whiteSpace: 'nowrap',
           }}>
-            {/* Mobile: il prompt insegna lo swipe ORIZZONTALE tra i moduli
-                (frecce ←/→ ai lati, shimmer alternato), così smette di
-                impersonare un lockscreen con la freccia verticale. Desktop:
-                resta ↓ "seleziona modulo", che indica la strip di tab sotto. */}
-            {mobile ? (
-              <>
-                <span style={{
-                  fontSize: 10, color: C.grey,
-                  animation: 'sgnBlink 1.4s step-start infinite',
-                }}>◀</span>
-                <span style={{
-                  fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
-                  fontFamily: 'IBM Plex Mono, monospace',
-                }}>
-                  {lang === 'it' ? 'SCORRI TRA I MODULI' : 'SWIPE TO BROWSE'}
-                </span>
-                <span style={{
-                  fontSize: 10, color: C.grey,
-                  animation: 'sgnBlink 1.4s step-start infinite', animationDelay: '0.7s',
-                }}>▶</span>
-              </>
-            ) : (
-              <>
-                <span style={{
-                  fontSize: 9, color: C.faint,
-                  animation: 'sgnBlink 1.4s step-start infinite',
-                }}>↓</span>
-                <span style={{
-                  fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
-                  fontFamily: 'IBM Plex Mono, monospace',
-                }}>
-                  {lang === 'it' ? 'SELEZIONA MODULO' : 'SELECT MODULE'}
-                </span>
-              </>
-            )}
+            <span style={{
+              fontSize: 10, color: C.grey,
+              animation: 'sgnBlink 1.4s step-start infinite',
+            }}>◀</span>
+            <span style={{
+              fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
+              fontFamily: 'IBM Plex Mono, monospace',
+            }}>
+              {lang === 'it' ? 'SCORRI LATERALMENTE' : 'SWIPE SIDEWAYS'}
+            </span>
+            <span style={{
+              fontSize: 10, color: C.grey,
+              animation: 'sgnBlink 1.4s step-start infinite', animationDelay: '0.7s',
+            }}>▶</span>
           </div>
         )}
 
