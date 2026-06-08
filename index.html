@@ -246,6 +246,10 @@ body {
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
     mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
   }
+  .sgn-link-scroller {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent);
+  }
 
   /* ── Terminal cursor blink (empty-states) */
   @keyframes sgnBlink {
@@ -862,26 +866,49 @@ body {
     .sgn-feat-desc-panel {
       flex: 0 1 auto !important;
       min-height: 0 !important;
-      max-height: clamp(74px, 14vh, 112px) !important;
+      max-height: clamp(56px, 10.5vh, 78px) !important;
     }
     .sgn-feat-desc {
       display: -webkit-box !important;
       -webkit-box-orient: vertical !important;
-      -webkit-line-clamp: 4 !important;
+      -webkit-line-clamp: 3 !important;
       overflow: hidden !important;
-      font-size: clamp(10px, 2.9vw, 12px) !important;
-      line-height: 1.45 !important;
+      font-size: clamp(10px, 2.85vw, 12px) !important;
+      line-height: 1.42 !important;
     }
-    .sgn-feat-stats { margin-top: auto !important; }
-    .sgn-feat-foot { gap: clamp(10px, 1.6vh, 14px) !important; }
-    /* CTA a tutta larghezza = bersaglio tap ampio, label centrata */
+    .sgn-feat-stats { margin-top: 0 !important; }
+    .sgn-feat-stat-cell {
+      flex-direction: row !important;
+      align-items: baseline !important;
+      justify-content: space-between !important;
+      gap: 8px !important;
+      padding: 9px 10px !important;
+      text-align: left !important;
+    }
+    .sgn-feat-stat-value {
+      font-size: clamp(13px, 3.7vw, 16px) !important;
+      letter-spacing: -0.015em !important;
+    }
+    .sgn-feat-stat-label {
+      order: -1;
+      font-size: 8px !important;
+      letter-spacing: 0.14em !important;
+      white-space: nowrap;
+    }
+    .sgn-feat-foot { gap: clamp(8px, 1.2vh, 12px) !important; }
+    /* CTA a tutta larghezza = bersaglio tap ampio, label centrata, ma più compatta. */
     .sgn-feat-cta {
       align-self: stretch !important;
       width: 100% !important;
+      height: 38px !important;
+      min-height: 38px !important;
     }
+    .sgn-feat-cta .sgn-cta__icon { width: 38px !important; }
     .sgn-feat-cta .sgn-cta__label {
       flex: 1 1 auto !important;
       justify-content: center !important;
+      font-size: 10px !important;
+      letter-spacing: 0.17em !important;
     }
 
     /* 01b · ULTIMI VIDEO → su mobile la griglia collassa a 1 colonna: aggancio
@@ -914,6 +941,8 @@ body {
       overflow-y: auto !important;
       scroll-snap-type: y proximity !important;
       gap: clamp(12px, 1.6vh, 18px) !important;
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent) !important;
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent) !important;
     }
     .sgn-link-scroller > [data-link-card] {
       height: auto !important;
@@ -3694,7 +3723,7 @@ function FeaturedVideo({ v, L, lang }) {
               { k: lang === 'it' ? 'VISUALIZZAZIONI' : 'VIEWS', v: fmtViews(meta.views) },
               { k: lang === 'it' ? 'DURATA' : 'LENGTH', v: fmtDur(meta.duration) },
             ].map(({ k, v: val }, i) => (
-              <div key={k} style={{
+              <div key={k} className="sgn-feat-stat-cell" style={{
                 flex: 1, boxSizing: 'border-box',
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -3705,12 +3734,16 @@ function FeaturedVideo({ v, L, lang }) {
                 borderLeft: i > 0 ? `0.5px solid ${C.border}` : 'none',
                 textAlign: 'center',
               }}>
-                <span style={{
+                <span className="sgn-feat-stat-value" style={{
                   display: 'block', fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
                   fontSize: 'clamp(16px, 1.5vw, 20px)', color: C.ink,
                   lineHeight: 1, letterSpacing: '-0.02em',
                 }}>{val}</span>
-                <Label size={9} color={C.faint} style={{ lineHeight: 1 }}>{k}</Label>
+                <span className="sgn-feat-stat-label" style={{
+                  display: 'block', fontFamily: 'IBM Plex Mono, monospace',
+                  fontSize: 9, fontWeight: 600, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: C.faint, lineHeight: 1,
+                }}>{k}</span>
               </div>
             ))}
           </div>
