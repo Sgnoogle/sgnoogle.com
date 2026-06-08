@@ -1595,7 +1595,7 @@ const UPLOADS_PID = 'UUO_SA_eFRJbVyfqWV8BKzCQ'; // uploads playlist = UC→UU
    quelli del 2026, senza chiave né API.
 
    La griglia live passa da /api/youtube: la chiave YouTube resta sul
-   Worker/Pages Function (env YOUTUBE_API_KEY), il client riceve solo JSON
+   Worker/Pages Function (env YOUTUBE_API_KEY/YT_API_KEY), il client riceve solo JSON
    cacheabile e mantiene fallback curato se l'endpoint non è disponibile. */
 const YT_FEED_ENDPOINT = '/api/youtube';
 
@@ -2535,12 +2535,10 @@ function STLLab({ lang }) {
   const coarse = React.useMemo(() => {
     try { return window.matchMedia('(pointer: coarse)').matches; } catch (e) { return false; }
   }, []);
-  const [viewerRequested, setViewerRequested] = React.useState(() => {
-    try { return !window.matchMedia('(pointer: coarse)').matches; } catch (e) { return true; }
-  });
+  const [viewerRequested, setViewerRequested] = React.useState(true);
 
-  // Load THREE on demand. Desktop parte subito quando apri Objects; mobile/touch
-  // resta su preview leggera finché non premi LOAD 3D.
+  // Load THREE appena il modulo Objects viene montato: gli STL devono essere
+  // visibili subito anche su mobile, senza passare da un gate LOAD 3D.
   React.useEffect(() => {
     if (!viewerRequested || ready) return undefined;
     let cancelled = false;
@@ -2857,24 +2855,6 @@ function STLLab({ lang }) {
           position: 'absolute', inset: 0,
           touchAction: 'none', cursor: 'grab', outlineOffset: '-2px',
         }}/>
-        {!viewerRequested && !loadError && (
-          <div style={{
-            position: 'absolute', inset: 0, background: C.white,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            gap: 14, padding: 24, textAlign: 'center', fontFamily: 'IBM Plex Mono, monospace',
-          }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.22em', color: C.faint, fontWeight: 700 }}>3D PREVIEW · STANDBY</span>
-            <button onClick={() => setViewerRequested(true)} className="sgn-hot"
-              style={{
-                border: `0.5px solid ${C.ink}`, background: 'transparent', color: C.ink,
-                fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, letterSpacing: '0.2em',
-                fontWeight: 700, padding: '9px 18px', cursor: 'pointer',
-              }}>{lang === 'it' ? 'LOAD 3D' : 'LOAD 3D'}</button>
-            <span style={{ fontSize: 10, letterSpacing: '0.08em', color: C.grey, lineHeight: 1.6, maxWidth: 260 }}>
-              {lang === 'it' ? 'Carica WebGL solo quando vuoi ruotare il modello.' : 'Loads WebGL only when you want to rotate the model.'}
-            </span>
-          </div>
-        )}
         {viewerRequested && !ready && !loadError && (
           <div style={{
             position: 'absolute', inset: 0,
@@ -3338,7 +3318,7 @@ function useFeaturedVideoMeta() {
 }
 
 /* useLatestUploads — popola la pagina 2 con gli ultimi video dal proxy edge.
-   Se /api/youtube non ha YOUTUBE_API_KEY configurata, resta il fallback curato. */
+   Se /api/youtube non ha YOUTUBE_API_KEY/YT_API_KEY configurata, resta il fallback curato. */
 function useLatestUploads() {
   const [rest, setRest] = React.useState(() => VIDEOS.slice(1));
   React.useEffect(() => {
