@@ -2828,28 +2828,36 @@ function STLLab({ lang }) {
       const reduceRevealMotion = (() => {
         try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
       })();
-      const revealModel = (group, materials = []) => {
+      const revealModel = (group, fills = [], edges = []) => {
+        const allMaterials = [...edges, ...fills].filter(Boolean);
         if (reduceRevealMotion) {
-          materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
+          allMaterials.forEach(m => { m.opacity = 1; m.transparent = false; });
           setModelReady(true);
           return;
         }
         const start = performance.now();
-        const duration = 560;
+        const duration = 640;
+        const edgeDuration = 320;
+        const fillDelay = 180;
+        const fillDuration = duration - fillDelay;
         const finalScale = group.scale.x || 1;
         const startScale = finalScale * 0.965;
         group.scale.setScalar(startScale);
-        materials.forEach(m => { if (m) { m.transparent = true; m.opacity = 0; } });
+        allMaterials.forEach(m => { m.transparent = true; m.opacity = 0; });
         setModelReady(true);
         const ease = t => 1 - Math.pow(1 - t, 3);
         const tick = (now) => {
           if (cancelled) return;
-          const p = Math.min(1, (now - start) / duration);
+          const elapsed = now - start;
+          const p = Math.min(1, elapsed / duration);
+          const edgeP = Math.min(1, elapsed / edgeDuration);
+          const fillP = Math.min(1, Math.max(0, elapsed - fillDelay) / fillDuration);
           const e = ease(p);
           group.scale.setScalar(startScale + (finalScale - startScale) * e);
-          materials.forEach(m => { if (m) m.opacity = e; });
+          edges.forEach(m => { if (m) m.opacity = ease(edgeP); });
+          fills.forEach(m => { if (m) m.opacity = ease(fillP); });
           if (p < 1) requestAnimationFrame(tick);
-          else materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
+          else allMaterials.forEach(m => { m.opacity = 1; m.transparent = false; });
         };
         requestAnimationFrame(tick);
       };
@@ -2879,18 +2887,19 @@ function STLLab({ lang }) {
           const maxDim = Math.max(size.x, size.y, size.z);
           if (maxDim > 0) group.scale.setScalar(180 / maxDim);
           holder.add(group);
-          revealModel(group, [fillMat, edgeMat]);
+          revealModel(group, [fillMat], [edgeMat]);
         },
         undefined,
         () => {
           if (!cancelled) {
             const fallback = buildProceduralModel(THREE, currentId);
             holder.add(fallback);
-            const mats = [];
+            const fills = [];
+            const edges = [];
             fallback.traverse?.(o => {
-              if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => mats.push(m));
+              if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => (o.isLineSegments ? edges : fills).push(m));
             });
-            revealModel(fallback, mats);
+            revealModel(fallback, fills, edges);
           }
         }
       );
