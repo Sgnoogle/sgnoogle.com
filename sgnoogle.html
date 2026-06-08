@@ -837,22 +837,23 @@ body {
        descrizione app) restano tali. */
 
     /* 01 · Video featured → mobile: cover editoriale prima, player sotto.
-       Il contenuto SGNOOGLE apre la schermata; il video diventa preview/asset
-       e occupa lo spazio residuo, evitando il grande vuoto sotto la CTA. */
+       Il contenuto SGNOOGLE apre la schermata; la preview resta però nel
+       formato reale dei video (18:9), senza stretch verticale/crop aggressivi. */
     .sgn-featured {
       grid-template-areas: "info" "vid" !important;
       grid-template-columns: 1fr !important;
-      grid-template-rows: auto minmax(190px, 1fr) !important;
+      grid-template-rows: auto auto !important;
+      align-content: start !important;
       gap: 0 !important;
     }
     .sgn-feat-vid-col {
-      min-height: clamp(190px, 31vh, 290px) !important;
+      min-height: 0 !important;
       border-top: 0.5px solid var(--border) !important;
     }
     .sgn-feat-vid {
-      height: 100% !important;
+      height: auto !important;
       width: 100% !important;
-      aspect-ratio: auto !important;
+      aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
     }
     /* Impilato: niente divisore verticale, pannello info compatto e gerarchico. */
