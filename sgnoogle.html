@@ -614,7 +614,7 @@ body {
   .sgn-langbtn.is-open .sgn-caret { transform: rotate(180deg); }
   .sgn-langbtn.is-open::after {
     content: ''; position: absolute; left: -0.5px; right: -0.5px; top: -0.5px; height: 2px;
-    background: var(--yellow); transform-origin: left; animation: sgnTopRailIn 160ms cubic-bezier(0.2,0,0,1) both;
+    background: var(--grey); transform-origin: left; animation: sgnTopRailIn 160ms cubic-bezier(0.2,0,0,1) both;
   }
   @keyframes sgnTopRailIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .sgn-lang-popover {
@@ -5204,7 +5204,6 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
 
 function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, onOpenPalette, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, sound, idle }) {
   const L = I18N[lang];
-  const mobileRoute = current || '00';
   const mobileRouteLabel = current ? (L.modules[current]?.label || '') : 'HOME';
   return (
     <header className={`sgn-topbar${!current ? ' sgn-topbar--home' : ''}`} style={{
@@ -5216,24 +5215,38 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       fontFamily: 'IBM Plex Mono, monospace',
       gap: 10, flexShrink: 0,
     }}>
-      {/* Logo+wordmark: desktop nei moduli; su mobile diventa un route chip
-         00/01..05 per bilanciare la topbar e dare orientamento. */}
+      {/* Logo+wordmark: desktop nei moduli; su mobile resta il logo mark.
+         In home è statico; nei moduli è un tasto esplicito per tornare alla home. */}
       {mobile ? (
         current ? (
           <button onClick={onHome} className="sgn-hot sgn-topctl" aria-label={(lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel} style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            minWidth: 34, height: 34, padding: '0 10px',
+            width: 34, height: 34, padding: 0,
             background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
             cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
-          }}>{mobileRoute}</button>
+          }}>
+            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 18, height: 18, display: 'block' }}>
+              <g fill={C.yellow}>
+                <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
+                <polygon points="102.79 0 206.1 0 51.35 100.8"/>
+                <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
+              </g>
+            </svg>
+          </button>
         ) : (
           <span aria-hidden="true" className="sgn-topctl" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            minWidth: 34, height: 34, padding: '0 10px',
+            width: 34, height: 34, padding: 0,
             background: C.paper, border: '0.5px solid rgba(120,122,124,0.25)',
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: C.grey,
-          }}>{mobileRoute}</span>
+          }}>
+            <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 18, height: 18, display: 'block', opacity: 0.86 }}>
+              <g fill={C.yellow}>
+                <polygon points="51.44 100.64 154.75 100.64 0 201.44"/>
+                <polygon points="102.79 0 206.1 0 51.35 100.8"/>
+                <polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/>
+              </g>
+            </svg>
+          </span>
         )
       ) : current ? (
         <button onClick={onHome} className="sgn-hot sgn-homebrand" style={{
@@ -6555,7 +6568,7 @@ function LangPopover({ lang, onPick, onClose, sound }) {
             <span style={{ flex: 1, fontSize: 11, letterSpacing: '0.02em',
               color: active ? C.ink : C.grey, transition: 'color 120ms linear' }}>{r.name}</span>
             {current ? (
-              <span aria-hidden title="current" style={{ width: 6, height: 6, background: C.yellow, flexShrink: 0 }}/>
+              <span aria-hidden title="current" style={{ width: 6, height: 6, background: C.ink, flexShrink: 0 }}/>
             ) : (
               <span aria-hidden style={{ fontSize: 9, letterSpacing: '0.14em', fontWeight: 700,
                 color: C.faint, opacity: active ? 1 : 0, transition: 'opacity 120ms linear' }}>SET ▸</span>
