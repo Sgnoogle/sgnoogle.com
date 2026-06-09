@@ -899,13 +899,12 @@ body {
        colonne collassano a 1; gli scroll interni già presenti (catalogo,
        descrizione app) restano tali. */
 
-    /* 01 · Video featured → mobile, soluzione A: poster editoriale.
-       Titolo enorme in stile Neue Machina → video 18:9 → byline/metriche →
-       CTA che CHIUDE sul bordo basso. Lo spazio che avanza è distribuito TRA
-       i blocchi (space-between, gap = minimo): il poster riempie la tela su
-       qualsiasi altezza, niente buco in fondo. La descrizione YouTube è
-       NASCOSTA su mobile: è boilerplate di link che tronca sempre male — la
-       byline dà già il contesto. (Resta sul desktop, dove ha 6 righe.) */
+    /* 01 · Video featured → mobile, card-cover: VIDEO full-bleed in cima
+       (a filo cornice, come le copertine in pagina 2) → tag + titolo da
+       didascalia → byline/metriche → CTA che CHIUDE sul bordo basso. Lo
+       spazio che avanza è distribuito TRA i blocchi (space-between, gap =
+       minimo). La descrizione YouTube è NASCOSTA su mobile: è boilerplate
+       di link che tronca sempre male. (Resta sul desktop, 6 righe.) */
     .sgn-featured {
       container-type: size;
       grid-template-areas: "info" !important;
@@ -949,12 +948,18 @@ body {
       margin-top: clamp(8px, 1.15cqh, 12px) !important;
     }
     .sgn-feat-desktop-meta { display: none !important; }
+    /* COVER-TOP: il video sta IN CIMA alla pagina, a tutta larghezza della
+       card (full-bleed dentro la cornice — come le copertine delle VideoCard
+       in pagina 2), e il titolo sotto fa da didascalia. I margini negativi
+       annullano il padding del pannello info; hairline sotto da separatore. */
     .sgn-feat-inline-vid-col {
-      order: 2 !important;
+      order: 0 !important;
       display: flex !important;
       min-height: 0 !important;
       box-sizing: border-box !important;
       padding: 0 !important;
+      margin: calc(-1 * clamp(16px, 3cqh, 30px)) calc(-1 * clamp(12px, 3.4vw, 16px)) 0 !important;
+      border-bottom: 0.5px solid var(--border-soft) !important;
       align-items: center !important;
       justify-content: center !important;
       overflow: hidden !important;
@@ -962,13 +967,12 @@ body {
     .sgn-feat-vid {
       flex: 0 0 auto !important;
       height: auto !important;
-      /* 18:9 pieno e controllato: larghezza quasi full-bleed, con cap
-         height-aware solo come safety su viewport molto bassi. */
-      width: min(100%, 88vw) !important;
-      width: min(100%, 88vw, 92cqh) !important;
+      width: 100% !important;
+      /* safety sui viewport bassi: il cover interno copre comunque il box */
+      max-height: 54cqh !important;
       aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
-      border: 0.5px solid var(--border) !important;
+      border: none !important;
       box-sizing: border-box !important;
       background: var(--ink) !important;
     }
@@ -1150,7 +1154,7 @@ body {
       padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
     }
     .sgn-feat-title { font-size: clamp(24px, 7.2vw, 34px) !important; line-height: 0.94 !important; -webkit-line-clamp: 2 !important; }
-    .sgn-feat-vid { width: min(100%, 80vw) !important; width: min(100%, 80vw, 78cqh) !important; }
+    .sgn-feat-vid { max-height: 42cqh !important; }
     .sgn-feat-mobile-metrics { margin-top: 0 !important; }
     .sgn-feat-mobile-metric { padding: 6px 7px !important; }
     .sgn-feat-foot { margin-top: 2px !important; }
@@ -4963,6 +4967,11 @@ function AboutProfilePage({ L, lang }) {
     <AutoFit>
       <div style={{
         width: '100%',
+        /* Composizione CENTRATA: senza cap la colonna testo (max 600) lasciava
+           tutto lo slack a destra → pagina sbilanciata con vuoto laterale.
+           Col cap ≈ avatar+gap+testo il gruppo sta in mezzo al display. */
+        maxWidth: 940,
+        margin: '0 auto',
         display: 'grid',
         gridTemplateColumns: 'auto minmax(0, 1fr)',
         gap: 'clamp(22px, 3vw, 56px)',
@@ -6926,27 +6935,23 @@ function Cursor({ enabled = true, sound }) {
       }}
       className="sgn-cursor"
     >
+      {/* Pulito e tecnico: a riposo una croce essenziale (2 tratti, nessun
+         glifo centrale); su interattivo SOLO le 4 staffe angolari del
+         mirino. Via tacche e rombi: meno dettagli, stessa identità. */}
       {hot ? (
         <svg viewBox="0 0 26 26" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
           <g stroke="#FFC200" strokeWidth={stroke} fill="none" strokeLinecap="square" strokeLinejoin="miter">
-            {/* corner blades — geometric target, no heavy ring */}
             <path d="M 2 7 L 2 2 L 7 2"/>
             <path d="M 19 2 L 24 2 L 24 7"/>
             <path d="M 24 19 L 24 24 L 19 24"/>
             <path d="M 7 24 L 2 24 L 2 19"/>
-            {/* micro alignment ticks */}
-            <path d="M 13 4.5 L 13 7.2 M 13 18.8 L 13 21.5 M 4.5 13 L 7.2 13 M 18.8 13 L 21.5 13" opacity="0.72"/>
-            <path d="M 11.4 13 L 13 11.4 L 14.6 13 L 13 14.6 Z" opacity="0.9"/>
           </g>
         </svg>
       ) : (
         <svg viewBox="0 0 18 18" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
           <g stroke="#FFC200" strokeWidth={stroke} fill="none" strokeLinecap="square">
-            <line x1="9" y1="1.5" x2="9" y2="6"/>
-            <line x1="9" y1="12" x2="9" y2="16.5"/>
-            <line x1="1.5" y1="9" x2="6" y2="9"/>
-            <line x1="12" y1="9" x2="16.5" y2="9"/>
-            <path d="M 8.2 9 L 9 8.2 L 9.8 9 L 9 9.8 Z" opacity="0.86"/>
+            <line x1="9" y1="1.5" x2="9" y2="16.5"/>
+            <line x1="1.5" y1="9" x2="16.5" y2="9"/>
           </g>
         </svg>
       )}
