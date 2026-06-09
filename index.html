@@ -777,6 +777,7 @@ body {
   .sgn-feat-vid-col   { grid-area: vid; }
   .sgn-feat-info      { grid-area: info; }
   .sgn-feat-mobile-metrics { display: none; }
+  .sgn-feat-mobile-meta { display: none; }
 
   /* ── Mobile (<=760) ── */
   @media (max-width: 760px) {
@@ -898,15 +899,10 @@ body {
        colonne collassano a 1; gli scroll interni già presenti (catalogo,
        descrizione app) restano tali. */
 
-    /* 01 · Video featured → mobile.
-       ROOT CAUSE reale dell'overflow percepito: non era solo il 18:9, ma la
-       riga `minmax(0, 1fr)` prima della CTA. Quella riga trasformava la
-       descrizione in un pozzo elastico e spingeva il bottone verso il fondo
-       della card. Su mobile il layout deve tornare a essere uno stack naturale:
-       head/metriche → video 18:9 → descrizione corta → CTA. La card resta alta
-       quanto il display; l'aria residua viene distribuita come ritmo/padding
-       controllato, non come un unico buco sotto la CTA né come un pozzo prima
-       del bottone. */
+    /* 01 · Video featured → mobile, soluzione A: poster editoriale.
+       Titolo enorme in stile Neue Machina → video 18:9 → meta/metriche → CTA
+       → descrizione secondaria. Niente righe elastiche prima del bottone: la
+       pagina deve sembrare una cover video, non una scheda dati compressa. */
     .sgn-featured {
       container-type: size;
       grid-template-areas: "info" !important;
@@ -928,21 +924,26 @@ body {
       justify-content: flex-start !important;
       align-content: stretch !important;
       height: 100% !important;
-      padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(18px, 3.8cqh, 38px) !important;
-      gap: clamp(10px, 1.55cqh, 18px) !important;
+      padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(16px, 3.4cqh, 34px) !important;
+      gap: clamp(10px, 1.45cqh, 16px) !important;
       border-left: none !important;
       overflow: hidden !important;
     }
     .sgn-feat-head {
+      order: 1 !important;
       padding-bottom: 0 !important;
     }
     .sgn-feat-title {
-      font-size: clamp(15px, 4.35vw, 20px) !important;
-      line-height: 1.16 !important;
-      -webkit-line-clamp: 2 !important;
-      margin-top: clamp(4px, 0.55vh, 6px) !important;
+      font-family: Neue Machina, IBM Plex Mono, monospace !important;
+      font-size: clamp(30px, 8.9vw, 46px) !important;
+      line-height: 0.94 !important;
+      letter-spacing: -0.06em !important;
+      -webkit-line-clamp: 3 !important;
+      margin-top: clamp(8px, 1.15cqh, 12px) !important;
     }
+    .sgn-feat-desktop-meta { display: none !important; }
     .sgn-feat-inline-vid-col {
+      order: 2 !important;
       display: flex !important;
       min-height: 0 !important;
       box-sizing: border-box !important;
@@ -956,31 +957,44 @@ body {
       height: auto !important;
       /* 18:9 pieno e controllato: larghezza quasi full-bleed, con cap
          height-aware solo come safety su viewport molto bassi. */
-      width: min(100%, 86vw) !important;
-      width: min(100%, 86vw, 86cqh) !important;
+      width: min(100%, 88vw) !important;
+      width: min(100%, 88vw, 92cqh) !important;
       aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
       border: 0.5px solid var(--border) !important;
       box-sizing: border-box !important;
       background: var(--ink) !important;
     }
+    .sgn-feat-mobile-meta {
+      order: 3 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: clamp(8px, 1cqh, 12px) !important;
+      min-width: 0 !important;
+    }
+    .sgn-feat-mobile-meta .sgn-label {
+      font-size: 9px !important;
+      letter-spacing: 0.22em !important;
+      line-height: 1.2 !important;
+    }
     .sgn-feat-desc-panel {
+      order: 5 !important;
       display: flex !important;
       align-items: center !important;
       flex: 0 0 auto !important;
       min-height: 0 !important;
-      max-height: 64px !important;
-      padding: clamp(8px, 1.15cqh, 13px) 0 !important;
+      max-height: 50px !important;
+      padding: clamp(7px, 0.9cqh, 10px) 0 !important;
       margin: 0 !important;
       overflow: hidden !important;
     }
     .sgn-feat-desc {
       display: -webkit-box !important;
       -webkit-box-orient: vertical !important;
-      -webkit-line-clamp: 3 !important;
+      -webkit-line-clamp: 2 !important;
       overflow: hidden !important;
       font-size: clamp(10px, 2.75vw, 12px) !important;
-      line-height: 1.42 !important;
+      line-height: 1.38 !important;
     }
     .sgn-feat-stats {
       display: none !important;
@@ -989,7 +1003,7 @@ body {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       gap: 0 !important;
-      margin-top: clamp(8px, 1.1cqh, 12px) !important;
+      margin-top: 0 !important;
       border-top: 0.5px solid var(--border-soft) !important;
       border-bottom: 0.5px solid var(--border-soft) !important;
     }
@@ -1040,10 +1054,11 @@ body {
       white-space: nowrap;
     }
     .sgn-feat-foot {
+      order: 4 !important;
       padding-top: 0 !important;
       gap: 0 !important;
       flex: 0 0 auto !important;
-      margin-top: clamp(16px, 5cqh, 58px) !important;
+      margin-top: clamp(2px, 0.7cqh, 8px) !important;
     }
     /* CTA a tutta larghezza = bersaglio tap ampio, label centrata, ma più compatta. */
     .sgn-feat-cta {
@@ -1141,13 +1156,13 @@ body {
       padding-top: 10px !important;
       padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
     }
-    .sgn-feat-title { font-size: clamp(13px, 3.95vw, 17px) !important; line-height: 1.12 !important; }
-    .sgn-feat-vid { width: min(100%, 78vw) !important; width: min(100%, 78vw, 74cqh) !important; }
-    .sgn-feat-desc-panel { max-height: 34px !important; padding: 5px 0 !important; }
-    .sgn-feat-desc { -webkit-line-clamp: 1 !important; line-height: 1.32 !important; }
-    .sgn-feat-mobile-metrics { margin-top: 5px !important; }
+    .sgn-feat-title { font-size: clamp(24px, 7.2vw, 34px) !important; line-height: 0.94 !important; -webkit-line-clamp: 2 !important; }
+    .sgn-feat-vid { width: min(100%, 80vw) !important; width: min(100%, 80vw, 78cqh) !important; }
+    .sgn-feat-desc-panel { max-height: 32px !important; padding: 5px 0 !important; }
+    .sgn-feat-desc { -webkit-line-clamp: 1 !important; line-height: 1.3 !important; }
+    .sgn-feat-mobile-metrics { margin-top: 0 !important; }
     .sgn-feat-mobile-metric { padding: 6px 7px !important; }
-    .sgn-feat-foot { margin-top: clamp(8px, 2.8cqh, 24px) !important; }
+    .sgn-feat-foot { margin-top: 2px !important; }
     .sgn-feat-cta { height: 34px !important; min-height: 34px !important; }
     .sgn-feat-cta .sgn-cta__icon { width: 34px !important; }
   }
@@ -2077,9 +2092,9 @@ function Tag({ children, color = C.yellow, size = 10, style }) {
   );
 }
 
-function Label({ children, color = C.grey, size = 10, style }) {
+function Label({ children, color = C.grey, size = 10, style, className = '' }) {
   return (
-    <span style={{
+    <span className={`sgn-label${className ? ' ' + className : ''}`} style={{
       fontFamily: 'IBM Plex Mono, monospace',
       fontSize: size, fontWeight: 600,
       letterSpacing: '0.14em', textTransform: 'uppercase',
@@ -3867,7 +3882,20 @@ function FeaturedVideo({ v, L, lang }) {
             display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
           }}>{displayTitle}</div>
-          <Label color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
+          <Label className="sgn-feat-desktop-meta" color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
+            FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ''}
+          </Label>
+        </div>
+
+        <div className="sgn-feat-inline-vid-col" style={{
+          display: 'none', minHeight: 0, boxSizing: 'border-box',
+          alignItems: 'center', justifyContent: 'center',
+        }}>
+          {renderFeaturedMedia()}
+        </div>
+
+        <div className="sgn-feat-mobile-meta" aria-label={lang === 'it' ? 'Dettagli video' : 'Video details'}>
+          <Label color={C.grey} size={10} style={{ display: 'block' }}>
             FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ''}
           </Label>
           {meta && (
@@ -3883,13 +3911,6 @@ function FeaturedVideo({ v, L, lang }) {
               ))}
             </div>
           )}
-        </div>
-
-        <div className="sgn-feat-inline-vid-col" style={{
-          display: 'none', minHeight: 0, boxSizing: 'border-box',
-          alignItems: 'center', justifyContent: 'center',
-        }}>
-          {renderFeaturedMedia()}
         </div>
 
         {displayDescription && (
