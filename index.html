@@ -6377,19 +6377,21 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         background: active ? C.white : C.paper,
         color: C.ink,
         border: `0.5px solid ${active ? C.border : C.borderSoft}`,
-        /* "Linguetta" = IL BUTTON STESSO che si estende sopra, nel gap, fino a
-           coprire di 1px la hairline inferiore della view (merge senza
-           cuciture): margin-top negativo + padding-top compensativo (il
-           contenuto non si muove) + bordo superiore trasparente (apertura).
-           UN SOLO elemento → i lati della linguetta SONO i bordi della tab:
-           disallineamento impossibile. Ogni variante a overlay (span con
-           propri hairline) falliva: a coordinate frazionarie (grid 1fr) i
-           bordi di elementi diversi venivano rasterizzati con snapping
-           diverso → scalini fino a ~1px, diversi per ogni tab (verificato
-           empiricamente in headless Chrome a dpr 2.625/3). */
+        /* "Linguetta" = IL BUTTON STESSO che si estende sopra, nel gap, e si
+           FERMA esattamente alla cornice della view (margin = -gap, zero
+           overlap → i bordi laterali incontrano la linea senza scavalcarla):
+           margin-top negativo + padding-top compensativo (il contenuto non si
+           muove) + bordo superiore trasparente (apertura). UN SOLO elemento →
+           i lati della linguetta SONO i bordi della tab: disallineamento
+           impossibile. Ogni variante a overlay (span con propri hairline)
+           falliva: a coordinate frazionarie (grid 1fr) i bordi di elementi
+           diversi rasterizzano con snapping diverso → scalini fino a ~1px,
+           diversi per ogni tab (verificato in headless Chrome, dpr 2.625/3).
+           La hairline della view viene cancellata dalla toppa interna (vedi
+           span sotto), non dall'overlap del bottone. */
         borderTopColor: active ? 'transparent' : undefined,
-        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px) - 1px)' : 0,
-        paddingTop: active ? 'calc(11px + var(--frame-gap, 16px) + 1px)' : 11,
+        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
+        paddingTop: active ? 'calc(11px + var(--frame-gap, 16px))' : 11,
         paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
@@ -6399,6 +6401,18 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear, margin-top 340ms cubic-bezier(0.2,0,0,1), padding-top 340ms cubic-bezier(0.2,0,0,1)',
         minHeight: 62,
       }}>
+      {/* Toppa interna SENZA bordi: cancella la hairline inferiore della view
+         solo per la larghezza interna dell'apertura (tra i due bordi — left/
+         right:0 = padding box). Fill puro → niente snapping da allineare
+         (verificato nei crop: la linea si interrompe esatta ai due stipiti).
+         Compare a fine corsa (delay ≈ durata crescita) così durante
+         l'animazione non si vede la striscia bianca attraversare il gap. */}
+      <span aria-hidden="true" style={{
+        position: 'absolute', top: -1.5, left: 0, right: 0, height: 3,
+        background: C.white, pointerEvents: 'none',
+        opacity: active ? 1 : 0,
+        transition: active ? 'opacity 120ms linear 260ms' : 'opacity 60ms linear',
+      }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
           10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
