@@ -1661,11 +1661,11 @@ const I18N = {
       live: 'LIVE',
     },
     modules: {
-      '01': { label: 'VIDEO',   sub: 'YouTube · recensioni · making',  count: 'live' },
-      '02': { label: 'OBJECTS', sub: 'Modelli 3D · STL',               count: '—'    },
-      '03': { label: 'APPS',    sub: 'Android · mobile',                count: '—'    },
-      '04': { label: 'LINK',    sub: 'Sponsor · collaborazioni',        count: '—'    },
-      '05': { label: 'ABOUT',   sub: 'Chi sono · contatti',             count: '01'   },
+      '01': { label: 'VIDEO',   sub: 'Analisi, opinioni, storie',       count: 'live' },
+      '02': { label: 'OBJECTS', sub: 'Modelli 3D pronti da stampare',   count: '—'    },
+      '03': { label: 'APPS',    sub: 'App Android fatte in casa',       count: '—'    },
+      '04': { label: 'LINK',    sub: 'Collab attive · slot aperti',     count: '—'    },
+      '05': { label: 'ABOUT',   sub: 'L’umano dietro la console',       count: '01'   },
     },
     video: {
       featured: 'IN PRIMO PIANO',
@@ -1773,11 +1773,11 @@ const I18N = {
       live: 'LIVE',
     },
     modules: {
-      '01': { label: 'VIDEO',   sub: 'YouTube · reviews · making',  count: 'live' },
-      '02': { label: 'OBJECTS', sub: '3D models · STL',             count: '—'    },
-      '03': { label: 'APPS',    sub: 'Android · mobile',             count: '—'    },
-      '04': { label: 'LINK',    sub: 'Sponsors · collabs',           count: '—'    },
-      '05': { label: 'ABOUT',   sub: 'About · contact',              count: '01'   },
+      '01': { label: 'VIDEO',   sub: 'Analysis, opinions, stories',   count: 'live' },
+      '02': { label: 'OBJECTS', sub: 'Print-ready 3D models',         count: '—'    },
+      '03': { label: 'APPS',    sub: 'Homemade Android apps',         count: '—'    },
+      '04': { label: 'LINK',    sub: 'Active collabs · open slots',   count: '—'    },
+      '05': { label: 'ABOUT',   sub: 'The human behind the console',  count: '01'   },
     },
     video: {
       featured: 'FEATURED',
@@ -6394,12 +6394,14 @@ function GameBoyKey({ id, n, label, active, onPress }) {
          · bordi laterali — si fermano ESATTAMENTE alla cornice della view
            (height = gap+1, dove l'1px è solo la sovrapposizione sulla key in
            basso), quindi NON spuntano sopra il bordo della view.
-         left/right: 0 (NON -0.5): il button è border-box, i suoi hairline
-         vivono DENTRO il box — a -0.5 la linguetta sporgeva di mezzo pixel
-         per lato rispetto alla tab. A 0 i bordi si sovrappongono esatti. */}
+         left/right: -0.5 — gli offset assoluti si misurano dal PADDING box
+         (dentro il bordo 0.5px del button): -0.5 porta gli span esattamente
+         sul border box esterno della tab, così i loro hairline si
+         sovrappongono ai bordi della tab. Con 0 la linguetta rientrerebbe
+         di mezzo pixel per lato (verificato a zoom). */}
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: 0, right: 0,
+        left: -0.5, right: -0.5,
         height: 'calc(var(--frame-gap, 16px) + 2px)',
         // Stesso fondo (e fade 160ms) del tasto: i due viaggiano insieme da
         // paper a white mentre la linguetta cresce.
@@ -6411,7 +6413,7 @@ function GameBoyKey({ id, n, label, active, onPress }) {
       }}/>
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: 0, right: 0,
+        left: -0.5, right: -0.5,
         height: 'calc(var(--frame-gap, 16px) + 1px)',
         borderLeft: `0.5px solid ${C.border}`,
         borderRight: `0.5px solid ${C.border}`,
@@ -7936,21 +7938,14 @@ function FadePill({ show, children }) {
   );
 }
 
-/* SwipeHint — chip "SCORRI ↕" nei moduli multipagina (lì il verticale esiste). */
+/* SwipeHint — chip "SCORRI ↕" nei moduli multipagina (lì il verticale esiste).
+   In home invece NESSUN chip: il prompt fisso "◀ SCORRI LATERALMENTE ▶" fa
+   già da guida — il chip una-tantum (MobileNavHint) duplicava il messaggio
+   20px più in alto ed è stato rimosso. */
 function SwipeHint({ lang, show }) {
   return (
     <FadePill show={show}>
       {lang === 'it' ? 'SCORRI' : 'SWIPE'}<span className="ar">↕</span>
-    </FadePill>
-  );
-}
-
-/* MobileNavHint — prima apertura, in home: SOLO lo scorrimento laterale
-   (in home il verticale non serve — niente più "↕ PAGINE"). */
-function MobileNavHint({ lang, show }) {
-  return (
-    <FadePill show={show}>
-      <span className="ar">◀▶</span>{lang === 'it' ? 'SCORRI I MODULI' : 'SWIPE MODULES'}
     </FadePill>
   );
 }
@@ -7989,7 +7984,6 @@ function App() {
   const [pageMeta, setPageMeta] = useState({ label: '', index: 0, total: 0, goto: null, labels: [] });
   const [idle, setIdle] = useState(false);
   const [swipeHint, setSwipeHint] = useState(false);
-  const [mobileHint, setMobileHint] = useState(false);
   const [onboard, setOnboard] = useState(false);
   const prevRef = useRef(null);
   const pendingPageRef = useRef(null);
@@ -8181,25 +8175,6 @@ function App() {
     try { el.focus({ preventScroll: true }); } catch (e) { try { el.focus(); } catch (e2) {} }
   }, [current, transKey, booted]);
 
-  /* Mobile navigation hint: una-tantum dopo il boot, spiega assi SGN-OS
-     senza popup — orizzontale per moduli, verticale per pagine. */
-  useEffect(() => {
-    if (!mobile || !booted) return;
-    try { if (localStorage.getItem('sgnMobileNavSeen')) return; } catch (e) {}
-    const t = setTimeout(() => setMobileHint(true), 1100);
-    const h = setTimeout(() => {
-      setMobileHint(false);
-      try { localStorage.setItem('sgnMobileNavSeen', '1'); } catch (e) {}
-    }, 4600);
-    return () => { clearTimeout(t); clearTimeout(h); };
-  }, [mobile, booted]);
-  useEffect(() => {
-    if ((current || pageMeta.index > 0) && mobileHint) {
-      setMobileHint(false);
-      try { localStorage.setItem('sgnMobileNavSeen', '1'); } catch (e) {}
-    }
-  }, [current, pageMeta.index, mobileHint]);
-
   /* Swipe hint (mobile, una-tantum a sessione) sui moduli multi-pagina. */
   useEffect(() => {
     if (!mobile || !current || pageMeta.total <= 1) { setSwipeHint(false); return; }
@@ -8345,7 +8320,6 @@ function App() {
                   sound={sound}
                 />
               )}
-              <MobileNavHint lang={lang} show={mobileHint}/>
               <SwipeHint lang={lang} show={swipeHint}/>
             </section>
             {pageMeta.total > 1 && pageMeta.goto && (
