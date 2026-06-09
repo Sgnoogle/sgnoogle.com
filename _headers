@@ -13,9 +13,12 @@
 /sgnoogle.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Static brand/media assets change rarely. File names should change when assets change.
+# Static brand/media assets: nella pratica vengono aggiornati IN PLACE a parità
+# di nome (es. avatar-real.webp ricompresso) → niente immutable/1 anno, o i
+# visitatori di ritorno restano sulla versione vecchia fino a un anno.
+# Un giorno di cache + SWR tiene la velocità senza congelare gli asset.
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=86400, stale-while-revalidate=2592000
 
 # PWA/search helper files can be cached briefly, but should update within a day.
 /site.webmanifest
@@ -24,7 +27,3 @@
   Cache-Control: public, max-age=86400
 /sitemap.xml
   Cache-Control: public, max-age=86400
-
-# YouTube proxy JSON is cached at the edge but refreshed often.
-/api/youtube
-  Cache-Control: public, max-age=300, s-maxage=900, stale-while-revalidate=3600

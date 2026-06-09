@@ -35,6 +35,9 @@
 <link rel="preconnect" href="https://i.ytimg.com">
 <link rel="dns-prefetch" href="https://www.googleapis.com">
 <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+<link rel="dns-prefetch" href="https://play-lh.googleusercontent.com">
+<!-- Il font display disegna il wordmark al primo paint: precaricalo. -->
+<link rel="preload" href="/assets/fonts/neue-machina.ttf" as="font" type="font/ttf" crossorigin>
 
 <!-- Dati strutturati: aiutano i motori a capire brand + persona. -->
 <script type="application/ld+json">
@@ -65,7 +68,7 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap">
 
 <style>
 @font-face {
@@ -89,7 +92,6 @@
   --bg-inverse:   var(--ink);
   --fg:           var(--ink);
   --fg-muted:     var(--grey);
-  --fg-faint:     #727476;
   --fg-on-yellow: var(--ink);
   --fg-on-ink:    var(--paper);
   --fg-accent:    var(--yellow);
@@ -1166,6 +1168,7 @@ body {
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
     .sgn-display-inner { scroll-behavior: auto; }
@@ -1480,9 +1483,9 @@ body {
 
 </style>
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <!-- Three.js is lazy-loaded by STLLab only when the 3D viewer is requested. -->
 
 <script>
@@ -1603,6 +1606,15 @@ body {
 </script>
 </head>
 <body>
+<noscript>
+  <div style="font-family:'IBM Plex Mono',monospace;padding:40px 20px;max-width:560px;margin:0 auto;color:#28282C">
+    <h1 style="letter-spacing:.04em;font-size:28px">SGNOOGLE</h1>
+    <p>Portfolio di Francesco Sgnaolin — tech creator: video, stampa 3D, app Android.</p>
+    <p>Questo sito richiede JavaScript. Nel frattempo:
+      <a href="https://www.youtube.com/@sgnoogle">YouTube @sgnoogle</a> ·
+      <a href="mailto:francesco.sgnaolin@gmail.com">email</a></p>
+  </div>
+</noscript>
 <div id="root"></div>
 
 <script type="text/babel">
@@ -1899,7 +1911,7 @@ const VIDEOS = [
   { id: '01', title: 'ULTIMO CARICAMENTO', cat: 'FRANCESCO SGNAOLIN · FEED LIVE', kind: 'A',
     playlistId: UPLOADS_PID,
     url: 'https://www.youtube.com/c/FrancescoSgnaolin/videos' },
-  /* Fallback curato — usato se /api/youtube non è disponibile. Sono gli upload
+  /* Fallback curato — usato se la YouTube Data API non risponde. Sono gli upload
      reali più recenti del canale (più nuovo → più vecchio); il #01 di cui
      sopra (live) li precede sempre, quindi qui NON va ripetuto l'ultimissimo. */
   { id: '02', title: 'NOTHING (3A) LITE', cat: 'REVIEW', kind: 'A',
@@ -2703,15 +2715,22 @@ function Hero3DMark({ mobile, color = C.borderSoft, accent = C.yellow }) {
       pointerEvents: 'none', overflow: 'hidden',
       perspective: '900px',
     }}>
+      {/* Tilt su wrapper SEPARATO dall'elemento animato: l'animation CSS
+         (sgnMarkSpin) vince sugli inline style per la proprietà transform —
+         sullo stesso div il parallax non aveva alcun effetto visibile. */}
       <div style={{
-        width: 'min(620px, 70vw)', aspectRatio: '1/1',
         transformStyle: 'preserve-3d',
         transform: `rotateX(${-tilt.y}deg) rotateY(${tilt.x}deg)`,
         transition: 'transform 380ms cubic-bezier(0.2,0,0,1)',
-        animation: 'sgnMarkSpin 26s linear infinite',
-        opacity: 0.55,
       }}>
-        <FWireframe color={color} accent={accent}/>
+        <div style={{
+          width: 'min(620px, 70vw)', aspectRatio: '1/1',
+          transformStyle: 'preserve-3d',
+          animation: 'sgnMarkSpin 26s linear infinite',
+          opacity: 0.55,
+        }}>
+          <FWireframe color={color} accent={accent}/>
+        </div>
       </div>
     </div>
   );
@@ -4103,14 +4122,22 @@ function VideoCard({ v, L, delay = 0 }) {
    video che non la espongono. È il "dato sempre aggiornato" che riempie le
    card della pagina 2 con immagini reali invece dei placeholder. */
 function VideoThumb({ id, title }) {
-  const [src, setSrc] = React.useState(`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`);
+  // srcset: mqdefault (320x180, 16:9 pulita) per le card ~250-300px, maxres
+  // per densità alte. Su errore (maxres mancante) si ricade su hqdefault
+  // senza srcset. Risparmio ~0.5-1.5MB sulla griglia da 12 card.
+  const [failed, setFailed] = React.useState(false);
   return (
     <img
-      src={src}
+      src={failed
+        ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
+        : `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`}
+      srcSet={failed ? undefined
+        : `https://i.ytimg.com/vi/${id}/mqdefault.jpg 320w, https://i.ytimg.com/vi/${id}/maxresdefault.jpg 1280w`}
+      sizes="(max-width: 760px) 46vw, 300px"
       alt={title}
       loading="lazy"
       decoding="async"
-      onError={() => setSrc(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`)}
+      onError={() => setFailed(true)}
       style={{
         position: 'absolute', inset: 0, width: '100%', height: '100%',
         objectFit: 'cover', display: 'block', background: C.ink,
@@ -8022,6 +8049,8 @@ function App() {
   }, []);
 
   useEffect(() => { if (tweaks.language && tweaks.language !== lang) setLang(tweaks.language); }, [tweaks.language]);
+  // Lingua del documento allineata allo stato (screen reader / SEO).
+  useEffect(() => { try { document.documentElement.lang = lang; } catch (e) {} }, [lang]);
   useEffect(() => { window.sgnAudio?.setEnabled(!!tweaks.sound); }, [tweaks.sound]);
 
   const sound = useCallback((kind) => {
