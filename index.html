@@ -843,8 +843,9 @@ body {
        descrizione in un pozzo elastico e spingeva il bottone verso il fondo
        della card. Su mobile il layout deve tornare a essere uno stack naturale:
        head/metriche → video 18:9 → descrizione corta → CTA. La card resta alta
-       quanto il display, ma l'eventuale aria residua resta DOPO la CTA, mai
-       tra descrizione e azione. */
+       quanto il display; l'aria residua viene distribuita come ritmo/padding
+       controllato, non come un unico buco sotto la CTA né come un pozzo prima
+       del bottone. */
     .sgn-featured {
       container-type: size;
       grid-template-areas: "info" !important;
@@ -866,8 +867,8 @@ body {
       justify-content: flex-start !important;
       align-content: stretch !important;
       height: 100% !important;
-      padding: clamp(10px, 1.45vh, 14px) clamp(12px, 3.4vw, 16px) clamp(10px, 1.55vh, 14px) !important;
-      gap: clamp(6px, 0.9vh, 9px) !important;
+      padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(18px, 3.8cqh, 38px) !important;
+      gap: clamp(10px, 1.55cqh, 18px) !important;
       border-left: none !important;
       overflow: hidden !important;
     }
@@ -875,8 +876,8 @@ body {
       padding-bottom: 0 !important;
     }
     .sgn-feat-title {
-      font-size: clamp(14px, 4.2vw, 19px) !important;
-      line-height: 1.12 !important;
+      font-size: clamp(15px, 4.35vw, 20px) !important;
+      line-height: 1.16 !important;
       -webkit-line-clamp: 2 !important;
       margin-top: clamp(4px, 0.55vh, 6px) !important;
     }
@@ -907,18 +908,18 @@ body {
       align-items: center !important;
       flex: 0 0 auto !important;
       min-height: 0 !important;
-      max-height: 42px !important;
-      padding: clamp(5px, 0.72vh, 8px) 0 !important;
+      max-height: 64px !important;
+      padding: clamp(8px, 1.15cqh, 13px) 0 !important;
       margin: 0 !important;
       overflow: hidden !important;
     }
     .sgn-feat-desc {
       display: -webkit-box !important;
       -webkit-box-orient: vertical !important;
-      -webkit-line-clamp: 2 !important;
+      -webkit-line-clamp: 3 !important;
       overflow: hidden !important;
-      font-size: clamp(9.5px, 2.65vw, 11.5px) !important;
-      line-height: 1.36 !important;
+      font-size: clamp(10px, 2.75vw, 12px) !important;
+      line-height: 1.42 !important;
     }
     .sgn-feat-stats {
       display: none !important;
@@ -927,7 +928,7 @@ body {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       gap: 0 !important;
-      margin-top: clamp(6px, 0.8vh, 8px) !important;
+      margin-top: clamp(8px, 1.1cqh, 12px) !important;
       border-top: 0.5px solid var(--border-soft) !important;
       border-bottom: 0.5px solid var(--border-soft) !important;
     }
@@ -936,7 +937,7 @@ body {
       grid-template-columns: auto minmax(0, 1fr) !important;
       align-items: center !important;
       gap: 6px !important;
-      padding: 6px 8px !important;
+      padding: 8px 9px !important;
       min-width: 0 !important;
     }
     .sgn-feat-mobile-metric + .sgn-feat-mobile-metric {
@@ -981,6 +982,7 @@ body {
       padding-top: 0 !important;
       gap: 0 !important;
       flex: 0 0 auto !important;
+      margin-top: clamp(16px, 5cqh, 58px) !important;
     }
     /* CTA a tutta larghezza = bersaglio tap ampio, label centrata, ma più compatta. */
     .sgn-feat-cta {
@@ -1074,16 +1076,17 @@ body {
 
   @media (max-width: 760px) and (max-height: 740px) {
     .sgn-feat-info {
-      gap: 5px !important;
-      padding-top: 8px !important;
-      padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+      gap: 6px !important;
+      padding-top: 10px !important;
+      padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
     }
-    .sgn-feat-title { font-size: clamp(13px, 3.95vw, 17px) !important; line-height: 1.1 !important; }
+    .sgn-feat-title { font-size: clamp(13px, 3.95vw, 17px) !important; line-height: 1.12 !important; }
     .sgn-feat-vid { width: min(100%, 78vw) !important; width: min(100%, 78vw, 74cqh) !important; }
-    .sgn-feat-desc-panel { max-height: 28px !important; padding: 4px 0 !important; }
-    .sgn-feat-desc { -webkit-line-clamp: 1 !important; line-height: 1.28 !important; }
+    .sgn-feat-desc-panel { max-height: 34px !important; padding: 5px 0 !important; }
+    .sgn-feat-desc { -webkit-line-clamp: 1 !important; line-height: 1.32 !important; }
     .sgn-feat-mobile-metrics { margin-top: 5px !important; }
-    .sgn-feat-mobile-metric { padding: 5px 7px !important; }
+    .sgn-feat-mobile-metric { padding: 6px 7px !important; }
+    .sgn-feat-foot { margin-top: clamp(8px, 2.8cqh, 24px) !important; }
     .sgn-feat-cta { height: 34px !important; min-height: 34px !important; }
     .sgn-feat-cta .sgn-cta__icon { width: 34px !important; }
   }
