@@ -900,9 +900,12 @@ body {
        descrizione app) restano tali. */
 
     /* 01 · Video featured → mobile, soluzione A: poster editoriale.
-       Titolo enorme in stile Neue Machina → video 18:9 → meta/metriche → CTA
-       → descrizione secondaria. Niente righe elastiche prima del bottone: la
-       pagina deve sembrare una cover video, non una scheda dati compressa. */
+       Titolo enorme in stile Neue Machina → video 18:9 → byline/metriche →
+       CTA che CHIUDE sul bordo basso. Lo spazio che avanza è distribuito TRA
+       i blocchi (space-between, gap = minimo): il poster riempie la tela su
+       qualsiasi altezza, niente buco in fondo. La descrizione YouTube è
+       NASCOSTA su mobile: è boilerplate di link che tronca sempre male — la
+       byline dà già il contesto. (Resta sul desktop, dove ha 6 righe.) */
     .sgn-featured {
       container-type: size;
       grid-template-areas: "info" !important;
@@ -921,7 +924,7 @@ body {
     .sgn-feat-info {
       display: flex !important;
       flex-direction: column !important;
-      justify-content: flex-start !important;
+      justify-content: space-between !important;
       align-content: stretch !important;
       height: 100% !important;
       padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(16px, 3.4cqh, 34px) !important;
@@ -977,24 +980,9 @@ body {
       letter-spacing: 0.22em !important;
       line-height: 1.2 !important;
     }
+    /* Descrizione YouTube: via su mobile (vedi nota in testa al blocco). */
     .sgn-feat-desc-panel {
-      order: 5 !important;
-      display: flex !important;
-      align-items: center !important;
-      flex: 0 0 auto !important;
-      min-height: 0 !important;
-      max-height: 50px !important;
-      padding: clamp(7px, 0.9cqh, 10px) 0 !important;
-      margin: 0 !important;
-      overflow: hidden !important;
-    }
-    .sgn-feat-desc {
-      display: -webkit-box !important;
-      -webkit-box-orient: vertical !important;
-      -webkit-line-clamp: 2 !important;
-      overflow: hidden !important;
-      font-size: clamp(10px, 2.75vw, 12px) !important;
-      line-height: 1.38 !important;
+      display: none !important;
     }
     .sgn-feat-stats {
       display: none !important;
@@ -1158,8 +1146,6 @@ body {
     }
     .sgn-feat-title { font-size: clamp(24px, 7.2vw, 34px) !important; line-height: 0.94 !important; -webkit-line-clamp: 2 !important; }
     .sgn-feat-vid { width: min(100%, 80vw) !important; width: min(100%, 80vw, 78cqh) !important; }
-    .sgn-feat-desc-panel { max-height: 32px !important; padding: 5px 0 !important; }
-    .sgn-feat-desc { -webkit-line-clamp: 1 !important; line-height: 1.3 !important; }
     .sgn-feat-mobile-metrics { margin-top: 0 !important; }
     .sgn-feat-mobile-metric { padding: 6px 7px !important; }
     .sgn-feat-foot { margin-top: 2px !important; }
