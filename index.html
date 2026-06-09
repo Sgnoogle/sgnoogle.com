@@ -5595,7 +5595,6 @@ function IdleDisplay({ lang, mobile, focused }) {
   const [typedModule, setTypedModule] = React.useState('');
   const [deletingModule, setDeletingModule] = React.useState(false);
   const [reduceModuleMotion, setReduceModuleMotion] = React.useState(false);
-  const [showSideHint, setShowSideHint] = React.useState(false);
 
   React.useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -5740,7 +5739,10 @@ function IdleDisplay({ lang, mobile, focused }) {
           </div>
         )}
 
-        {!preview && showSideHint && (
+        {/* Prompt fisso ◀ SCORRI LATERALMENTE ▶ — solo mobile (sul desktop si
+           naviga da tab/tastiera). NB: era gated da uno stato showSideHint
+           mai impostato → non appariva MAI (residuo del rework). */}
+        {!preview && mobile && (
           <div aria-hidden style={{
             position: 'absolute',
             bottom: 'clamp(8px, 1.2vh, 14px)',
@@ -6396,32 +6398,33 @@ function GameBoyKey({ id, n, label, active, onPress }) {
            basso), quindi NON spuntano sopra il bordo della view.
          left/right: -0.5 — gli offset assoluti si misurano dal PADDING box
          (dentro il bordo 0.5px del button): -0.5 porta gli span esattamente
-         sul border box esterno della tab, così i loro hairline si
-         sovrappongono ai bordi della tab. Con 0 la linguetta rientrerebbe
-         di mezzo pixel per lato (verificato a zoom). */}
+         sul border box esterno della tab.
+         ANIMAZIONE SU HEIGHT, NON transform: un elemento con transform viene
+         rasterizzato su un layer compositor con snapping ai pixel fisici
+         DIVERSO dal bordo del button (dipinto in flusso) — con le tab a
+         coordinate frazionarie (grid 1fr) gli hairline cadevano su pixel
+         diversi per ogni tab (disallineamento visibile a zoom). Animando
+         height (ancora in basso = stessa crescita dal basso) la linguetta
+         resta nel flusso di paint del button → snapping identico. */}
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
         left: -0.5, right: -0.5,
-        height: 'calc(var(--frame-gap, 16px) + 2px)',
+        height: active ? 'calc(var(--frame-gap, 16px) + 2px)' : 0,
         // Stesso fondo (e fade 160ms) del tasto: i due viaggiano insieme da
         // paper a white mentre la linguetta cresce.
         background: active ? C.white : C.paper,
-        boxSizing: 'border-box', pointerEvents: 'none',
-        transformOrigin: 'bottom',
-        transform: active ? 'scaleY(1)' : 'scaleY(0)',
-        transition: 'transform 340ms cubic-bezier(0.2,0,0,1), background 160ms linear',
+        boxSizing: 'border-box', pointerEvents: 'none', overflow: 'hidden',
+        transition: 'height 340ms cubic-bezier(0.2,0,0,1), background 160ms linear',
       }}/>
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
         left: -0.5, right: -0.5,
-        height: 'calc(var(--frame-gap, 16px) + 1px)',
+        height: active ? 'calc(var(--frame-gap, 16px) + 1px)' : 0,
         borderLeft: `0.5px solid ${C.border}`,
         borderRight: `0.5px solid ${C.border}`,
         background: 'transparent',
-        boxSizing: 'border-box', pointerEvents: 'none',
-        transformOrigin: 'bottom',
-        transform: active ? 'scaleY(1)' : 'scaleY(0)',
-        transition: 'transform 340ms cubic-bezier(0.2,0,0,1)',
+        boxSizing: 'border-box', pointerEvents: 'none', overflow: 'hidden',
+        transition: 'height 340ms cubic-bezier(0.2,0,0,1)',
       }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
