@@ -6377,55 +6377,28 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         background: active ? C.white : C.paper,
         color: C.ink,
         border: `0.5px solid ${active ? C.border : C.borderSoft}`,
-        padding: '11px 6px 10px',
+        /* "Linguetta" = IL BUTTON STESSO che si estende sopra, nel gap, fino a
+           coprire di 1px la hairline inferiore della view (merge senza
+           cuciture): margin-top negativo + padding-top compensativo (il
+           contenuto non si muove) + bordo superiore trasparente (apertura).
+           UN SOLO elemento → i lati della linguetta SONO i bordi della tab:
+           disallineamento impossibile. Ogni variante a overlay (span con
+           propri hairline) falliva: a coordinate frazionarie (grid 1fr) i
+           bordi di elementi diversi venivano rasterizzati con snapping
+           diverso → scalini fino a ~1px, diversi per ogni tab (verificato
+           empiricamente in headless Chrome a dpr 2.625/3). */
+        borderTopColor: active ? 'transparent' : undefined,
+        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px) - 1px)' : 0,
+        paddingTop: active ? 'calc(11px + var(--frame-gap, 16px) + 1px)' : 11,
+        paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
         // Press feedback minimale: micro-scala, niente bordo-rialzo né shadow.
         transform: pressed ? 'scale(0.96)' : 'scale(1)',
-        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear',
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear, margin-top 340ms cubic-bezier(0.2,0,0,1), padding-top 340ms cubic-bezier(0.2,0,0,1)',
         minHeight: 62,
       }}>
-      {/* Tab attiva → la "linguetta" bianca raccorda la key alla view: colma
-         il gap stage↔strip (= --frame-gap) così key + linguetta + view sono una
-         forma continua. Sempre montata: morpha in altezza (scaleY dal basso).
-         È in DUE parti per evitare che i bordi grigi sconfinino oltre la
-         cornice della view (il "saltino"):
-         · riempimento bianco — sconfina 1px DENTRO la view per cancellarne la
-           hairline inferiore localmente (merge senza cuciture); nessun bordo;
-         · bordi laterali — si fermano ESATTAMENTE alla cornice della view
-           (height = gap+1, dove l'1px è solo la sovrapposizione sulla key in
-           basso), quindi NON spuntano sopra il bordo della view.
-         left/right: -0.5 — gli offset assoluti si misurano dal PADDING box
-         (dentro il bordo 0.5px del button): -0.5 porta gli span esattamente
-         sul border box esterno della tab.
-         ANIMAZIONE SU HEIGHT, NON transform: un elemento con transform viene
-         rasterizzato su un layer compositor con snapping ai pixel fisici
-         DIVERSO dal bordo del button (dipinto in flusso) — con le tab a
-         coordinate frazionarie (grid 1fr) gli hairline cadevano su pixel
-         diversi per ogni tab (disallineamento visibile a zoom). Animando
-         height (ancora in basso = stessa crescita dal basso) la linguetta
-         resta nel flusso di paint del button → snapping identico. */}
-      <span aria-hidden="true" style={{
-        position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: -0.5, right: -0.5,
-        height: active ? 'calc(var(--frame-gap, 16px) + 2px)' : 0,
-        // Stesso fondo (e fade 160ms) del tasto: i due viaggiano insieme da
-        // paper a white mentre la linguetta cresce.
-        background: active ? C.white : C.paper,
-        boxSizing: 'border-box', pointerEvents: 'none', overflow: 'hidden',
-        transition: 'height 340ms cubic-bezier(0.2,0,0,1), background 160ms linear',
-      }}/>
-      <span aria-hidden="true" style={{
-        position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: -0.5, right: -0.5,
-        height: active ? 'calc(var(--frame-gap, 16px) + 1px)' : 0,
-        borderLeft: `0.5px solid ${C.border}`,
-        borderRight: `0.5px solid ${C.border}`,
-        background: 'transparent',
-        boxSizing: 'border-box', pointerEvents: 'none', overflow: 'hidden',
-        transition: 'height 340ms cubic-bezier(0.2,0,0,1)',
-      }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
           10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
