@@ -837,17 +837,15 @@ body {
        colonne collassano a 1; gli scroll interni già presenti (catalogo,
        descrizione app) restano tali. */
 
-    /* 01 · Video featured → mobile: layout editoriale compatto e bilanciato.
-       Ordine: label/titolo/meta → video 18:9 → descrizione adattiva → stats → CTA.
-       La card resta alta quanto la finestra centrale, ma le righe interne sono
-       vincolate: il media può ridursi, la descrizione assorbe solo il residuo
-       disponibile e la CTA resta sempre dentro al bordo inferiore. */
+    /* 01 · Video featured → mobile.
+       ROOT CAUSE reale dell'overflow percepito: non era solo il 18:9, ma la
+       riga `minmax(0, 1fr)` prima della CTA. Quella riga trasformava la
+       descrizione in un pozzo elastico e spingeva il bottone verso il fondo
+       della card. Su mobile il layout deve tornare a essere uno stack naturale:
+       head/metriche → video 18:9 → descrizione corta → CTA. La card resta alta
+       quanto il display, ma l'eventuale aria residua resta DOPO la CTA, mai
+       tra descrizione e azione. */
     .sgn-featured {
-      /* ROOT FIX: the previous mobile layout kept a separate stat strip plus a
-         fixed 18:9 media size inside a 100%-high snap page. On shorter mobile
-         viewports their fixed heights could exceed the central window and push
-         the CTA below the frame. Make the card a size container, then budget the
-         video from the card height instead of viewport width alone. */
       container-type: size;
       grid-template-areas: "info" !important;
       grid-template-columns: 1fr !important;
@@ -863,16 +861,13 @@ body {
       display: none !important;
     }
     .sgn-feat-info {
-      display: grid !important;
-      /* head / 18:9 media / elastic description / CTA.
-         Stats are folded into the head on mobile, so no fixed row can force
-         the CTA out of bounds. */
-      grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: flex-start !important;
       align-content: stretch !important;
-      justify-content: stretch !important;
       height: 100% !important;
       padding: clamp(10px, 1.45vh, 14px) clamp(12px, 3.4vw, 16px) clamp(10px, 1.55vh, 14px) !important;
-      row-gap: clamp(6px, 0.9vh, 9px) !important;
+      gap: clamp(6px, 0.9vh, 9px) !important;
       border-left: none !important;
       overflow: hidden !important;
     }
@@ -897,11 +892,10 @@ body {
     .sgn-feat-vid {
       flex: 0 0 auto !important;
       height: auto !important;
-      /* 18:9, with a safe viewport fallback plus a height-aware cap.
-         70cqh means the media height is max 35% of the featured card: this is
-         the key constraint that keeps the CTA inside short mobile viewports. */
-      width: min(100%, 76vw) !important;
-      width: min(100%, 76vw, 70cqh) !important;
+      /* 18:9 pieno e controllato: larghezza quasi full-bleed, con cap
+         height-aware solo come safety su viewport molto bassi. */
+      width: min(100%, 86vw) !important;
+      width: min(100%, 86vw, 86cqh) !important;
       aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
       border: 0.5px solid var(--border) !important;
@@ -911,9 +905,9 @@ body {
     .sgn-feat-desc-panel {
       display: flex !important;
       align-items: center !important;
-      flex: initial !important;
+      flex: 0 0 auto !important;
       min-height: 0 !important;
-      max-height: 100% !important;
+      max-height: 42px !important;
       padding: clamp(5px, 0.72vh, 8px) 0 !important;
       margin: 0 !important;
       overflow: hidden !important;
@@ -986,6 +980,7 @@ body {
     .sgn-feat-foot {
       padding-top: 0 !important;
       gap: 0 !important;
+      flex: 0 0 auto !important;
     }
     /* CTA a tutta larghezza = bersaglio tap ampio, label centrata, ma più compatta. */
     .sgn-feat-cta {
@@ -1079,14 +1074,13 @@ body {
 
   @media (max-width: 760px) and (max-height: 740px) {
     .sgn-feat-info {
-      grid-template-rows: auto auto minmax(0, 1fr) auto !important;
-      row-gap: 5px !important;
+      gap: 5px !important;
       padding-top: 8px !important;
       padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
     }
     .sgn-feat-title { font-size: clamp(13px, 3.95vw, 17px) !important; line-height: 1.1 !important; }
-    .sgn-feat-vid { width: min(100%, 70vw) !important; width: min(100%, 70vw, 62cqh) !important; }
-    .sgn-feat-desc-panel { padding: 4px 0 !important; }
+    .sgn-feat-vid { width: min(100%, 78vw) !important; width: min(100%, 78vw, 74cqh) !important; }
+    .sgn-feat-desc-panel { max-height: 28px !important; padding: 4px 0 !important; }
     .sgn-feat-desc { -webkit-line-clamp: 1 !important; line-height: 1.28 !important; }
     .sgn-feat-mobile-metrics { margin-top: 5px !important; }
     .sgn-feat-mobile-metric { padding: 5px 7px !important; }
