@@ -927,6 +927,10 @@ body {
       justify-content: space-between !important;
       align-content: stretch !important;
       height: 100% !important;
+      /* border-box OBBLIGATORIO: height 100% + padding in content-box sfora
+         il fondo card → CTA tagliata (con space-between il contenuto arriva
+         davvero in fondo, lo sforo non è più mascherato dallo slack). */
+      box-sizing: border-box !important;
       padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(16px, 3.4cqh, 34px) !important;
       gap: clamp(10px, 1.45cqh, 16px) !important;
       border-left: none !important;
@@ -1000,21 +1004,22 @@ body {
       grid-template-columns: auto minmax(0, 1fr) !important;
       align-items: center !important;
       gap: 6px !important;
-      padding: 8px 9px !important;
+      padding: 9px 10px !important;
       min-width: 0 !important;
     }
     .sgn-feat-mobile-metric + .sgn-feat-mobile-metric {
       border-left: 0.5px solid var(--border-soft) !important;
     }
+    /* Stesso corpo (9px) della byline qui sopra → footer omogeneo. */
     .sgn-feat-mobile-metric__label {
-      font: 700 8px/1 IBM Plex Mono, monospace !important;
-      letter-spacing: 0.13em !important;
+      font: 700 9px/1 IBM Plex Mono, monospace !important;
+      letter-spacing: 0.18em !important;
       color: var(--faint) !important;
       white-space: nowrap !important;
     }
     .sgn-feat-mobile-metric__value {
       justify-self: end !important;
-      font: 700 clamp(11px, 3.1vw, 13px)/1 IBM Plex Mono, monospace !important;
+      font: 700 clamp(12px, 3.4vw, 14px)/1 IBM Plex Mono, monospace !important;
       letter-spacing: -0.015em !important;
       color: var(--ink) !important;
       white-space: nowrap !important;
@@ -1362,9 +1367,13 @@ body {
         sfuma dopo pochi secondi o al primo scroll. Trattamento "pannello OS":
         fondo paper, hairline, accento giallo a sinistra (niente più pill ink,
         che pesava sul display bianco). ── */
+  /* ── Hint chip (mobile) — chip in basso al centro del display, trattamento
+        "pannello OS": fondo paper, hairline, accento giallo a sinistra.
+        Appare/sparisce SEMPRE in dissolvenza: lo stato .is-on è pilotato da
+        FadePill (mount → fade-in, fade-out → unmount), mai a scatto. ── */
   .sgn-swipe-hint {
     position: absolute; z-index: 21;
-    left: 50%; bottom: 14px; transform: translateX(-50%);
+    left: 50%; bottom: 14px;
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--paper); color: var(--ink);
     border: 0.5px solid var(--border);
@@ -1373,11 +1382,12 @@ body {
     font-family: var(--font-mono); font-size: 9px; font-weight: 700;
     letter-spacing: 0.2em; text-transform: uppercase;
     pointer-events: none;
-    animation: sgnHintIn 200ms cubic-bezier(0.2,0,0,1);
+    opacity: 0; transform: translate(-50%, 8px);
+    transition: opacity 280ms linear, transform 280ms cubic-bezier(0.2,0,0,1);
   }
+  .sgn-swipe-hint.is-on { opacity: 1; transform: translate(-50%, 0); }
   .sgn-swipe-hint .ar { color: var(--ink); font-size: 12px; line-height: 1;
     animation: sgnNudge 1.4s ease-in-out infinite; }
-  @keyframes sgnHintIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
   @keyframes sgnNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
   @media (prefers-reduced-motion: reduce) { .sgn-swipe-hint .ar { animation: none; } }
 
@@ -1437,6 +1447,8 @@ body {
     animation: sgnHintIn 220ms cubic-bezier(0.2,0,0,1);
     max-width: min(92vw, 520px);
   }
+  /* Ingresso del coachmark (i chip mobile non lo usano più: FadePill). */
+  @keyframes sgnHintIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
   .sgn-onboard::before {
     content: ''; position: absolute; top: -5px; left: 50%;
     width: 9px; height: 9px; background: var(--white);
@@ -6381,10 +6393,13 @@ function GameBoyKey({ id, n, label, active, onPress }) {
            hairline inferiore localmente (merge senza cuciture); nessun bordo;
          · bordi laterali — si fermano ESATTAMENTE alla cornice della view
            (height = gap+1, dove l'1px è solo la sovrapposizione sulla key in
-           basso), quindi NON spuntano sopra il bordo della view. */}
+           basso), quindi NON spuntano sopra il bordo della view.
+         left/right: 0 (NON -0.5): il button è border-box, i suoi hairline
+         vivono DENTRO il box — a -0.5 la linguetta sporgeva di mezzo pixel
+         per lato rispetto alla tab. A 0 i bordi si sovrappongono esatti. */}
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: -0.5, right: -0.5,
+        left: 0, right: 0,
         height: 'calc(var(--frame-gap, 16px) + 2px)',
         // Stesso fondo (e fade 160ms) del tasto: i due viaggiano insieme da
         // paper a white mentre la linguetta cresce.
@@ -6396,7 +6411,7 @@ function GameBoyKey({ id, n, label, active, onPress }) {
       }}/>
       <span aria-hidden="true" style={{
         position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: -0.5, right: -0.5,
+        left: 0, right: 0,
         height: 'calc(var(--frame-gap, 16px) + 1px)',
         borderLeft: `0.5px solid ${C.border}`,
         borderRight: `0.5px solid ${C.border}`,
@@ -7896,21 +7911,47 @@ function MobilePageRail({ index, total, goto, lang, sound }) {
   );
 }
 
-/* SwipeHint — pill transitoria "SCORRI ↕" (mobile, una-tantum a sessione). */
-function SwipeHint({ lang }) {
+/* FadePill — shell comune dei chip-hint: monta col fade-in e smonta DOPO il
+   fade-out (mai comparse/sparizioni a scatto). Doppio rAF: lo stato "off"
+   deve dipingersi prima che parta la transizione. */
+function FadePill({ show, children }) {
+  const [mounted, setMounted] = React.useState(show);
+  const [on, setOn] = React.useState(false);
+  React.useEffect(() => {
+    if (show) {
+      setMounted(true);
+      let r2;
+      const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setOn(true)); });
+      return () => { cancelAnimationFrame(r1); if (r2) cancelAnimationFrame(r2); };
+    }
+    setOn(false);
+    const t = setTimeout(() => setMounted(false), 300);
+    return () => clearTimeout(t);
+  }, [show]);
+  if (!mounted) return null;
   return (
-    <div className="sgn-swipe-hint" role="status" aria-hidden="true">
-      {lang === 'it' ? 'SCORRI' : 'SWIPE'}<span className="ar">↕</span>
+    <div className={'sgn-swipe-hint' + (on ? ' is-on' : '')} role="status" aria-hidden="true">
+      {children}
     </div>
   );
 }
 
-function MobileNavHint({ lang }) {
+/* SwipeHint — chip "SCORRI ↕" nei moduli multipagina (lì il verticale esiste). */
+function SwipeHint({ lang, show }) {
   return (
-    <div className="sgn-swipe-hint" role="status" aria-hidden="true">
-      <span className="ar">◀▶</span>{lang === 'it' ? 'MODULI' : 'MODULES'}<span style={{ color: C.border }}>/</span>
-      <span className="ar">↕</span>{lang === 'it' ? 'PAGINE' : 'PAGES'}
-    </div>
+    <FadePill show={show}>
+      {lang === 'it' ? 'SCORRI' : 'SWIPE'}<span className="ar">↕</span>
+    </FadePill>
+  );
+}
+
+/* MobileNavHint — prima apertura, in home: SOLO lo scorrimento laterale
+   (in home il verticale non serve — niente più "↕ PAGINE"). */
+function MobileNavHint({ lang, show }) {
+  return (
+    <FadePill show={show}>
+      <span className="ar">◀▶</span>{lang === 'it' ? 'SCORRI I MODULI' : 'SWIPE MODULES'}
+    </FadePill>
   );
 }
 
@@ -8304,8 +8345,8 @@ function App() {
                   sound={sound}
                 />
               )}
-              {mobileHint && <MobileNavHint lang={lang}/>}
-              {swipeHint && <SwipeHint lang={lang}/>}
+              <MobileNavHint lang={lang} show={mobileHint}/>
+              <SwipeHint lang={lang} show={swipeHint}/>
             </section>
             {pageMeta.total > 1 && pageMeta.goto && (
               <PagerCard
