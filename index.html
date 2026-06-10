@@ -1600,6 +1600,11 @@ body {
       { freq: 800,  dur: 0.040, vol: 0.030, type: 'triangle', when: 0     },
       { freq: 480,  dur: 0.070, vol: 0.035, type: 'triangle', when: 0.045 },
     ],
+    // tap/tapBack — conferme a UNA nota per il TOUCH: su mobile manca la
+    // fase di hover, quindi i bicordi confirm/back arrivavano "a freddo"
+    // troppo carichi. Stessa famiglia timbrica (triangle), metà complessità.
+    tap:     [{ freq: 1320, dur: 0.045, vol: 0.034, type: 'triangle' }],
+    tapBack: [{ freq:  640, dur: 0.055, vol: 0.030, type: 'triangle' }],
     boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
     // skill — variazione del 'boot' per il riempimento delle barre competenze:
     // stesso click meccanico, timbro un filo più brillante (triangle, +pitch).
@@ -8153,11 +8158,13 @@ function App() {
       const dir = dirOverride != null ? dirOverride : computeDirection(prev, next);
       setDirection(dir);
       prevRef.current = prev;
-      if (next) { setTransKey(k => k + 1); sound('confirm'); }
-      else { sound('back'); }
+      // Su mobile suoni a UNA nota: senza la fase di hover del desktop il
+      // bicordo risultava troppo aggressivo sul tap diretto.
+      if (next) { setTransKey(k => k + 1); sound(mobile ? 'tap' : 'confirm'); }
+      else { sound(mobile ? 'tapBack' : 'back'); }
       return next;
     });
-  }, [sound]);
+  }, [sound, mobile]);
 
   const goHome = useCallback((dirOverride) => {
     if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico
@@ -8165,10 +8172,10 @@ function App() {
       if (!prev) return prev;
       setDirection(typeof dirOverride === 'number' ? dirOverride : computeDirection(prev, null));
       prevRef.current = prev;
-      sound('back');
+      sound(mobile ? 'tapBack' : 'back');
       return null;
     });
-  }, [sound]);
+  }, [sound, mobile]);
 
   // Swipe orizzontale (solo mobile) per scorrere tra i moduli, riusando la
   // stessa select/goHome → suono, direzione e animazione restano coerenti.
