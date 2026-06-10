@@ -1263,6 +1263,27 @@ body {
     outline-offset: 2px;
   }
 
+  /* ── iOS/Safari: i bordi da 0.5px a posizioni frazionarie possono venire
+        ARROTONDATI A ZERO su singoli lati (visto su iPhone: box INSTALLA e
+        lato inferiore delle cornici screenshot). Qui, SOLO su WebKit iOS
+        (-webkit-touch-callout), li portiamo a 1px con alpha dimezzata:
+        stesso peso ottico, ma 1px non può sparire. Chrome/Android/desktop
+        non sono toccati. ── */
+  @supports (-webkit-touch-callout: none) {
+    .sgn-cta {
+      border-width: 1px;
+      border-color: rgba(40, 40, 44, 0.62);
+    }
+    .sgn-cta__icon {
+      border-right-width: 1px;
+      border-right-color: rgba(120, 122, 124, 0.16);
+    }
+    .sgn-shot-frame {
+      border-width: 1px !important;
+      border-color: rgba(120, 122, 124, 0.12) !important;
+    }
+  }
+
   /* ── Touch (nessun hover): il linguaggio di selezione del sito è tutto a
         hover (corner-mark gialli, ignite del CTA, rail STL). Sul dito non
         scatta e, peggio, un hover può "restare incollato" dopo il tap.
@@ -4486,7 +4507,7 @@ function AppGallery({ shots, name }) {
               objectFit: 'contain',
             }}
           />
-          <div style={{
+          <div className="sgn-shot-frame" style={{
             position: 'absolute', inset: 0,
             border: `0.5px solid ${C.borderSoft}`,
             pointerEvents: 'none',
