@@ -228,6 +228,21 @@ body {
      Coerente con il deck (.sgn-deck-scroll); l'affordance dello scroll è
      data dal fade-mask ai bordi e, dove presenti, dalle frecce. La barra
      non occupa spazio e non riflowa il layout. Cross-browser. */
+  /* ── Fade ai bordi della gallery screenshot (App): compare solo sul lato
+        con contenuto tagliato — classi fade-l/fade-r gestite da AppGallery.
+        Con --fade* a 0 il gradiente degenera in nessun fade. ── */
+  .sgn-app-gallery { --fade-l: 0px; --fade-r: 0px; }
+  .sgn-app-gallery.fade-l { --fade-l: 38px; }
+  .sgn-app-gallery.fade-r { --fade-r: 38px; }
+  .sgn-app-gallery.fade-l, .sgn-app-gallery.fade-r {
+    -webkit-mask-image: linear-gradient(to right,
+      transparent 0, #000 var(--fade-l),
+      #000 calc(100% - var(--fade-r)), transparent 100%);
+    mask-image: linear-gradient(to right,
+      transparent 0, #000 var(--fade-l),
+      #000 calc(100% - var(--fade-r)), transparent 100%);
+  }
+
   .sgn-stl-scroll,
   .sgn-video-grid,
   .sgn-cp-list,
@@ -4413,9 +4428,30 @@ function AppPage({ app, lang }) {
    mai croppati (regola del sistema); fondo paper a riempire l'eventuale
    margine. Scroll orizzontale, scrollbar nascosta (sgn-stl-scroll), snap. */
 function AppGallery({ shots, name }) {
+  /* Fade ai bordi SOLO sul lato dove c'è contenuto tagliato: uno screenshot
+     mezzo visibile sfuma invece di sembrare un errore di layout, e invita a
+     scorrere. Stato aggiornato su scroll + resize. */
+  const scrollerRef = React.useRef(null);
+  const [edges, setEdges] = React.useState({ l: false, r: false });
+  React.useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return undefined;
+    const update = () => {
+      const l = el.scrollLeft > 2;
+      const r = el.scrollLeft + el.clientWidth < el.scrollWidth - 2;
+      setEdges(prev => (prev.l === l && prev.r === r) ? prev : { l, r });
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => { el.removeEventListener('scroll', update); ro.disconnect(); };
+  }, [shots]);
   if (!shots || !shots.length) return null;
   return (
-    <div className="sgn-app-gallery sgn-stl-scroll" style={{
+    <div ref={scrollerRef}
+      className={'sgn-app-gallery sgn-stl-scroll' + (edges.l ? ' fade-l' : '') + (edges.r ? ' fade-r' : '')}
+      style={{
       flex: 1, minHeight: 0,
       display: 'flex', alignItems: 'stretch', gap: 'clamp(8px, 0.9vw, 12px)',
       overflowX: 'auto', overflowY: 'hidden',
