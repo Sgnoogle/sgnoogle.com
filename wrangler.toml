@@ -3,3 +3,6 @@ compatibility_date = "2024-09-23"
 
 [assets]
 directory = "."
+# Senza questo, Workers Assets risponde 404 SENZA corpo (→ pagina d'errore di
+# Chrome): "404-page" serve /404.html con status 404.
+not_found_handling = "404-page"
