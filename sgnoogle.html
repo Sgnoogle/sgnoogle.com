@@ -1532,6 +1532,18 @@ body {
 
 </style>
 
+<!-- ── Cloudflare Web Analytics (privacy-friendly: zero cookie, zero banner).
+     DUE strade per attivarlo, scegline una:
+     A) ZERO CODICE — dashboard Cloudflare → Analytics & Logs → Web Analytics
+        → Add site (sgnoogle.com) → spunta "Automatic setup": il beacon viene
+        iniettato dal proxy, questo blocco può restare commentato per sempre.
+     B) MANUALE — stesso percorso ma copia il token JS e sostituiscilo a
+        CF_BEACON_TOKEN qui sotto, poi de-commenta il tag.
+     Nota: il sito naviga via hash (#01..#05) con replaceState → le viste per
+     singolo modulo NON vengono separate; si misurano visite, referrer,
+     device e Core Web Vitals dell'intera pagina.
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "CF_BEACON_TOKEN"}'></script>
+-->
 <script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
 <script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
 <script defer src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
