@@ -220,6 +220,15 @@ body {
     from { transform: translate(0, 0); }
     to   { transform: translate(-132px, -132px); }
   }
+  /* Deriva PERPENDICOLARE alle righe a 45°: sgnDrift trasla lungo (−1,−1),
+     che per le strisce è la loro stessa direzione → moto matematicamente
+     invisibile (il pattern scorre su sé stesso). Qui (−x,+x), con
+     63.64px = 4 periodi da 22.5px lungo l'asse del gradiente → loop esatto,
+     nessuno scatto. */
+  @keyframes sgnStripeDrift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(-63.64px, 63.64px); }
+  }
   @media (prefers-reduced-motion: reduce) {
     .sgn-ambient { animation: none !important; }
   }
@@ -1308,7 +1317,8 @@ body {
     background-image: repeating-linear-gradient(45deg,
       var(--border-soft) 0 0.5px, transparent 0.5px 22px);
     opacity: 0.7;
-    animation: sgnDrift 28s linear infinite;
+    animation: sgnStripeDrift 16s linear infinite;
+    will-change: transform;
     pointer-events: none;
   }
 
