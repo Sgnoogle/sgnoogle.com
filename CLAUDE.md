@@ -44,6 +44,28 @@ Type: IBM Plex Mono everywhere; Neue Machina for big display headings. Sizes use
 `clamp()` heavily — **every element must scale with viewport** (phone ↔ desktop).
 Tracking is wide/uppercase for labels. Stroke hairlines are `0.5px`.
 
+**HARD RULE — YELLOW and INK must NEVER touch** ("nastro di pericolo" effect):
+no ink text on yellow background, no yellow fill adjacent to ink blocks.
+Yellow lives on white/paper only, separated from ink by a light buffer
+(examples in code: CTA hover *removes* the yellow before filling with ink;
+toggle/underline patterns use a yellow bar on white under ink text).
+This applies to `::selection` too (ink bg + paper text, NOT yellow).
+
+**Hairlines on iOS/WebKit**: 0.5px borders at fractional positions can be
+rounded to ZERO per-side on Safari iOS. There is a dedicated
+`@supports (-webkit-touch-callout: none)` block that hardens affected
+borders to `1px` with halved alpha (same optical weight). If a new hairline
+is reported missing on iPhone, add it THERE — do not change the base 0.5px.
+
+**Sound vocabulary** (WebAudio engine, `presets` in index.html):
+- Desktop module tabs are a 3-phase gesture, ONE note per phase:
+  `hover` (1400Hz announce) → `tick` (1800Hz press, from Cursor) →
+  `release`/`releaseBack` (single resolution note on pointerup).
+- Mobile has no hover phase: module open/close uses single-note
+  `tap`/`tapBack` — never the two-note chords on direct taps.
+- The two-note `confirm`/`back` chords are reserved for gestures WITHOUT a
+  press-tick phase (lang pick, palette, card flip, links).
+
 ## Layout architecture (IMPORTANT pitfalls)
 
 - The outer shell is `#root > .sgn-page` → `.sgn-frame` (grid: TopBar /
@@ -115,3 +137,43 @@ until ready. Loading rules learned the hard way:
 - Commit messages end with the session URL footer.
 - Don't create PRs unless asked. Commit + push to `main` to deploy.
 - The user communicates in Italian — respond in Italian.
+
+## Headless verification runner (USE IT before pushing UI changes)
+
+unpkg is blocked in the sandbox but the npm registry is NOT, and Puppeteer's
+Chrome downloads fine from storage.googleapis.com. The real site can be run
+and screenshot-verified locally:
+
+```bash
+# one-time setup
+mkdir -p /tmp/pwtest && cd /tmp/pwtest && npm init -y && npm i puppeteer
+mkdir -p /tmp/site/vendor && cd /tmp/site && npm init -y \
+  && npm i react@18.3.1 react-dom@18.3.1 @babel/standalone@7.29.0 three@0.137.0
+cp node_modules/react/umd/react.production.min.js vendor/
+cp node_modules/react-dom/umd/react-dom.production.min.js vendor/
+cp node_modules/@babel/standalone/babel.min.js vendor/
+cp node_modules/three/build/three.min.js vendor/
+cp node_modules/three/examples/js/loaders/STLLoader.js vendor/
+ln -sfn /home/claude/repo/assets /tmp/site/assets
+```
+
+Build step (rerun after每 edit): copy repo `index.html` to `/tmp/site/` while
+rewriting the five unpkg URLs to `./vendor/...` and stripping the babel SRI
+attribute. Serve with `python3 -m http.server 8819` from `/tmp/site` (NB: the
+server dies between Bash calls — restart it). In Puppeteer:
+- skip boot: `evaluateOnNewDocument(() => sessionStorage.setItem('sgnBooted','1'))`
+  (+ `localStorage.sgnOnboardSeen=1` on desktop);
+- use `waitUntil: 'domcontentloaded'` + fixed delay (networkidle never settles);
+- WebGL needs launch arg `--enable-unsafe-swiftshader`;
+- mobile: viewport 412x915, deviceScaleFactor 2.625, isMobile+hasTouch.
+Pixel-level checks: screenshot → draw to canvas in-page → getImageData
+(luminance scanlines for border alignment, zoomed nearest-neighbor crops for
+visual proof). Babel-validate both HTML files with @babel/standalone before
+every commit. Always verify, then push.
+
+## Session log conventions
+
+The owner reviews changes live on phone+desktop and reports back with
+screenshots; iterate with empirical verification (measure pixels, don't
+theorize). Mirror every index.html edit into sgnoogle.html in the same
+commit.
