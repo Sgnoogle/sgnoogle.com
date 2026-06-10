@@ -1501,8 +1501,8 @@ body {
 
 </style>
 
-<script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-<script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+<script defer src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
 <script defer src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <!-- Three.js is lazy-loaded by STLLab only when the 3D viewer is requested. -->
 
@@ -4941,7 +4941,7 @@ function OpenSlotCard({ n, lang }) {
         <span style={{
           fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: 'clamp(64px, 9vw, 128px)', letterSpacing: '-0.05em',
-          color: C.border, lineHeight: 0.85,
+          color: 'rgba(120,122,124,0.5)', lineHeight: 0.85,
         }}>{String(n).padStart(2, '0')}</span>
       </div>
       <span style={{
@@ -6166,7 +6166,7 @@ function CornerChangelog({ armed, mobile, dimmed }) {
    Ripple "armed": mousedown → outline appears on the tab. mouseup on the
    same tab triggers select() + a yellow sonar ripple at the release point.
    If the pointer leaves before mouseup, armed clears and no ripple fires. */
-function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick, onHover, onLeave }) {
+function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick, onHover, onLeave, onFocusOut }) {
   const [armed, setArmed] = React.useState(false);
   const tabRef = React.useRef(null);
   // Track 'expanded' separately so the icon/label transitions stay visible
@@ -6212,7 +6212,8 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
       onPointerDown={onDown}
       onPointerUp={onUp}
       onPointerCancel={onCancel}
-      onBlur={onCancel}
+      onFocus={onHover}
+      onBlur={() => { onCancel(); onFocusOut?.(); }}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick && onClick(); } }}
       aria-current={active ? 'true' : undefined}
       aria-label={label + (sub ? ' — ' + sub : '')}
@@ -6394,8 +6395,11 @@ function ModuleStrip({ current, focused, setFocused, lang, onSelect, mobile, sou
           anyActive={!!current}
           onClick={() => onSelect(id)}
           onHover={() => { setFocused?.(id); sound && sound('hover'); }}
-          /* onLeave intenzionalmente NO-OP: il container gestisce il clear. */
+          /* onLeave intenzionalmente NO-OP: il container gestisce il clear.
+             Il blur da TASTIERA invece pulisce subito (il container non
+             riceve mouseleave quando si naviga col Tab). */
           onLeave={() => {}}
+          onFocusOut={() => setFocused?.(null)}
         />
       ))}
     </div>
@@ -8207,6 +8211,15 @@ function App() {
     setLangOpen(false);
   }, [setTweak]);
 
+  /* Titolo documento per modulo: cronologia e tab del browser leggibili. */
+  useEffect(() => {
+    try {
+      document.title = current
+        ? `SGNOOGLE · ${I18N[lang].modules[current].label}`
+        : 'SGNOOGLE · SGN-OS';
+    } catch (e) {}
+  }, [current, lang]);
+
   /* URL hash sync — leggi al mount + scrivi quando cambia `current`.
      Se l'utente naviga avanti/indietro col browser, popstate ri-applica. */
   useEffect(() => {
@@ -8308,6 +8321,18 @@ function App() {
             detail: { dir: e.key === 'ArrowDown' ? 'next' : 'prev' }
           }));
         }
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        // ←/→ scorrono i moduli in carosello circolare — speculare allo
+        // swipe mobile, stessa select/goHome (suono+slide coerenti). Il
+        // viewer STL ha la precedenza: se ha già gestito lui le frecce
+        // (preventDefault sul mount focusato), qui non si naviga.
+        if (e.defaultPrevented) return;
+        e.preventDefault();
+        const ORDER = [null, '01', '02', '03', '04', '05'];
+        const step = e.key === 'ArrowRight' ? 1 : -1;
+        const i = ORDER.indexOf(current ?? null);
+        const target = ORDER[(i + step + ORDER.length) % ORDER.length];
+        if (target === null) goHome(step); else select(target, step);
       } else if (e.key.toLowerCase() === 'l') {
         setLangOpen(true);
       } else if (e.key.toLowerCase() === 'm') {
@@ -8316,7 +8341,7 @@ function App() {
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [select, goHome, langOpen, paletteOpen, tweaks.sound, setTweak, sound, mobile]);
+  }, [select, goHome, current, langOpen, paletteOpen, tweaks.sound, setTweak, sound, mobile]);
 
   const ActiveModule = current ? MODULES[current] : null;
   const slideClass = direction > 0 ? 'sgn-slide-forward'

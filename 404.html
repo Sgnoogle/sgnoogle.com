@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>404 · SGNOOGLE</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap">
+<style>
+  :root { --paper:#F0F1F2; --ink:#28282C; --yellow:#FFC200; --grey:#787A7C;
+          --border:rgba(120,122,124,.3); --border-soft:rgba(120,122,124,.2); }
+  * { box-sizing:border-box; margin:0; }
+  html,body { height:100%; }
+  body { background:var(--paper); font-family:'IBM Plex Mono',ui-monospace,monospace;
+         color:var(--ink); display:flex; align-items:center; justify-content:center;
+         padding:24px; -webkit-font-smoothing:antialiased; }
+  .card { background:#fff; border:.5px solid var(--border); max-width:560px; width:100%;
+          padding:clamp(28px,6vw,52px); position:relative; }
+  .tick { position:absolute; width:12px; height:12px; pointer-events:none; }
+  .tl { top:7px; left:7px; border-top:1.5px solid var(--yellow); border-left:1.5px solid var(--yellow); }
+  .tr { top:7px; right:7px; border-top:1.5px solid var(--yellow); border-right:1.5px solid var(--yellow); }
+  .bl { bottom:7px; left:7px; border-bottom:1.5px solid var(--yellow); border-left:1.5px solid var(--yellow); }
+  .br { bottom:7px; right:7px; border-bottom:1.5px solid var(--yellow); border-right:1.5px solid var(--yellow); }
+  .tag { display:inline-flex; align-items:center; gap:8px; font-size:9px; font-weight:700;
+         letter-spacing:.28em; color:var(--grey); text-transform:uppercase; margin-bottom:18px; }
+  .dot { width:6px; height:6px; background:var(--yellow); display:inline-block;
+         animation:pulse 1.6s linear infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+  h1 { font-size:clamp(64px,18vw,120px); line-height:.9; letter-spacing:-.04em; font-weight:700; }
+  .sub { margin-top:14px; font-size:13px; font-weight:700; letter-spacing:.18em;
+         text-transform:uppercase; }
+  .desc { margin-top:8px; font-size:12px; line-height:1.6; color:var(--grey); }
+  .desc em { font-style:normal; color:var(--ink); }
+  hr { border:0; border-top:.5px solid var(--border-soft); margin:24px 0; }
+  a.cta { display:inline-flex; align-items:stretch; text-decoration:none; color:var(--ink);
+          border:.5px solid var(--ink); background:#fff; font-size:10px; font-weight:700;
+          letter-spacing:.2em; text-transform:uppercase;
+          transition:background 120ms linear,color 120ms linear; }
+  a.cta .ico { display:flex; align-items:center; justify-content:center; width:38px;
+               border-right:.5px solid var(--border); }
+  a.cta .ico span { width:10px; height:10px; background:var(--yellow);
+                    clip-path:polygon(100% 0,100% 65%,78% 43%,30% 91%,9% 70%,57% 22%,35% 0); }
+  a.cta .lbl { padding:12px 16px; }
+  a.cta:hover { background:var(--ink); color:var(--paper); }
+  @media (prefers-reduced-motion:reduce){ .dot{animation:none} }
+</style>
+</head>
+<body>
+  <main class="card">
+    <span class="tick tl"></span><span class="tick tr"></span>
+    <span class="tick bl"></span><span class="tick br"></span>
+    <div class="tag"><span class="dot"></span>SGN-OS · ERRORE DI SISTEMA</div>
+    <h1>404</h1>
+    <div class="sub">Modulo non trovato</div>
+    <p class="desc">L'indirizzo richiesto non esiste in questo sistema.
+       <em>The requested path does not exist on this system.</em></p>
+    <hr>
+    <a class="cta" href="/"><span class="ico"><span></span></span><span class="lbl">Torna alla console</span></a>
+  </main>
+</body>
+</html>
