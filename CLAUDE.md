@@ -54,8 +54,12 @@ Tracking is wide/uppercase for labels. Stroke hairlines are `0.5px`.
   `.sgn-page`, or you'll paint over `.sgn-display`'s white background and break
   module widths. (This caused the "About lost its white bg / video card too
   narrow" regression.)
-- Desktop "floating" look: `#root > .sgn-page` has `max-width: 1100px;
-  margin: 0 auto; background: var(--paper)`, sitting on `body`'s `--bg-outer`.
+- Desktop layout: **FULL-WIDTH (horizontal), by owner decision** — the old
+  1100px "floating panel" cap is intentionally DEAD (the wrapper under #root
+  is not `.sgn-page`, so `#root > .sgn-page` does not match; a `.sgn-shell`
+  class exists on the wrapper's page div as a future hook). Do NOT re-enable
+  the cap. The desktop featured video box must stay 18:9 and fully visible
+  (contain, centered) — never fill-crop the column.
 - Mobile breakpoint: `@media (max-width: 760px)`. Respect safe areas with
   `env(safe-area-inset-*)`. Use `100dvh` (not `100vh`) so Safari's dynamic
   toolbar is followed.

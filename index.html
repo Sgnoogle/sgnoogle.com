@@ -344,8 +344,10 @@ body {
   }
   /* Solo la shell esterna — non le pagine interne di PageDeck che condividono
      la stessa classe. #root > seleziona solo il figlio diretto. */
-  #root > .sgn-page,
-  .sgn-page.sgn-shell {
+  /* Cap 1100 'flottante' DISATTIVATO di proposito: l'impostazione attuale
+     del sito è orizzontale, a tutta larghezza (il selettore sotto non matcha:
+     il wrapper sotto #root non è .sgn-page). Hook .sgn-shell disponibile. */
+  #root > .sgn-page {
     background: var(--paper);
     max-width: 1100px;
     margin: 0 auto;
@@ -3852,7 +3854,10 @@ function FeaturedVideo({ v, L, lang }) {
 
   const renderFeaturedMedia = () => (
     <div className="sgn-feat-vid" style={{
-      position: 'relative', width: '100%', height: '100%',
+      /* Box SEMPRE 18:9 e SEMPRE tutto visibile: niente fill-crop della
+         colonna. maxHeight 100% + margin auto = contain centrato. */
+      position: 'relative', width: '100%', aspectRatio: '18 / 9',
+      maxHeight: '100%', margin: 'auto',
       overflow: 'hidden',
     }}>
       {v.youtubeId || v.playlistId || meta?.videoId
@@ -5627,6 +5632,11 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
 
 /* ─────────────────────────── IdleDisplay ─────────────────────────── */
 function IdleDisplay({ lang, mobile, focused }) {
+  // Dopo il primo swipe laterale della sessione il prompt non ricompare
+  // (IdleDisplay rimonta a ogni ritorno in home → rilegge il flag).
+  const [sideNavUsed] = React.useState(() => {
+    try { return sessionStorage.getItem('sgnSideNavUsed') === '1'; } catch (e) { return false; }
+  });
   const L = I18N[lang];
   const [armed, setArmed] = React.useState(false);
   const [idleMode, setIdleMode] = React.useState(false);
@@ -5772,7 +5782,7 @@ function IdleDisplay({ lang, mobile, focused }) {
         {/* Prompt fisso ◀ SCORRI LATERALMENTE ▶ — solo mobile (sul desktop si
            naviga da tab/tastiera). NB: era gated da uno stato showSideHint
            mai impostato → non appariva MAI (residuo del rework). */}
-        {!preview && mobile && (
+        {!preview && mobile && !sideNavUsed && (
           <div aria-hidden style={{
             position: 'absolute',
             bottom: 'clamp(8px, 1.2vh, 14px)',
@@ -6233,6 +6243,15 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         </span>
       </span>
 
+      {/* Yellow top rail sull'active tab */}
+      <span style={{
+        position: 'absolute', top: -0.5, left: -0.5, right: -0.5,
+        height: 2, background: C.yellow,
+        transform: expanded ? 'scaleX(1)' : 'scaleX(0)',
+        transformOrigin: 'left',
+        transition: 'transform 320ms cubic-bezier(0.2,0,0,1)',
+      }}/>
+
       {/* BOTTOM: numero + etichetta SEMPRE visibile (wayfinding anche a
           riposo). Tre stati, animati:
           · RIPOSO (niente di aperto)  → numero grande, etichetta SOTTO, grigia.
@@ -6397,7 +6416,10 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         // restano paper. Stacco affidato a hairline + tono del fondo, mai ombre.
         background: active ? C.white : C.paper,
         color: C.ink,
-        border: `0.5px solid ${active ? C.border : C.borderSoft}`,
+        /* ATTIVA SENZA CORNICE (border trasparente = stessa metrica): la
+           tab cliccata si fonde con ponte e view in un'unica forma bianca,
+           coerente col pannello senza bordi. Le inattive restano card. */
+        border: `0.5px solid ${active ? 'transparent' : C.borderSoft}`,
         /* La tab attiva si apre verso l'alto: bordo superiore trasparente +
            PONTE bianco senza bordi (span sotto). La view è un pannello SENZA
            cornice (border: none) — quindi il raccordo giusto non ha stipiti
@@ -6406,7 +6428,6 @@ function GameBoyKey({ id, n, label, active, onPress }) {
            = niente snapping da allineare: l'incastro è perfetto per
            costruzione, anche sulle tab agli estremi (bianco su bianco,
            collineare col filo del pannello). */
-        borderTopColor: active ? 'transparent' : undefined,
         paddingTop: 11, paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
@@ -8118,6 +8139,9 @@ function App() {
       const ni = (i + step + ORDER.length) % ORDER.length;   // wrap-around: carosello circolare
       const target = ORDER[ni];
       // passo la direzione del gesto: la giunzione 05↔home anima nel verso giusto
+      // L'utente ha imparato il gesto: il prompt in home non serve più
+      // per il resto della sessione (letto da IdleDisplay al mount).
+      try { sessionStorage.setItem('sgnSideNavUsed', '1'); } catch (err) {}
       if (target === null) goHome(step); else select(target, step);
     };
     const onCancel = () => { tracking = false; };
