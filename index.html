@@ -996,10 +996,6 @@ body {
       letter-spacing: 0.22em !important;
       line-height: 1.2 !important;
     }
-    /* Descrizione YouTube: via su mobile (vedi nota in testa al blocco). */
-    .sgn-feat-desc-panel {
-      display: none !important;
-    }
     .sgn-feat-stats {
       display: none !important;
     }
@@ -1683,11 +1679,11 @@ const I18N = {
       live: 'LIVE',
     },
     modules: {
-      '01': { label: 'VIDEO',   sub: 'Analisi, opinioni, storie',       count: 'live' },
-      '02': { label: 'OBJECTS', sub: 'Modelli 3D pronti da stampare',   count: '—'    },
-      '03': { label: 'APPS',    sub: 'App Android fatte in casa',       count: '—'    },
-      '04': { label: 'LINK',    sub: 'Collab attive · slot aperti',     count: '—'    },
-      '05': { label: 'ABOUT',   sub: 'L’umano dietro la console',       count: '01'   },
+      '01': { label: 'VIDEO',   sub: 'Analisi · opinioni · storie',  count: 'live' },
+      '02': { label: 'OBJECTS', sub: 'Stampa 3D · STL',              count: '—'    },
+      '03': { label: 'APPS',    sub: 'Android · fatte in casa',      count: '—'    },
+      '04': { label: 'LINK',    sub: 'Collab · slot aperti',         count: '—'    },
+      '05': { label: 'ABOUT',   sub: 'Dietro la console',            count: '01'   },
     },
     video: {
       featured: 'IN PRIMO PIANO',
@@ -1795,11 +1791,11 @@ const I18N = {
       live: 'LIVE',
     },
     modules: {
-      '01': { label: 'VIDEO',   sub: 'Analysis, opinions, stories',   count: 'live' },
-      '02': { label: 'OBJECTS', sub: 'Print-ready 3D models',         count: '—'    },
-      '03': { label: 'APPS',    sub: 'Homemade Android apps',         count: '—'    },
-      '04': { label: 'LINK',    sub: 'Active collabs · open slots',   count: '—'    },
-      '05': { label: 'ABOUT',   sub: 'The human behind the console',  count: '01'   },
+      '01': { label: 'VIDEO',   sub: 'Analysis · opinions · stories', count: 'live' },
+      '02': { label: 'OBJECTS', sub: '3D printing · STL',             count: '—'    },
+      '03': { label: 'APPS',    sub: 'Android · homemade',            count: '—'    },
+      '04': { label: 'LINK',    sub: 'Collabs · open slots',          count: '—'    },
+      '05': { label: 'ABOUT',   sub: 'Behind the console',            count: '01'   },
     },
     video: {
       featured: 'FEATURED',
@@ -3907,7 +3903,7 @@ function FeaturedVideo({ v, L, lang }) {
           </div>
           <div className="sgn-feat-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-            fontSize: 'clamp(13px, 1.3vw, 19px)', letterSpacing: '-0.02em',
+            fontSize: 'clamp(15px, 1.55vw, 24px)', letterSpacing: '-0.02em',
             color: C.ink, lineHeight: 1.2, margin: 0, textTransform: 'uppercase',
             display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
@@ -3943,26 +3939,9 @@ function FeaturedVideo({ v, L, lang }) {
           )}
         </div>
 
-        {displayDescription && (
-          <div className="sgn-feat-desc-panel" style={{
-            position: 'relative', minHeight: 0, flex: '0 1 auto',
-            borderTop: `0.5px solid ${C.borderSoft}`,
-            borderBottom: `0.5px solid ${C.borderSoft}`,
-            padding: 'clamp(10px, 1.2vh, 14px) 0',
-            overflow: 'hidden',
-          }}>
-            <p className="sgn-feat-desc" style={{
-              margin: 0,
-              display: '-webkit-box', WebkitLineClamp: 6, WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              fontFamily: 'IBM Plex Mono, monospace',
-              fontSize: 'clamp(11px, 0.85vw, 13px)', color: C.grey, lineHeight: 1.55,
-            }}>{displayDescription}</p>
-          </div>
-        )}
 
         {meta && (
-          <div className="sgn-feat-stats" style={{ display: 'flex', flexShrink: 0, borderTop: `0.5px solid ${C.border}`, borderBottom: `0.5px solid ${C.border}` }}>
+          <div className="sgn-feat-stats" style={{ display: 'flex', flexShrink: 0, marginTop: 'auto', borderTop: `0.5px solid ${C.border}`, borderBottom: `0.5px solid ${C.border}` }}>
             {[
               { k: 'VIEWS', v: fmtViews(meta.views) },
               { k: 'TIME', v: fmtDur(meta.duration) },
@@ -3993,7 +3972,7 @@ function FeaturedVideo({ v, L, lang }) {
           </div>
         )}
 
-        <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(8px, 1.2vh, 14px)' }}>
+        <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(8px, 1.2vh, 14px)', marginTop: meta ? undefined : 'auto' }}>
           {!meta && <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>}
           <CTA
             href={videoHref}
@@ -6416,18 +6395,18 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         // restano paper. Stacco affidato a hairline + tono del fondo, mai ombre.
         background: active ? C.white : C.paper,
         color: C.ink,
-        /* ATTIVA SENZA CORNICE (border trasparente = stessa metrica): la
-           tab cliccata si fonde con ponte e view in un'unica forma bianca,
-           coerente col pannello senza bordi. Le inattive restano card. */
+        /* ATTIVA SENZA CORNICE + PONTE NEL BOX: la tab cliccata si fonde con
+           la view (pannello senza bordi) in un'unica forma bianca. Il
+           raccordo è il BORDER-TOP TRASPARENTE del bottone stesso: il bianco
+           è il background che dipinge sotto il bordo (background-clip
+           default). UN SOLO box dipinto → i fianchi di ponte e tab sono la
+           STESSA geometria: nessun passo sub-pixel possibile (uno span
+           separato arrotondava la larghezza in modo indipendente — ~1 device
+           px di rientro, misurato). margin-top e min-height compensano:
+           contenuto e riga della strip non si muovono di un pixel. */
         border: `0.5px solid ${active ? 'transparent' : C.borderSoft}`,
-        /* La tab attiva si apre verso l'alto: bordo superiore trasparente +
-           PONTE bianco senza bordi (span sotto). La view è un pannello SENZA
-           cornice (border: none) — quindi il raccordo giusto non ha stipiti
-           grigi: è una colonna di puro bianco che unisce tab e pannello, con
-           i bordi morbidi dello stesso linguaggio. Niente hairline nel ponte
-           = niente snapping da allineare: l'incastro è perfetto per
-           costruzione, anche sulle tab agli estremi (bianco su bianco,
-           collineare col filo del pannello). */
+        borderTopWidth: active ? 'calc(var(--frame-gap, 16px) + 2px)' : '0.5px',
+        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px) - 1.5px)' : 0,
         paddingTop: 11, paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
@@ -6436,19 +6415,9 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         // 'none' a riposo: un transform permanente rasterizza i bordi su un
         // layer non-snappato (hairline più morbide di quelle circostanti).
         transform: pressed ? 'scale(0.96)' : 'none',
-        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear',
-        minHeight: 62,
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear, border-top-width 340ms cubic-bezier(0.2,0,0,1), margin-top 340ms cubic-bezier(0.2,0,0,1), min-height 340ms cubic-bezier(0.2,0,0,1)',
+        minHeight: active ? 'calc(62px + var(--frame-gap, 16px) + 1.5px)' : 62,
       }}>
-      {/* PONTE — colonna bianca a tutta larghezza della tab, dal bordo del
-         pannello alla key (1px di sovrapposizione per coprire la riga del
-         bordo superiore in dissolvenza). Cresce dal basso animando height. */}
-      <span aria-hidden="true" style={{
-        position: 'absolute', bottom: 'calc(100% - 1px)',
-        left: -0.5, right: -0.5,
-        height: active ? 'calc(var(--frame-gap, 16px) + 2.5px)' : 0,
-        background: C.white, pointerEvents: 'none', overflow: 'hidden',
-        transition: 'height 340ms cubic-bezier(0.2,0,0,1)',
-      }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
           10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
