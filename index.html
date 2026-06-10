@@ -344,7 +344,8 @@ body {
   }
   /* Solo la shell esterna — non le pagine interne di PageDeck che condividono
      la stessa classe. #root > seleziona solo il figlio diretto. */
-  #root > .sgn-page {
+  #root > .sgn-page,
+  .sgn-page.sgn-shell {
     background: var(--paper);
     max-width: 1100px;
     margin: 0 auto;
@@ -925,7 +926,7 @@ body {
     .sgn-feat-info {
       display: flex !important;
       flex-direction: column !important;
-      justify-content: space-between !important;
+      justify-content: flex-start !important;
       align-content: stretch !important;
       height: 100% !important;
       /* border-box OBBLIGATORIO: height 100% + padding in content-box sfora
@@ -980,13 +981,16 @@ body {
     }
     .sgn-feat-mobile-meta {
       order: 3 !important;
+      /* lo slack della pagina si accumula QUI (tra titolo e meta):
+         cover+tag+titolo restano compatti in alto, meta+CTA in basso. */
+      margin-top: auto !important;
       display: flex !important;
       flex-direction: column !important;
       gap: clamp(8px, 1cqh, 12px) !important;
       min-width: 0 !important;
     }
     .sgn-feat-mobile-meta .sgn-label {
-      font-size: 9px !important;
+      font-size: 10px !important;
       letter-spacing: 0.22em !important;
       line-height: 1.2 !important;
     }
@@ -1010,7 +1014,7 @@ body {
       grid-template-columns: auto minmax(0, 1fr) !important;
       align-items: center !important;
       gap: 6px !important;
-      padding: 9px 10px !important;
+      padding: 11px 12px !important;
       min-width: 0 !important;
     }
     .sgn-feat-mobile-metric + .sgn-feat-mobile-metric {
@@ -1025,7 +1029,7 @@ body {
     }
     .sgn-feat-mobile-metric__value {
       justify-self: end !important;
-      font: 700 clamp(12px, 3.4vw, 14px)/1 IBM Plex Mono, monospace !important;
+      font: 700 clamp(14px, 4vw, 17px)/1 IBM Plex Mono, monospace !important;
       letter-spacing: -0.015em !important;
       color: var(--ink) !important;
       white-space: nowrap !important;
@@ -5686,20 +5690,10 @@ function IdleDisplay({ lang, mobile, focused }) {
     };
   }, [focused]);
 
-  React.useEffect(() => {
-    if (focused) {
-      setShowSideHint(false);
-      try { localStorage.setItem('sgnHomeSideHintSeen', '1'); } catch (e) {}
-      return undefined;
-    }
-    try { if (localStorage.getItem('sgnHomeSideHintSeen')) return undefined; } catch (e) {}
-    const show = setTimeout(() => setShowSideHint(true), 900);
-    const hide = setTimeout(() => {
-      setShowSideHint(false);
-      try { localStorage.setItem('sgnHomeSideHintSeen', '1'); } catch (e) {}
-    }, 5000);
-    return () => { clearTimeout(show); clearTimeout(hide); };
-  }, [focused]);
+  /* (Il vecchio effect one-tantum del side hint è stato rimosso insieme allo
+     stato showSideHint: il prompt è ora sempre visibile su mobile in home.
+     Una chiamata orfana a setShowSideHint qui crashava l'intero albero per i
+     visitatori senza il flag in localStorage.) */
 
   const preview = focused && L.modules[focused];
 
@@ -6239,15 +6233,6 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         </span>
       </span>
 
-      {/* Yellow top rail sull'active tab */}
-      <span style={{
-        position: 'absolute', top: -0.5, left: -0.5, right: -0.5,
-        height: 2, background: C.yellow,
-        transform: expanded ? 'scaleX(1)' : 'scaleX(0)',
-        transformOrigin: 'left',
-        transition: 'transform 320ms cubic-bezier(0.2,0,0,1)',
-      }}/>
-
       {/* BOTTOM: numero + etichetta SEMPRE visibile (wayfinding anche a
           riposo). Tre stati, animati:
           · RIPOSO (niente di aperto)  → numero grande, etichetta SOTTO, grigia.
@@ -6413,41 +6398,35 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         background: active ? C.white : C.paper,
         color: C.ink,
         border: `0.5px solid ${active ? C.border : C.borderSoft}`,
-        /* "Linguetta" = IL BUTTON STESSO che si estende sopra, nel gap, e si
-           FERMA esattamente alla cornice della view (margin = -gap, zero
-           overlap → i bordi laterali incontrano la linea senza scavalcarla):
-           margin-top negativo + padding-top compensativo (il contenuto non si
-           muove) + bordo superiore trasparente (apertura). UN SOLO elemento →
-           i lati della linguetta SONO i bordi della tab: disallineamento
-           impossibile. Ogni variante a overlay (span con propri hairline)
-           falliva: a coordinate frazionarie (grid 1fr) i bordi di elementi
-           diversi rasterizzano con snapping diverso → scalini fino a ~1px,
-           diversi per ogni tab (verificato in headless Chrome, dpr 2.625/3).
-           La hairline della view viene cancellata dalla toppa interna (vedi
-           span sotto), non dall'overlap del bottone. */
+        /* La tab attiva si apre verso l'alto: bordo superiore trasparente +
+           PONTE bianco senza bordi (span sotto). La view è un pannello SENZA
+           cornice (border: none) — quindi il raccordo giusto non ha stipiti
+           grigi: è una colonna di puro bianco che unisce tab e pannello, con
+           i bordi morbidi dello stesso linguaggio. Niente hairline nel ponte
+           = niente snapping da allineare: l'incastro è perfetto per
+           costruzione, anche sulle tab agli estremi (bianco su bianco,
+           collineare col filo del pannello). */
         borderTopColor: active ? 'transparent' : undefined,
-        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
-        paddingTop: active ? 'calc(11px + var(--frame-gap, 16px))' : 11,
-        paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
+        paddingTop: 11, paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
         // Press feedback minimale: micro-scala, niente bordo-rialzo né shadow.
-        transform: pressed ? 'scale(0.96)' : 'scale(1)',
-        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear, margin-top 340ms cubic-bezier(0.2,0,0,1), padding-top 340ms cubic-bezier(0.2,0,0,1)',
+        // 'none' a riposo: un transform permanente rasterizza i bordi su un
+        // layer non-snappato (hairline più morbide di quelle circostanti).
+        transform: pressed ? 'scale(0.96)' : 'none',
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear',
         minHeight: 62,
       }}>
-      {/* Toppa interna SENZA bordi: cancella la hairline inferiore della view
-         solo per la larghezza interna dell'apertura (tra i due bordi — left/
-         right:0 = padding box). Fill puro → niente snapping da allineare
-         (verificato nei crop: la linea si interrompe esatta ai due stipiti).
-         Compare a fine corsa (delay ≈ durata crescita) così durante
-         l'animazione non si vede la striscia bianca attraversare il gap. */}
+      {/* PONTE — colonna bianca a tutta larghezza della tab, dal bordo del
+         pannello alla key (1px di sovrapposizione per coprire la riga del
+         bordo superiore in dissolvenza). Cresce dal basso animando height. */}
       <span aria-hidden="true" style={{
-        position: 'absolute', top: -1.5, left: 0, right: 0, height: 3,
-        background: C.white, pointerEvents: 'none',
-        opacity: active ? 1 : 0,
-        transition: active ? 'opacity 120ms linear 260ms' : 'opacity 60ms linear',
+        position: 'absolute', bottom: 'calc(100% - 1px)',
+        left: -0.5, right: -0.5,
+        height: active ? 'calc(var(--frame-gap, 16px) + 2.5px)' : 0,
+        background: C.white, pointerEvents: 'none', overflow: 'hidden',
+        transition: 'height 340ms cubic-bezier(0.2,0,0,1)',
       }}/>
       <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
@@ -7992,7 +7971,9 @@ function OnboardHint({ lang, onClose }) {
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [lang, setLang] = useState(tweaks.language || 'it');
-  const [current, setCurrent] = useState(null);
+  // Hash letto AL MOUNT (lazy): senza, il primo writeHash(current=null)
+  // CANCELLAVA l'hash e i deep-link #01..#05 aprivano sempre la home.
+  const [current, setCurrent] = useState(() => parseHash().mod);
   const [focused, setFocused] = useState(null);
   // Boot persistente: la prima visita vede TapToStart + boot; chi torna entra
   // diretto. sessionStorage resta fallback per compatibilità con visite aperte.
@@ -8008,7 +7989,7 @@ function App() {
   const [swipeHint, setSwipeHint] = useState(false);
   const [onboard, setOnboard] = useState(false);
   const prevRef = useRef(null);
-  const pendingPageRef = useRef(null);
+  const pendingPageRef = useRef(parseHash().page);
   const mobile = useIsMobile();
   const displayInnerRef = useRef(null);
   const displaySectionRef = useRef(null);
@@ -8290,7 +8271,7 @@ function App() {
       <Cursor enabled={!!tweaks.crosshair && !mobile} sound={sound}/>
       <ClickRipple enabled={!!tweaks.ripple}/>
 
-      <div className="sgn-page">
+      <div className="sgn-page sgn-shell">
         <div className="sgn-frame">
           <div className="sgn-stage">
           <TopBar
