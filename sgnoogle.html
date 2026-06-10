@@ -5785,6 +5785,11 @@ function IdleDisplay({ lang, mobile, focused }) {
         padding: 'clamp(20px, 3.2vw, 48px)',
         gap: 'clamp(18px, 3vh, 28px)',
       }}>
+        {/* In STANDBY il wordmark CAMBIA STATO: SGNOOGLE sfuma e al suo posto
+           appare STANDBY, sbiadito, col wireframe che continua a girare
+           dietro. Niente altre scritte (badge, ciclo moduli e label sotto
+           svaniscono): la home non parla più, segnala uno stato — come un
+           vero OS. Crossfade a livelli: zero scatti di testo. */}
         <h1 style={{
           fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
           fontWeight: 700,
@@ -5793,11 +5798,21 @@ function IdleDisplay({ lang, mobile, focused }) {
           lineHeight: 0.9, margin: 0,
           whiteSpace: 'nowrap',
           display: preview ? 'none' : 'block',
-          opacity: idleMode ? 0.35 : (armed ? 1 : 0),
+          position: 'relative',
+          opacity: idleMode ? 0.3 : (armed ? 1 : 0),
           transform: armed ? 'translateY(0)' : 'translateY(18px)',
           transition: 'opacity 700ms linear 120ms, transform 700ms cubic-bezier(0.2,0,0,1) 120ms',
         }}>
-          <span style={{ color: C.yellow }}>SGN</span>OOGLE
+          <span style={{
+            opacity: idleMode ? 0 : 1,
+            transition: 'opacity 600ms linear',
+          }}><span style={{ color: C.yellow }}>SGN</span>OOGLE</span>
+          <span aria-hidden="true" style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            opacity: idleMode ? 1 : 0,
+            transition: 'opacity 600ms linear 200ms',
+          }}>STANDBY</span>
         </h1>
 
         {!preview && (
@@ -5811,7 +5826,7 @@ function IdleDisplay({ lang, mobile, focused }) {
               aria-label="VIDEO · OBJECTS · APPS · LINK · ABOUT"
               style={{
                 marginTop: 'clamp(22px, 4vh, 44px)',
-                opacity: armed ? (idleMode ? 0.18 : 0.52) : 0,
+                opacity: armed ? (idleMode ? 0 : 0.52) : 0,
                 transform: armed ? 'translateY(0)' : 'translateY(6px)',
                 transition: 'opacity 600ms linear 760ms, transform 600ms cubic-bezier(0.2,0,0,1) 760ms',
               }}
@@ -5857,15 +5872,6 @@ function IdleDisplay({ lang, mobile, focused }) {
         )}
       </div>
 
-      {idleMode && !preview && (
-        <div aria-hidden style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%) translateY(120px)',
-          fontSize: 10, letterSpacing: '0.4em', color: C.faint, fontWeight: 600,
-          zIndex: 3, pointerEvents: 'none',
-          animation: 'sgnpulse 2.4s linear infinite',
-        }}>{lang === 'it' ? '— IN ATTESA —' : '— STAND BY —'}</div>
-      )}
     </div>
   );
 }
@@ -6114,7 +6120,7 @@ function LiveBadge({ armed, dimmed }) {
   return (
     <div style={{
       display: 'inline-flex', alignItems: 'center', gap: 9,
-      opacity: armed ? (dimmed ? 0.4 : 1) : 0,
+      opacity: armed ? (dimmed ? 0 : 1) : 0,
       transform: armed ? 'translateY(0)' : 'translateY(8px)',
       transition: 'opacity 600ms linear 600ms, transform 600ms cubic-bezier(0.2,0,0,1) 600ms',
     }}>
