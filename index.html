@@ -1603,16 +1603,17 @@ body {
      back   — two-note descending (leaving a module)
      boot   — sparse low click during the boot bar fill */
   const presets = {
-    hover:   [{ freq: 1400, dur: 0.024, vol: 0.032, type: 'sine'     }],
-    tick:    [{ freq: 1800, dur: 0.022, vol: 0.035, type: 'triangle' }],
-    confirm: [
-      { freq: 1100, dur: 0.040, vol: 0.035, type: 'triangle', when: 0     },
-      { freq: 1650, dur: 0.060, vol: 0.040, type: 'triangle', when: 0.045 },
-    ],
-    back: [
-      { freq: 800,  dur: 0.040, vol: 0.030, type: 'triangle', when: 0     },
-      { freq: 480,  dur: 0.070, vol: 0.035, type: 'triangle', when: 0.045 },
-    ],
+    // hover — precursore SOFFICE e breve (sine, quasi inudibile): introduce il
+    // pop del click senza essere esso stesso un pop. Niente più 1400Hz acuti.
+    hover:   [{ freq: 900, dur: 0.020, vol: 0.022, type: 'sine', bend: 1.0,  attack: 0.002 }],
+    // tick — IL click universale del sito: pressione del Cursor su desktop +
+    // ogni sound('tick') (lista STL, lingua, palette). Ora è il POP a bolla,
+    // non più il triangle acuto a 1800Hz.
+    tick:    [{ freq: 720, dur: 0.050, vol: 0.040, type: 'sine', bend: 1.7,  attack: 0.003 }],
+    // confirm/back — gesti SENZA fase di pressione (lingua, palette, flip card,
+    // link): pop singolo, confirm più brillante (conferma), back più grave.
+    confirm: [{ freq: 880, dur: 0.055, vol: 0.042, type: 'sine', bend: 1.7,  attack: 0.003 }],
+    back:    [{ freq: 520, dur: 0.060, vol: 0.040, type: 'sine', bend: 1.45, attack: 0.003 }],
     // tap/tapBack — "BOLLA CHE SCOPPIA": sine + bend IN SU (la frequenza sale
     // mentre il suono muore = la risonanza della bolla che collassa, il vero
     // segreto del 'pop'). Fondamentale media + sub-ottava per il corpo,
