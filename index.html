@@ -1603,28 +1603,27 @@ body {
      back   — two-note descending (leaving a module)
      boot   — sparse low click during the boot bar fill */
   const presets = {
-    // hover — precursore SOFFICE e breve (sine, quasi inudibile): introduce il
-    // pop del click senza essere esso stesso un pop. Niente più 1400Hz acuti.
-    hover:   [{ freq: 900, dur: 0.020, vol: 0.022, type: 'sine', bend: 1.0,  attack: 0.002 }],
-    // tick — IL click universale del sito: pressione del Cursor su desktop +
-    // ogni sound('tick') (lista STL, lingua, palette). Ora è il POP a bolla,
-    // non più il triangle acuto a 1800Hz.
-    tick:    [{ freq: 720, dur: 0.050, vol: 0.040, type: 'sine', bend: 1.7,  attack: 0.003 }],
-    // confirm/back — gesti SENZA fase di pressione (lingua, palette, flip card,
-    // link): pop singolo, confirm più brillante (conferma), back più grave.
-    confirm: [{ freq: 880, dur: 0.055, vol: 0.042, type: 'sine', bend: 1.7,  attack: 0.003 }],
-    back:    [{ freq: 520, dur: 0.060, vol: 0.040, type: 'sine', bend: 1.45, attack: 0.003 }],
-    // tap/tapBack — "BOLLA CHE SCOPPIA": sine + bend IN SU (la frequenza sale
-    // mentre il suono muore = la risonanza della bolla che collassa, il vero
-    // segreto del 'pop'). Fondamentale media + sub-ottava per il corpo,
-    // durata corta, attacco snello. tap più acuto (apre), tapBack più grave.
+    // hover — precursore soffice e basso (sine, quasi inudibile): introduce il
+    // click senza esserne uno. Niente più 1400Hz acuti.
+    hover:   [{ freq: 760, dur: 0.022, vol: 0.022, type: 'sine', bend: 0.9,  attack: 0.003 }],
+    // tick — IL click universale del sito (pressione Cursor desktop + ogni
+    // sound('tick'): lista STL, lingua, palette). Timbro CUPO: sine basso, bend
+    // in giù — niente triangle acuto a 1800Hz, niente pop brillante.
+    tick:    [{ freq: 660, dur: 0.055, vol: 0.040, type: 'sine', bend: 0.82, attack: 0.004 }],
+    // confirm/back — gesti senza fase di pressione (lingua, palette, flip card,
+    // link): stessa famiglia cupa, confirm un filo più alto, back più grave.
+    confirm: [{ freq: 760, dur: 0.060, vol: 0.042, type: 'sine', bend: 0.84, attack: 0.004 }],
+    back:    [{ freq: 460, dur: 0.075, vol: 0.038, type: 'sine', bend: 0.78, attack: 0.004 }],
+    // tap/tapBack — conferma a UNA nota per il TOUCH, timbro CUPO/caldo (la
+    // versione preferita): sine a fondamentale bassa + sub-ottava per il corpo,
+    // bend in giù, attacco morbido. tap apre (più alto), tapBack chiude (grave).
     tap: [
-      { freq: 760, dur: 0.052, vol: 0.050, type: 'sine', bend: 1.75, attack: 0.004 },
-      { freq: 380, dur: 0.052, vol: 0.020, type: 'sine', bend: 1.75, attack: 0.004 },
+      { freq: 600, dur: 0.085, vol: 0.052, type: 'sine', bend: 0.84, attack: 0.006 },
+      { freq: 300, dur: 0.085, vol: 0.026, type: 'sine', bend: 0.84, attack: 0.006 },
     ],
     tapBack: [
-      { freq: 560, dur: 0.058, vol: 0.048, type: 'sine', bend: 1.6,  attack: 0.004 },
-      { freq: 280, dur: 0.058, vol: 0.020, type: 'sine', bend: 1.6,  attack: 0.004 },
+      { freq: 420, dur: 0.095, vol: 0.050, type: 'sine', bend: 0.80, attack: 0.006 },
+      { freq: 210, dur: 0.095, vol: 0.026, type: 'sine', bend: 0.80, attack: 0.006 },
     ],
     // release/releaseBack — la RISOLUZIONE del click desktop in 3 fasi:
     // hover (annuncio, 1400) → tick alla pressione (attacco, 1800) → UNA
@@ -1633,10 +1632,10 @@ body {
     // e il bicordo ripartiva PIÙ IN BASSO del tick (inciampo). Una nota per
     // fase: confirm/back restano per i gesti senza fase di pressione
     // (lingua, palette, flip card).
-    // Risoluzione del click desktop come "pop" (stessa famiglia del tap mobile,
-    // sine + bend in su): dopo hover→tick l'apertura scoppia come una bolla.
-    release:     [{ freq: 820, dur: 0.052, vol: 0.044, type: 'sine', bend: 1.7, attack: 0.003 }],
-    releaseBack: [{ freq: 600, dur: 0.058, vol: 0.040, type: 'sine', bend: 1.5, attack: 0.003 }],
+    // Risoluzione del click desktop in 3 fasi: dopo hover→tick si "posa" su una
+    // nota calda e bassa (cupo), meno acuta.
+    release:     [{ freq: 880, dur: 0.075, vol: 0.046, type: 'sine', bend: 0.86, attack: 0.004 }],
+    releaseBack: [{ freq: 520, dur: 0.085, vol: 0.042, type: 'sine', bend: 0.82, attack: 0.004 }],
     boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
     // skill — variazione del 'boot' per il riempimento delle barre competenze:
     // stesso click meccanico, timbro un filo più brillante (triangle, +pitch).
