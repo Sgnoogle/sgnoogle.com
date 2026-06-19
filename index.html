@@ -1570,7 +1570,7 @@ body {
   /* Single-note: shaped envelope (attack → quick decay).
      freq: Hz; dur: total seconds; vol: peak amplitude;
      type: oscillator type; bend: ratio to ramp pitch to over dur. */
-  function note(ac, { freq, dur, vol, type = 'sine', bend = 0.7, when = 0 }) {
+  function note(ac, { freq, dur, vol, type = 'sine', bend = 0.7, when = 0, attack = 0.002 }) {
     const start = ac.currentTime + when;
     const osc = ac.createOscillator();
     const gain = ac.createGain();
@@ -1579,7 +1579,8 @@ body {
     osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq * bend), start + dur);
 
     gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(vol, start + 0.002);
+    // attack: 2ms = click secco; ~6ms = onset morbido (suoni 'caldi' tipo Switch)
+    gain.gain.linearRampToValueAtTime(vol, start + attack);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
 
     osc.connect(gain).connect(ac.destination);
@@ -1612,11 +1613,18 @@ body {
       { freq: 800,  dur: 0.040, vol: 0.030, type: 'triangle', when: 0     },
       { freq: 480,  dur: 0.070, vol: 0.035, type: 'triangle', when: 0.045 },
     ],
-    // tap/tapBack — conferme a UNA nota per il TOUCH: su mobile manca la
-    // fase di hover, quindi i bicordi confirm/back arrivavano "a freddo"
-    // troppo carichi. Stessa famiglia timbrica (triangle), metà complessità.
-    tap:     [{ freq: 1320, dur: 0.045, vol: 0.034, type: 'triangle' }],
-    tapBack: [{ freq:  640, dur: 0.055, vol: 0.030, type: 'triangle' }],
+    // tap/tapBack — conferme a UNA nota per il TOUCH (mobile non ha la fase
+    // di hover). Timbro "Switch": niente triangle acuto → SINE caldo a
+    // fondamentale bassa + una sub-ottava sotto (corpo), attacco morbido (6ms)
+    // e leggero bend in giù = un pop morbido, non un bip tagliente.
+    tap: [
+      { freq: 600, dur: 0.085, vol: 0.052, type: 'sine', bend: 0.84, attack: 0.006 },
+      { freq: 300, dur: 0.085, vol: 0.026, type: 'sine', bend: 0.84, attack: 0.006 },
+    ],
+    tapBack: [
+      { freq: 420, dur: 0.095, vol: 0.050, type: 'sine', bend: 0.80, attack: 0.006 },
+      { freq: 210, dur: 0.095, vol: 0.026, type: 'sine', bend: 0.80, attack: 0.006 },
+    ],
     // release/releaseBack — la RISOLUZIONE del click desktop in 3 fasi:
     // hover (annuncio, 1400) → tick alla pressione (attacco, 1800) → UNA
     // nota al rilascio. Prima al rilascio partiva l'intero bicordo
@@ -1624,8 +1632,11 @@ body {
     // e il bicordo ripartiva PIÙ IN BASSO del tick (inciampo). Una nota per
     // fase: confirm/back restano per i gesti senza fase di pressione
     // (lingua, palette, flip card).
-    release:     [{ freq: 1650, dur: 0.060, vol: 0.040, type: 'triangle' }],
-    releaseBack: [{ freq:  480, dur: 0.070, vol: 0.035, type: 'triangle' }],
+    // Risoluzione SINE e più bassa (≈ un'ottava sotto il tick 1800): dopo i
+    // due click brillanti hover→tick, l'apertura "si posa" su una nota calda,
+    // meno acuta — stessa direzione Switch del tap mobile.
+    release:     [{ freq: 880, dur: 0.075, vol: 0.046, type: 'sine', bend: 0.86, attack: 0.004 }],
+    releaseBack: [{ freq: 520, dur: 0.085, vol: 0.042, type: 'sine', bend: 0.82, attack: 0.004 }],
     boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
     // skill — variazione del 'boot' per il riempimento delle barre competenze:
     // stesso click meccanico, timbro un filo più brillante (triangle, +pitch).
