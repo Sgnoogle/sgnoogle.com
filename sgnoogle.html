@@ -1613,17 +1613,17 @@ body {
       { freq: 800,  dur: 0.040, vol: 0.030, type: 'triangle', when: 0     },
       { freq: 480,  dur: 0.070, vol: 0.035, type: 'triangle', when: 0.045 },
     ],
-    // tap/tapBack — conferme a UNA nota per il TOUCH (mobile non ha la fase
-    // di hover). Timbro "Switch": niente triangle acuto → SINE caldo a
-    // fondamentale bassa + una sub-ottava sotto (corpo), attacco morbido (6ms)
-    // e leggero bend in giù = un pop morbido, non un bip tagliente.
+    // tap/tapBack — "BOLLA CHE SCOPPIA": sine + bend IN SU (la frequenza sale
+    // mentre il suono muore = la risonanza della bolla che collassa, il vero
+    // segreto del 'pop'). Fondamentale media + sub-ottava per il corpo,
+    // durata corta, attacco snello. tap più acuto (apre), tapBack più grave.
     tap: [
-      { freq: 600, dur: 0.085, vol: 0.052, type: 'sine', bend: 0.84, attack: 0.006 },
-      { freq: 300, dur: 0.085, vol: 0.026, type: 'sine', bend: 0.84, attack: 0.006 },
+      { freq: 760, dur: 0.052, vol: 0.050, type: 'sine', bend: 1.75, attack: 0.004 },
+      { freq: 380, dur: 0.052, vol: 0.020, type: 'sine', bend: 1.75, attack: 0.004 },
     ],
     tapBack: [
-      { freq: 420, dur: 0.095, vol: 0.050, type: 'sine', bend: 0.80, attack: 0.006 },
-      { freq: 210, dur: 0.095, vol: 0.026, type: 'sine', bend: 0.80, attack: 0.006 },
+      { freq: 560, dur: 0.058, vol: 0.048, type: 'sine', bend: 1.6,  attack: 0.004 },
+      { freq: 280, dur: 0.058, vol: 0.020, type: 'sine', bend: 1.6,  attack: 0.004 },
     ],
     // release/releaseBack — la RISOLUZIONE del click desktop in 3 fasi:
     // hover (annuncio, 1400) → tick alla pressione (attacco, 1800) → UNA
@@ -1632,11 +1632,10 @@ body {
     // e il bicordo ripartiva PIÙ IN BASSO del tick (inciampo). Una nota per
     // fase: confirm/back restano per i gesti senza fase di pressione
     // (lingua, palette, flip card).
-    // Risoluzione SINE e più bassa (≈ un'ottava sotto il tick 1800): dopo i
-    // due click brillanti hover→tick, l'apertura "si posa" su una nota calda,
-    // meno acuta — stessa direzione Switch del tap mobile.
-    release:     [{ freq: 880, dur: 0.075, vol: 0.046, type: 'sine', bend: 0.86, attack: 0.004 }],
-    releaseBack: [{ freq: 520, dur: 0.085, vol: 0.042, type: 'sine', bend: 0.82, attack: 0.004 }],
+    // Risoluzione del click desktop come "pop" (stessa famiglia del tap mobile,
+    // sine + bend in su): dopo hover→tick l'apertura scoppia come una bolla.
+    release:     [{ freq: 820, dur: 0.052, vol: 0.044, type: 'sine', bend: 1.7, attack: 0.003 }],
+    releaseBack: [{ freq: 600, dur: 0.058, vol: 0.040, type: 'sine', bend: 1.5, attack: 0.003 }],
     boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
     // skill — variazione del 'boot' per il riempimento delle barre competenze:
     // stesso click meccanico, timbro un filo più brillante (triangle, +pitch).
