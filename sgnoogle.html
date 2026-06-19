@@ -953,15 +953,15 @@ body {
     .sgn-feat-info {
       display: flex !important;
       flex-direction: column !important;
+      /* TOP-anchored coeso: hero (cover) in cima, didascalia subito sotto a
+         ritmo uniforme, lo spazio calmo tutto in fondo. Niente voragine in
+         mezzo (era margin-top:auto sul meta). */
       justify-content: flex-start !important;
       align-content: stretch !important;
       height: 100% !important;
-      /* border-box OBBLIGATORIO: height 100% + padding in content-box sfora
-         il fondo card → CTA tagliata (con space-between il contenuto arriva
-         davvero in fondo, lo sforo non è più mascherato dallo slack). */
       box-sizing: border-box !important;
-      padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(16px, 3.4cqh, 34px) !important;
-      gap: clamp(10px, 1.45cqh, 16px) !important;
+      padding: clamp(16px, 3cqh, 28px) clamp(14px, 4vw, 20px) clamp(16px, 3cqh, 28px) !important;
+      gap: clamp(13px, 2.3cqh, 20px) !important;
       border-left: none !important;
       overflow: hidden !important;
     }
@@ -978,18 +978,17 @@ body {
       margin-top: clamp(8px, 1.15cqh, 12px) !important;
     }
     .sgn-feat-desktop-meta { display: none !important; }
-    /* COVER-TOP: il video sta IN CIMA alla pagina, a tutta larghezza della
-       card (full-bleed dentro la cornice — come le copertine delle VideoCard
-       in pagina 2), e il titolo sotto fa da didascalia. I margini negativi
-       annullano il padding del pannello info; hairline sotto da separatore. */
+    /* COVER INSET: la copertina 18:9 sta in cima al gruppo ma ALLINEATA alla
+       colonna del testo (niente più full-bleed che sborda i margini → ora
+       tutto incolonnato). Cornice hairline propria (irrobustita su iOS, vedi
+       blocco @supports). */
     .sgn-feat-inline-vid-col {
       order: 0 !important;
       display: flex !important;
       min-height: 0 !important;
       box-sizing: border-box !important;
       padding: 0 !important;
-      margin: calc(-1 * clamp(16px, 3cqh, 30px)) calc(-1 * clamp(12px, 3.4vw, 16px)) 0 !important;
-      border-bottom: 0.5px solid var(--border-soft) !important;
+      margin: 0 !important;
       align-items: center !important;
       justify-content: center !important;
       overflow: hidden !important;
@@ -998,19 +997,15 @@ body {
       flex: 0 0 auto !important;
       height: auto !important;
       width: 100% !important;
-      /* safety sui viewport bassi: il cover interno copre comunque il box */
-      max-height: 54cqh !important;
+      max-height: 50cqh !important;
       aspect-ratio: 18 / 9 !important;
       margin: 0 !important;
-      border: none !important;
+      border: 0.5px solid var(--border) !important;
       box-sizing: border-box !important;
       background: var(--ink) !important;
     }
     .sgn-feat-mobile-meta {
       order: 3 !important;
-      /* lo slack della pagina si accumula QUI (tra titolo e meta):
-         cover+tag+titolo restano compatti in alto, meta+CTA in basso. */
-      margin-top: auto !important;
       display: flex !important;
       flex-direction: column !important;
       gap: clamp(8px, 1cqh, 12px) !important;
@@ -1282,6 +1277,7 @@ body {
       border-width: 1px !important;
       border-color: rgba(120, 122, 124, 0.12) !important;
     }
+    .sgn-feat-vid { border-width: 1px; border-color: rgba(120, 122, 124, 0.16); }
   }
 
   /* ── Touch (nessun hover): il linguaggio di selezione del sito è tutto a
