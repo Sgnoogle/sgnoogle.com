@@ -406,14 +406,17 @@ button { border: none; }
     margin-bottom: var(--frame-gap);
     transition: height 320ms cubic-bezier(0.2,0,0,1),
                 margin-bottom 320ms cubic-bezier(0.2,0,0,1),
+                background-color 320ms cubic-bezier(0.2,0,0,1),
                 border-color 220ms linear;
   }
   .sgn-topbar--home {
     margin-bottom: 0;
     border-color: transparent !important;
     /* v3.2: in home la barra si fonde col fondo (acciaio) in un'unica
-       superficie, come il vecchio merge bianco-su-bianco. */
-    background: transparent !important;
+       superficie, come il vecchio merge bianco-su-bianco. Paper (non
+       transparent): stesso tono del display e dissolvenza pulita del
+       bianco, animata da background-color nella transition qui sopra. */
+    background: var(--paper) !important;
     height: clamp(54px, 8vh, 66px) !important;
   }
   .sgn-display {
@@ -5538,12 +5541,23 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             </g>
           </svg>
         </button>
-      ) : current ? (
-        <button onClick={onHome} className="sgn-hot sgn-homebrand" style={{
-          display: 'inline-flex', alignItems: 'center', gap: 10,
-          background: 'transparent', border: 'none', padding: 0,
-          cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
-        }}>
+      ) : (
+        /* Sempre montato: in home sfuma a opacity 0 (come il mark mobile),
+           così lo space-between non redistribuisce e le etichette centrali
+           non slittano durante la transizione barra bianca ↔ acciaio. */
+        <button
+          onClick={current ? onHome : undefined}
+          className="sgn-hot sgn-homebrand"
+          aria-hidden={!current}
+          tabIndex={current ? 0 : -1}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            background: 'transparent', border: 'none', padding: 0,
+            cursor: current ? 'pointer' : 'default', fontFamily: 'inherit', color: 'inherit',
+            opacity: current ? 1 : 0,
+            pointerEvents: current ? 'auto' : 'none',
+            transition: 'opacity 320ms linear',
+          }}>
           <svg viewBox="0 0 206.1 201.44" aria-hidden style={{
             width: 22, height: 22, display: 'block', flexShrink: 0,
           }}>
@@ -5557,8 +5571,6 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', color: C.ink,
           }}>{BRAND.product}</span>
         </button>
-      ) : (
-        <span aria-hidden="true" />
       )}
 
       {!mobile && (
