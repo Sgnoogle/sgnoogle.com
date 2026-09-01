@@ -411,6 +411,9 @@ button { border: none; }
   .sgn-topbar--home {
     margin-bottom: 0;
     border-color: transparent !important;
+    /* v3.2: in home la barra si fonde col fondo (acciaio) in un'unica
+       superficie, come il vecchio merge bianco-su-bianco. */
+    background: transparent !important;
     height: clamp(54px, 8vh, 66px) !important;
   }
   .sgn-display {
@@ -656,14 +659,13 @@ button { border: none; }
 
   /* ══════════════════════════════════════════════════════════════
      LANG button (topbar) + popover trigger states.
-     Riposo: hairline grey. Hover: bordo → ink (stesso linguaggio di
-     card/CTA). Aperto (is-open): la cella valore si arma a ink+paper e
-     il caret ruota. Nessun giallo coinvolto.
+     v3.2 flat: chip senza bordo. Aperto (is-open): la cella valore passa
+     a bianco pieno (tono, mai sfondi ink), rail grigio in alto, caret
+     ruotato. Il popover è un pannello bianco flat senza cornice.
      ══════════════════════════════════════════════════════════════ */
   .sgn-langbtn { position: relative; overflow: hidden; transition: border-color 120ms linear; }
   .sgn-langbtn__val { transition: background 120ms linear, color 120ms linear; }
-  .sgn-langbtn.is-open { border-color: var(--ink); }
-  .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
+  .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--white) !important; color: var(--ink) !important; }
   .sgn-caret { transition: transform 160ms cubic-bezier(0.2,0,0,1); }
   .sgn-langbtn.is-open .sgn-caret { transform: rotate(180deg); }
   .sgn-langbtn.is-open::after {
@@ -6777,7 +6779,7 @@ function LangPopover({ lang, onPick, onClose, sound }) {
   return (
     <div ref={ref} className="sgn-lang-popover" role="menu" aria-label="Locale" style={{
       position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 9000,
-      width: 214, background: C.white, border: `0.5px solid ${C.ink}`,
+      width: 214, background: C.white,
       fontFamily: 'IBM Plex Mono, monospace',
     }}>
       {/* header strip */}
