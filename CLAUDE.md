@@ -1,24 +1,24 @@
-# SGNOOGLE.COM — SGN-OS v3.3
+# SGNOOGLE.COM · SGN-OS v3.3
 
 Personal portfolio of Francesco Sgnaolin (@sgnoogle). Single-page "operating
-system" themed site. Deployed on **Cloudflare Pages** — every `git push` to
+system" themed site. Deployed on **Cloudflare Pages** · every `git push` to
 `main` auto-deploys.
 
 ## Files & where to edit
 
-- **`index.html`** — THE deployed source of truth. Cloudflare serves it as the
+- **`index.html`** · THE deployed source of truth. Cloudflare serves it as the
   site root (see `wrangler.toml` → `[assets] directory = "."`). **Edit this
   directly.** It's a single self-contained file (~7000+ lines).
-- **`sgnoogle.html`** — a generated mirror of `index.html`. Historically built
+- **`sgnoogle.html`** · a generated mirror of `index.html`. Historically built
   by `build_sgnoogle.py` from `/tmp/sgnaolin-design-system/project`, but that
   source path is **not present** in fresh containers, so the build script can't
   run here. **Keep `sgnoogle.html` in sync by applying the same edits by hand**
   whenever you change `index.html`.
-- **`project/ui_kits/web/`** — reference copies of the original component source
+- **`project/ui_kits/web/`** · reference copies of the original component source
   (the "claude design" originals: `os/STLLab.jsx`, `os/Boot.jsx`, etc.). Useful
-  to consult when something regresses — check how the original did it. Not
+  to consult when something regresses · check how the original did it. Not
   deployed.
-- **`assets/models/`** — real `.stl` files served at `/assets/models/<file>`.
+- **`assets/models/`** · real `.stl` files served at `/assets/models/<file>`.
 
 After editing, always: `git add index.html sgnoogle.html && git commit && git push -u origin main`.
 
@@ -30,39 +30,45 @@ After editing, always: `git add index.html sgnoogle.html && git commit && git pu
 - Fonts: IBM Plex Mono (Google Fonts) + Neue Machina (inlined as base64 in the
   built `sgnoogle.html`).
 
-## Design system
+## Design system · FS Brand Guidelines v3.2 "Flat"
 
-Palette is exposed both as CSS vars (`--paper`, `--ink`, etc.) and a JS object
-`C` used in inline styles:
+La fonte di verità estetica è `project/assets/FS_BrandGuidelines_v3.2.md`
+(trascrizione delle guidelines del proprietario). Palette esposta sia come CSS
+vars (`--paper`, `--ink`, etc.) che come oggetto JS `C` negli inline styles:
 
-- `C.paper` `#F0F1F2` · `C.ink` `#28282C` · `C.yellow` `#FFC200`
-- `C.white` `#FFFFFF` · `C.grey` `#787A7C`
-- `C.border` / `C.borderSoft` / `C.faint` — translucent greys
-- `--bg-outer` `#E8E9EA` — desktop background *behind* the floating panel
+- `C.paper` `#F0F1F2` (acciaio, sfondo principale) · `C.ink` `#28282C`
+  (antracite: SOLO testo, mai sfondo) · `C.yellow` `#FFC200`
+- `C.white` `#FFFFFF` · `C.grey` `#787A7C` (testo di default)
+- `--bg-outer` `#E8E9EA`: desktop background dietro la shell
 
-Type: IBM Plex Mono everywhere; Neue Machina for big display headings. Sizes use
-`clamp()` heavily — **every element must scale with viewport** (phone ↔ desktop).
-Tracking is wide/uppercase for labels. Stroke hairlines are `0.5px`.
+Type: IBM Plex Mono OVUNQUE (unico font). Neue Machina vive SOLO nel wordmark
+SGNOOGLE della home: mai per titoli o numeri. Sizes use `clamp()` heavily:
+**every element must scale with viewport** (phone ↔ desktop).
+Uppercase+tracking largo solo per marcatori brevi (label, tag, numeri sezione).
 
-**HARD RULE — YELLOW and INK must NEVER touch** ("nastro di pericolo" effect):
-no ink text on yellow background, no yellow fill adjacent to ink blocks.
-Yellow lives on white/paper only, separated from ink by a light buffer
-(examples in code: CTA hover *removes* the yellow before filling with ink;
-toggle/underline patterns use a yellow bar on white under ink text).
-This applies to `::selection` too (ink bg + paper text, NOT yellow).
+**SUPERFICI FLAT (v3.2)**: le hairline grigie 0.5px sono ABOLITE su pannelli,
+card, liste e immagini. La separazione è solo tonale: pannelli bianchi pieni
+sul fondo acciaio (`.sgn-display` è paper, le card sono bianche senza bordo),
+blocchi distanziati con gap. Restano solo: outline gialle di focus (a11y) e
+bordi ink sui controlli interattivi (CTA, coachmark, popover). Niente ombre,
+niente border-radius, niente grana/texture, niente barre decorative, NIENTE
+mirini/corner-mark gialli (aboliti, divieto 06). Niente em dash in nessun
+testo, commenti inclusi: usare `:` `,` `.` o il separatore `·`.
 
-**Hairlines on iOS/WebKit**: 0.5px borders at fractional positions can be
-rounded to ZERO per-side on Safari iOS. There is a dedicated
-`@supports (-webkit-touch-callout: none)` block that hardens affected
-borders to `1px` with halved alpha (same optical weight). If a new hairline
-is reported missing on iPhone, add it THERE — do not change the base 0.5px.
+**HARD RULE · YELLOW and INK must NEVER touch** ("nastro di pericolo"):
+su giallo si scrive SOLO in bianco (v3.2), mai antracite; no yellow fill
+adjacent to ink blocks. `::selection` è giallo con testo bianco.
+
+**iOS/WebKit**: il blocco `@supports (-webkit-touch-callout: none)` ora
+indurisce solo il bordo ink della CTA a 1px. Le altre hairline non esistono
+più (v3.2 flat): non reintrodurle.
 
 **Sound vocabulary** (WebAudio engine, `presets` in index.html):
 - Desktop module tabs are a 3-phase gesture, ONE note per phase:
   `hover` (1400Hz announce) → `tick` (1800Hz press, from Cursor) →
   `release`/`releaseBack` (single resolution note on pointerup).
 - Mobile has no hover phase: module open/close uses single-note
-  `tap`/`tapBack` — never the two-note chords on direct taps.
+  `tap`/`tapBack` · never the two-note chords on direct taps.
 - The two-note `confirm`/`back` chords are reserved for gestures WITHOUT a
   press-tick phase (lang pick, palette, card flip, links).
 
@@ -72,21 +78,21 @@ is reported missing on iPhone, add it THERE — do not change the base 0.5px.
   display / bottom nav strip).
 - **`.sgn-page` is a SHARED class name**: it's the outer shell AND each inner
   snap-scroll page inside `PageDeck`. So shell-only styling (`background`,
-  `max-width`, centering) MUST be scoped to **`#root > .sgn-page`** — never bare
-  `.sgn-page`, or you'll paint over `.sgn-display`'s white background and break
-  module widths. (This caused the "About lost its white bg / video card too
+  `max-width`, centering) MUST be scoped to **`#root > .sgn-page`** · never bare
+  `.sgn-page`, or you'll paint over `.sgn-display`'s background (paper, v3.2)
+  and break module widths. (This caused the "About lost its bg / video card too
   narrow" regression.)
-- Desktop layout: **FULL-WIDTH (horizontal), by owner decision** — the old
+- Desktop layout: **FULL-WIDTH (horizontal), by owner decision** · the old
   1100px "floating panel" cap is intentionally DEAD (the wrapper under #root
   is not `.sgn-page`, so `#root > .sgn-page` does not match; a `.sgn-shell`
   class exists on the wrapper's page div as a future hook). Do NOT re-enable
   the cap. The desktop featured video box must stay 18:9 and fully visible
-  (contain, centered) — never fill-crop the column.
+  (contain, centered) · never fill-crop the column.
 - Mobile breakpoint: `@media (max-width: 760px)`. Respect safe areas with
   `env(safe-area-inset-*)`. Use `100dvh` (not `100vh`) so Safari's dynamic
   toolbar is followed.
 
-## Three.js / STL viewer (OBJECTS module) — READ BEFORE TOUCHING
+## Three.js / STL viewer (OBJECTS module) · READ BEFORE TOUCHING
 
 The viewer (`STLLab` component) uses the **UMD global `window.THREE`**, polled
 until ready. Loading rules learned the hard way:
@@ -100,7 +106,7 @@ until ready. Loading rules learned the hard way:
   r137 is the last family shipping BOTH the UMD core (`build/three.min.js`) AND
   the UMD `examples/js` loaders (which register `THREE.STLLoader`).
 - **Do NOT** use `@0.149` or newer: r148 removed `examples/js/`, r150 removed
-  the UMD core. **Do NOT** use ES module + import map — module load failures are
+  the UMD core. **Do NOT** use ES module + import map · module load failures are
   silent and leave the viewer stuck on "LOADING · THREE.JS" forever.
 - r137 also predates the r155 physically-correct lighting change, so existing
   light intensities render correctly.
@@ -115,7 +121,7 @@ until ready. Loading rules learned the hard way:
 
 - **No build step.** The single-file, hand-edited `index.html` workflow stays.
   Loading React dev + Babel-standalone (in-browser JSX transpile) is a known
-  tradeoff the owner has accepted — do NOT suggest migrating to esbuild /
+  tradeoff the owner has accepted · do NOT suggest migrating to esbuild /
   precompiled JSX / React production builds. The big perf win (the 2.4MB inline
   avatar) is already done.
 - **YouTube API key / Video module: keep the browser-side key flow.** The key is
@@ -136,7 +142,7 @@ until ready. Loading rules learned the hard way:
   user-facing string needs both (`lang === 'it' ? '…' : '…'`).
 - Commit messages end with the session URL footer.
 - Don't create PRs unless asked. Commit + push to `main` to deploy.
-- The user communicates in Italian — respond in Italian.
+- The user communicates in Italian · respond in Italian.
 
 ## Headless verification runner (USE IT before pushing UI changes)
 
@@ -160,7 +166,7 @@ ln -sfn /home/claude/repo/assets /tmp/site/assets
 Build step (rerun after每 edit): copy repo `index.html` to `/tmp/site/` while
 rewriting the five unpkg URLs to `./vendor/...` and stripping the babel SRI
 attribute. Serve with `python3 -m http.server 8819` from `/tmp/site` (NB: the
-server dies between Bash calls — restart it). In Puppeteer:
+server dies between Bash calls · restart it). In Puppeteer:
 - skip boot: `evaluateOnNewDocument(() => sessionStorage.setItem('sgnBooted','1'))`
   (+ `localStorage.sgnOnboardSeen=1` on desktop);
 - use `waitUntil: 'domcontentloaded'` + fixed delay (networkidle never settles);

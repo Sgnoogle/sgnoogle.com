@@ -84,7 +84,7 @@
   --yellow:   #FFC200;
   --paper:    #F0F1F2;
   --bg-outer: #E8E9EA;
-  --grey:     #686A6C;
+  --grey:     #787A7C;
   --ink:      #28282C;
   --white:    #FFFFFF;
 
@@ -93,7 +93,7 @@
   --bg-inverse:   var(--ink);
   --fg:           var(--ink);
   --fg-muted:     var(--grey);
-  --fg-on-yellow: var(--ink);
+  --fg-on-yellow: var(--white); /* v3.2: su giallo si scrive in bianco */
   --fg-on-ink:    var(--paper);
   --fg-accent:    var(--yellow);
 
@@ -105,6 +105,8 @@
   --accent:       var(--yellow);
   --accent-line:  var(--yellow);
 
+  /* v3.2: Neue Machina vive SOLO nel wordmark di home; ogni altro display
+     text usa IBM Plex Mono Bold. */
   --font-display: 'Neue Machina', 'IBM Plex Mono', monospace;
   --font-mono:    'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
   --font-body:    var(--font-mono);
@@ -175,11 +177,12 @@ body {
 }
 /* Selezione testo: fondo ink + testo paper. NIENTE giallo dietro il nero
    (regola giallo↔ink), come il toggle: il giallo resta accento su chiaro. */
-::selection { background: var(--ink); color: var(--paper); }
+/* v3.2: sfondi sempre chiari · su giallo si scrive in bianco */
+::selection { background: var(--yellow); color: var(--white); }
 
 
   /* ──────────────────────────────────────────────────────────
-     SGN-OS shell — floating layout v3.3
+     SGN-OS shell · floating layout v3.3
      Sfondo paper, 3 componenti su white, gap visibile,
      contenitore centrato max 1400px.
      ────────────────────────────────────────────────────────── */
@@ -208,7 +211,7 @@ body {
   }
 
   /* ── Anteprima ambient: pan+zoom lento per i fondali fotografici
-     (thumbnail video, icona app) — molto zoomati e sfocati così la bassa
+     (thumbnail video, icona app) · molto zoomati e sfocati così la bassa
      risoluzione non si nota, e il movimento li tiene vivi. */
   @keyframes sgnPanZoom {
     0%   { transform: scale(1.5) translate(-2.5%, -1.5%); }
@@ -238,7 +241,7 @@ body {
      data dal fade-mask ai bordi e, dove presenti, dalle frecce. La barra
      non occupa spazio e non riflowa il layout. Cross-browser. */
   /* ── Fade ai bordi della gallery screenshot (App): compare solo sul lato
-        con contenuto tagliato — classi fade-l/fade-r gestite da AppGallery.
+        con contenuto tagliato · classi fade-l/fade-r gestite da AppGallery.
         Con --fade* a 0 il gradiente degenera in nessun fade. ── */
   .sgn-app-gallery { --fade-l: 0px; --fade-r: 0px; }
   .sgn-app-gallery.fade-l { --fade-l: 38px; }
@@ -284,7 +287,7 @@ body {
     50%, 100% { opacity: 0; }
   }
 
-  /* ── Hairline sweep — usata dal route-readout in topbar (sottolineatura
+  /* ── Hairline sweep · usata dal route-readout in topbar (sottolineatura
      direzionale del nome sezione). Cresce dal lato d'ingresso e rientra
      dall'altro. */
   @keyframes sgnSweepRight {
@@ -367,7 +370,7 @@ body {
     box-sizing: border-box;
     overflow: hidden;
   }
-  /* Solo la shell esterna — non le pagine interne di PageDeck che condividono
+  /* Solo la shell esterna · non le pagine interne di PageDeck che condividono
      la stessa classe. #root > seleziona solo il figlio diretto. */
   /* Cap 1100 'flottante' DISATTIVATO di proposito: l'impostazione attuale
      del sito è orizzontale, a tutta larghezza (il selettore sotto non matcha:
@@ -390,7 +393,7 @@ body {
   /* ── Stage = TopBar + display impilati in colonna. NON c'è gap di griglia
         tra loro: lo stacco è una margin-bottom della TopBar (= --frame-gap),
         così in home può collassare a 0 e i due pannelli diventano un'unica
-        superficie bianca — merge strutturale, niente "gonna" che copre il gap
+        superficie bianca · merge strutturale, niente "gonna" che copre il gap
         a pixel (era quella a lasciare la riga di separazione). L'unico gap di
         griglia rimasto è stage↔strip, quello che la linguetta raccorda. ── */
   .sgn-stage { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
@@ -408,7 +411,9 @@ body {
   .sgn-display {
     position: relative;
     overflow: hidden;
-    background: var(--white);
+    /* v3.2: acciaio come sfondo principale; i contenuti vivono su pannelli
+       bianchi flat, separati dal tono e dai gap, mai da cornici. */
+    background: var(--paper);
     outline: none;
   }
   /* ── Display area = display + (optional) side pager card ── */
@@ -422,10 +427,9 @@ body {
   .sgn-display-area.has-pager {
     grid-template-columns: 1fr clamp(36px, 3vw, 48px);
   }
-  /* Pager card — barre verticali stackate, una pagina sopra l'altra. */
+  /* Pager card · barre verticali stackate, una pagina sopra l'altra. */
   .sgn-pager-card {
     background: var(--white);
-    border: 0.5px solid var(--border-soft);
     box-sizing: border-box;
     display: flex; flex-direction: column;
     align-items: center; justify-content: space-between;
@@ -457,8 +461,7 @@ body {
   }
   .sgn-pager-bar {
     appearance: none; padding: 0; margin: 0; cursor: pointer;
-    background: transparent;
-    border: 0.5px solid rgba(120,122,124,0.35);
+    background: rgba(120,122,124,0.3);
     width: 6px;
     height: clamp(28px, 6vh, 56px);
     transition:
@@ -467,11 +470,10 @@ body {
       background 160ms linear,
       border-color 160ms linear;
   }
-  .sgn-pager-bar:hover { border-color: var(--ink); }
+  .sgn-pager-bar:hover { background: var(--grey); }
   .sgn-pager-bar.active {
     width: 10px;
     background: var(--yellow);
-    border-color: var(--yellow);
   }
   .sgn-pager-bar:focus-visible {
     outline: 0.5px solid var(--yellow);
@@ -485,7 +487,7 @@ body {
     position: absolute; inset: 0;
     overflow: hidden;  /* il PageDeck è absolute inset:0 e gestisce il suo scroll */
   }
-  /* Hide scrollbars del deck — la nav avviene con HUD + tastiera */
+  /* Hide scrollbars del deck · la nav avviene con HUD + tastiera */
   .sgn-deck-scroll::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
   /* ──────────────────────────────────────────────────────────
@@ -506,17 +508,17 @@ body {
     max-height: 100%;
   }
 
-  /* ── Tab hover (background only — il resto è gestito JSX) */
+  /* ── Tab hover (background only · il resto è gestito JSX) */
   .sgn-tab:hover { background: var(--white) !important; }
 
   /* ══════════════════════════════════════════════════════════════
-     CTA — pulsante canonico del sito (INSTALLA · SCRIVIMI · MW …).
+     CTA · pulsante canonico del sito (INSTALLA · SCRIVIMI · MW …).
      Struttura unica: [cella freccia | hairline | label]. La taglia
      cambia (md/sm/xs), la struttura no. Reso da <CTA> in modules.jsx.
      HOVER "arma" il pulsante: resta bianco, si accende di INK solo la
      cella della freccia, la freccia passa giallo→paper (mai gialla
      sull'ink) e il bordo si fa ink. Taglio netto a 120ms, niente ombra,
-     niente lift — giallo e ink non si toccano MAI.
+     niente lift · giallo e ink non si toccano MAI.
      ══════════════════════════════════════════════════════════════ */
   .sgn-cta {
     position: relative;
@@ -528,12 +530,11 @@ body {
     font-family: var(--font-mono);
     cursor: pointer;
     box-sizing: border-box;
-    /* Hard, mechanical cut — no shadow, no lift (brand: shadow:none, moto non-organico). */
+    /* Hard, mechanical cut · no shadow, no lift (brand: shadow:none, moto non-organico). */
     transition: background 120ms linear, color 120ms linear, border-color 120ms linear, transform 90ms ease-out;
   }
   .sgn-cta__icon {
     display: flex; align-items: center; justify-content: center;
-    border-right: 0.5px solid var(--border);
     flex-shrink: 0;
     transition: background 140ms linear, border-color 140ms linear;
   }
@@ -542,7 +543,7 @@ body {
     display: flex; align-items: center;
     font-weight: 700; text-transform: uppercase; white-space: nowrap;
   }
-  /* ignite — al hover il GIALLO SPARISCE del tutto: il pulsante si riempie
+  /* ignite · al hover il GIALLO SPARISCE del tutto: il pulsante si riempie
      di ink e freccia + label diventano paper (chiaro-su-scuro, pulito).
      Così giallo e ink non si toccano MAI: il giallo vive solo a riposo
      (freccia gialla su bianco). Niente accostamento giallo-nero. */
@@ -554,7 +555,6 @@ body {
   .sgn-cta:hover .sgn-cta__icon,
   .sgn-card-hover:hover .sgn-cta .sgn-cta__icon {
     background: var(--ink);
-    border-right-color: var(--ink);
   }
   .sgn-cta:hover .sgn-cta__icon > span,
   .sgn-card-hover:hover .sgn-cta .sgn-cta__icon > span {
@@ -564,7 +564,7 @@ body {
   .sgn-card-hover:hover .sgn-cta .sgn-cta__label {
     color: var(--ink) !important;
   }
-  /* press — feedback meccanico al clic: il pulsante "scatta" giù di 1px e si
+  /* press · feedback meccanico al clic: il pulsante "scatta" giù di 1px e si
      riempie di ink (freccia + label → paper), come l'hover ma deciso. Niente
      ombra/lift: solo il nudge verticale. Vale anche dove l'hover non esiste
      (touch), così su telefono il tap dà comunque una risposta netta prima che
@@ -580,7 +580,7 @@ body {
   .sgn-cta.sgn-hot:active .sgn-cta__icon > span { background-color: var(--paper) !important; }
   .sgn-cta.sgn-hot:active .sgn-cta__label { color: var(--paper) !important; }
 
-  /* Pulsante video nelle SponsorCard — stesso linguaggio del box-icona CTA:
+  /* Pulsante video nelle SponsorCard · stesso linguaggio del box-icona CTA:
      a riposo hairline + glifo ink; al hover/press della card si riempie di
      ink e il glifo (currentColor) diventa paper. */
   .sgn-ytbtn { transition: background 140ms linear, border-color 140ms linear, color 140ms linear; }
@@ -592,36 +592,27 @@ body {
   }
 
   /* ══════════════════════════════════════════════════════════════
-     Card interattiva — qualunque .sgn-card-hover (video, app-row,
+     Card interattiva · qualunque .sgn-card-hover (video, app-row,
      link/sponsor/contact card, channel row). HOVER "COMBO" (selezione
      inequivocabile, zero ombre): scambio di tono (bg → paper), cornice
      ispessita a 1.5px ink (outline, niente reflow) e corner-marks gialli
-     che si agganciano crescendo — mirino HUD. Profondità da tono + bordo
+     che si agganciano crescendo · mirino HUD. Profondità da tono + bordo
      + marks, mai da shadow.
      ══════════════════════════════════════════════════════════════ */
-  .sgn-card-hover { transition: border-color 160ms linear, background 160ms linear; }
-  /* Hover intermedio: niente doppia cornice nera, niente ombre (regola brand).
-     Solo un hairline grigio un filo più marcato + fondo paper. La selezione
-     "vera" resta affidata ai corner-mark gialli. */
+  .sgn-card-hover { transition: background 160ms linear; }
+  /* v3.2 flat: hover solo tonale (bianco → paper), niente cornici né ombre. */
   .sgn-card-hover:hover {
-    border-color: var(--grey) !important;
     background: var(--paper) !important;
   }
-  .sgn-card-hover .sgn-cm {
-    transition: opacity 180ms linear,
-                width 170ms cubic-bezier(0.2,0,0,1),
-                height 170ms cubic-bezier(0.2,0,0,1) !important;
-  }
-  .sgn-card-hover:hover .sgn-cm { opacity: 1 !important; width: 16px !important; height: 16px !important; }
 
-  /* Variante MEDIA (card video: featured + griglia) — il corpo è già scuro
+  /* Variante MEDIA (card video: featured + griglia) · il corpo è già scuro
      (player) o paper (art): NON ribaltare il fondo a paper, altrimenti l'art
      si fonde con la card. Tieni il fondo bianco e affida la selezione a
      bordo ink + corner-marks gialli. */
   .sgn-card-hover--media:hover { background: var(--white) !important; }
 
   /* ══════════════════════════════════════════════════════════════
-     STL catalog rows — ogni voce si "sveglia" al passaggio del mouse,
+     STL catalog rows · ogni voce si "sveglia" al passaggio del mouse,
      prima ancora del click: fondo paper + rail giallo che affiora. La
      voce attiva resta com'è (rail pieno). Stesso linguaggio tono+rail.
      ══════════════════════════════════════════════════════════════ */
@@ -631,12 +622,12 @@ body {
   .sgn-stl-item:hover:not(.is-active) .sgn-stl-id { color: var(--ink) !important; }
 
   /* ══════════════════════════════════════════════════════════════
-     Controlli topbar (audio + lingua) — hover "sta per selezionare":
+     Controlli topbar (audio + lingua) · hover "sta per selezionare":
      cornice → ink + fondo → paper. Stesso linguaggio della card (tono +
      bordo), in scala ridotta. Niente giallo, niente ombra.
      ══════════════════════════════════════════════════════════════ */
   /* NB: i bottoni topbar portano stili inline (background:transparent, border)
-     che hanno priorità sulle regole :hover — servono !important per
+     che hanno priorità sulle regole :hover · servono !important per
      far emergere lo stato hover. */
   .sgn-topctl { transition: border-color 120ms linear, background 120ms linear, transform 90ms ease-out; }
   .sgn-topctl:active { transform: translateY(1px); }
@@ -691,7 +682,7 @@ body {
   }
 
   /* Hover SOLO su dispositivi con puntatore fine (mouse). Sul touch un
-     :hover resta "incollato" dopo il tap — es. dopo aver aperto e chiuso il
+     :hover resta "incollato" dopo il tap · es. dopo aver aperto e chiuso il
      menu lingua la cella valore restava ink. Lo stato is-open (sopra) NON è
      hover, quindi il feedback "aperto" continua a valere anche sul dito. */
   @media (hover: hover) and (pointer: fine) {
@@ -701,7 +692,7 @@ body {
     }
     .sgn-langbtn:hover { border-color: var(--ink) !important; }
     /* la cella valore (IT/EN) si accende a ink+paper anche al solo hover,
-       non solo da aperta — feedback "sta per selezionare". */
+       non solo da aperta · feedback "sta per selezionare". */
     .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
     .sgn-homebrand:hover::after { transform: scaleX(1); }
   }
@@ -721,7 +712,6 @@ body {
   .sgn-cp {
     width: min(560px, 92vw);
     background: var(--white);
-    border: 0.5px solid var(--border-soft);
     box-sizing: border-box;
     font-family: var(--font-mono);
     color: var(--ink);
@@ -730,7 +720,6 @@ body {
   .sgn-cp-input-row {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 16px;
-    border-bottom: 0.5px solid var(--border-soft);
   }
   .sgn-cp-prompt {
     color: var(--yellow); font-weight: 700; font-size: 12px;
@@ -756,7 +745,6 @@ body {
     gap: 12px;
     align-items: center;
     padding: 10px 16px;
-    border-bottom: 0.5px solid var(--border-soft);
     cursor: pointer;
     transition: background 80ms linear;
   }
@@ -769,7 +757,7 @@ body {
   }
   .sgn-cp-item.active .glyph { color: var(--yellow); }
   .sgn-cp-item .num {
-    font-family: 'Neue Machina', 'IBM Plex Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-weight: 700; font-size: 14px; color: var(--ink);
     letter-spacing: -0.02em;
   }
@@ -780,19 +768,16 @@ body {
   .sgn-cp-item .kbd {
     font-size: 9px; letter-spacing: 0.18em; color: rgba(120,122,124,0.7);
     font-weight: 600; text-transform: uppercase;
-    border: 0.5px solid rgba(120,122,124,0.25);
     padding: 2px 6px;
   }
   .sgn-cp-foot {
     padding: 8px 16px;
-    border-top: 0.5px solid var(--border-soft);
     display: flex; gap: 16px; align-items: center;
     font-size: 9px; letter-spacing: 0.18em; color: rgba(120,122,124,0.7);
     font-weight: 600; text-transform: uppercase;
   }
   .sgn-cp-foot kbd {
     background: var(--paper);
-    border: 0.5px solid rgba(120,122,124,0.25);
     padding: 1px 6px;
     font-family: inherit; font-size: 9px; font-weight: 700;
     letter-spacing: 0.18em; color: var(--ink);
@@ -861,7 +846,7 @@ body {
     .sgn-app-row > *:nth-child(3),
     .sgn-app-row > *:nth-child(4) { grid-column: 1 / -1; }
 
-    /* App detail mobile — product header più editoriale e meno affollato.
+    /* App detail mobile · product header più editoriale e meno affollato.
        Prima: icona + titolo + CTA convivevano nella stessa riga alta quanto
        l'icona, quindi il pulsante sembrava incastrato. Ora: riga identità
        (icona + nome) e CTA come command bar autonoma sotto, con paddings
@@ -922,7 +907,7 @@ body {
       padding-bottom: 10px !important;
     }
 
-    /* ── Mobile reflow v3.9 — snap come desktop, elementi responsive ──
+    /* ── Mobile reflow v3.9 · snap come desktop, elementi responsive ──
        Le pagine restano a tutta schermata con snap verticale (identico al
        desktop): qui NON si cambia la natura dello scroll, si rende solo ogni
        layout fluido alle larghezze/densità telefono. Tutti i blocchi a 2
@@ -970,7 +955,7 @@ body {
       padding-bottom: 0 !important;
     }
     .sgn-feat-title {
-      font-family: Neue Machina, IBM Plex Mono, monospace !important;
+      font-family: IBM Plex Mono, monospace !important;
       font-size: clamp(30px, 8.9vw, 46px) !important;
       line-height: 0.94 !important;
       letter-spacing: -0.06em !important;
@@ -979,7 +964,7 @@ body {
     }
     .sgn-feat-desktop-meta { display: none !important; }
     /* COVER-TOP: il video sta IN CIMA alla pagina, a tutta larghezza della
-       card (full-bleed dentro la cornice — come le copertine delle VideoCard
+       card (full-bleed dentro la cornice · come le copertine delle VideoCard
        in pagina 2), e il titolo sotto fa da didascalia. I margini negativi
        annullano il padding del pannello info; hairline sotto da separatore. */
     .sgn-feat-inline-vid-col {
@@ -989,7 +974,6 @@ body {
       box-sizing: border-box !important;
       padding: 0 !important;
       margin: calc(-1 * clamp(16px, 3cqh, 30px)) calc(-1 * clamp(12px, 3.4vw, 16px)) 0 !important;
-      border-bottom: 0.5px solid var(--border-soft) !important;
       align-items: center !important;
       justify-content: center !important;
       overflow: hidden !important;
@@ -1029,8 +1013,6 @@ body {
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       gap: 0 !important;
       margin-top: 0 !important;
-      border-top: 0.5px solid var(--border-soft) !important;
-      border-bottom: 0.5px solid var(--border-soft) !important;
     }
     .sgn-feat-mobile-metric {
       display: grid !important;
@@ -1041,7 +1023,6 @@ body {
       min-width: 0 !important;
     }
     .sgn-feat-mobile-metric + .sgn-feat-mobile-metric {
-      border-left: 0.5px solid var(--border-soft) !important;
     }
     /* Stesso corpo (9px) della byline qui sopra → footer omogeneo. */
     .sgn-feat-mobile-metric__label {
@@ -1218,7 +1199,7 @@ body {
     }
   }
 
-  /* ── Range tablet / desktop stretto (761–1024): NESSUN reflow — la UX
+  /* ── Range tablet / desktop stretto (761–1024): NESSUN reflow · la UX
         resta identica al desktop, si toglie solo un filo di cromo verticale
         così il display respira nelle finestre intermedie. ── */
   @media (min-width: 761px) and (max-width: 1024px) {
@@ -1235,15 +1216,11 @@ body {
         Qui le replichiamo a livello globale. :focus-visible scatta solo da
         tastiera, quindi mouse e look "a riposo" non cambiano. ── */
   .sgn-card-hover:focus-visible {
-    border-color: var(--grey);
     background: var(--paper);
     outline: 0.5px solid var(--yellow);
     outline-offset: -1px;
   }
   .sgn-card-hover--media:focus-visible { background: var(--white); }
-  .sgn-card-hover:focus-visible .sgn-cm {
-    opacity: 1; width: 16px; height: 16px;
-  }
   .sgn-cta:focus-visible {
     background: var(--ink); border-color: var(--ink);
     outline: 0.5px solid var(--yellow); outline-offset: 2px;
@@ -1274,39 +1251,26 @@ body {
       border-width: 1px;
       border-color: rgba(40, 40, 44, 0.62);
     }
-    .sgn-cta__icon {
-      border-right-width: 1px;
-      border-right-color: rgba(120, 122, 124, 0.16);
-    }
-    .sgn-shot-frame {
-      border-width: 1px !important;
-      border-color: rgba(120, 122, 124, 0.12) !important;
-    }
   }
 
   /* ── Touch (nessun hover): il linguaggio di selezione del sito è tutto a
         hover (corner-mark gialli, ignite del CTA, rail STL). Sul dito non
         scatta e, peggio, un hover può "restare incollato" dopo il tap.
-        Qui replichiamo lo STESSO feedback su :active/:focus — niente di
+        Qui replichiamo lo STESSO feedback su :active/:focus · niente di
         nuovo, niente ombre, stessi marker. Il desktop (hover:hover) NON è
         toccato, quindi la UX non cambia. ── */
   @media (hover: none) {
     .sgn-card-hover:active,
     .sgn-card-hover:focus-visible {
-      border-color: var(--grey) !important;
       background: var(--paper) !important;
     }
     .sgn-card-hover--media:active,
     .sgn-card-hover--media:focus-visible { background: var(--white) !important; }
-    .sgn-card-hover:active .sgn-cm,
-    .sgn-card-hover:focus-within .sgn-cm {
-      opacity: 1 !important; width: 16px !important; height: 16px !important;
-    }
     .sgn-cta:active {
       background: var(--ink) !important; border-color: var(--ink) !important;
     }
     .sgn-cta:active .sgn-cta__icon {
-      background: var(--ink) !important; border-right-color: var(--ink) !important;
+      background: var(--ink) !important;
     }
     .sgn-cta:active .sgn-cta__icon > span { background-color: var(--paper) !important; }
     .sgn-cta:active .sgn-cta__label { color: var(--ink) !important; }
@@ -1317,45 +1281,37 @@ body {
 
     /* Selezione PERSISTENTE al tap (touch-select.js mette data-tapped):
        i corner-mark gialli restano accesi sulla card toccata finché non se
-       ne tocca un'altra — l'equivalente "che resta" dell'hover desktop. */
+       ne tocca un'altra · l'equivalente "che resta" dell'hover desktop. */
     .sgn-card-hover[data-tapped] {
-      border-color: var(--grey) !important;
       background: var(--paper) !important;
     }
     .sgn-card-hover--media[data-tapped] { background: var(--white) !important; }
-    .sgn-card-hover[data-tapped] .sgn-cm {
-      opacity: 1 !important; width: 16px !important; height: 16px !important;
-    }
   }
 
-  /* ── Contact ambient — campo di hairline a 45° in deriva lenta che
+  /* ── Contact ambient · campo di hairline a 45° in deriva lenta che
         incornicia la griglia contatti (stessa grammatica del placeholder
         della ProfileCard: 45deg + border-soft). Nessun colore nuovo,
         nessuna ombra: solo un fondo "vivo" dietro le celle bianche.
         Sovradimensionato (inset negativo) così la deriva non scopre i bordi. ── */
   .sgn-contact-bg {
     position: absolute; inset: -160px;
-    background-image: repeating-linear-gradient(45deg,
-      var(--border-soft) 0 0.5px, transparent 0.5px 22px);
-    opacity: 0.7;
-    animation: sgnStripeDrift 16s linear infinite;
-    will-change: transform;
+    /* v3.2: niente grana né texture: il fondo resta acciaio pieno. */
+    background: none;
     pointer-events: none;
   }
 
   /* ══════════════════════════════════════════════════════════════
-     A11Y — skip-link + screen-reader-only utility.
+     A11Y · skip-link + screen-reader-only utility.
      Lo skip-link resta fuori schermo finché non riceve focus da
      tastiera, poi compare in alto a sinistra (hairline, nessuna ombra).
      ══════════════════════════════════════════════════════════════ */
   .sgn-skip {
     position: fixed; top: 8px; left: 8px; z-index: 99999;
     transform: translateY(-160%);
-    background: var(--ink); color: var(--paper);
+    background: var(--yellow); color: var(--white);
     font-family: var(--font-mono); font-size: 11px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
     padding: 9px 14px; text-decoration: none;
-    border: 0.5px solid var(--yellow);
     transition: transform 140ms cubic-bezier(0.2,0,0,1);
   }
   .sgn-skip:focus { transform: translateY(0); outline: none; }
@@ -1370,7 +1326,7 @@ body {
   .sgn-display-inner:focus-visible { outline: 0.5px solid var(--yellow); outline-offset: -2px; }
 
   /* ══════════════════════════════════════════════════════════════
-     MOBILE PAGE RAIL — eco verticale della pager-card desktop, ma
+     MOBILE PAGE RAIL · eco verticale della pager-card desktop, ma
      overlay sul bordo destro del display (la pager-card è nascosta
      <760). Barre stackate: attiva = gialla e più lunga. Tap → goto.
      Solo mobile + moduli multi-pagina.
@@ -1382,7 +1338,6 @@ body {
     flex-direction: column; align-items: center; gap: 8px;
     padding: 8px 5px;
     background: rgba(240,241,242,0.82);
-    border: 0.5px solid var(--border-soft);
     backdrop-filter: none;
     /* A riposo: discreto e poco invadente. Torna pieno appena si cambia
        pagina (classe .awake, gestita da JS) o al tocco/hover sul rail. */
@@ -1397,8 +1352,7 @@ body {
   .sgn-mrail-bar {
     appearance: none; margin: 0; padding: 0; cursor: pointer;
     position: relative;
-    background: transparent;
-    border: 0.5px solid rgba(120,122,124,0.4);
+    background: rgba(120,122,124,0.35);
     width: 5px; height: 22px;
     transition: height 200ms cubic-bezier(0.2,0,0,1),
                 background 160ms linear, border-color 160ms linear;
@@ -1411,19 +1365,19 @@ body {
     top: -5px; bottom: -5px; left: -14px; right: -14px;
   }
   .sgn-mrail-bar.active {
-    height: 34px; background: var(--yellow); border-color: var(--yellow);
+    height: 34px; background: var(--yellow);
   }
   .sgn-mrail-bar:focus-visible { outline: 0.5px solid var(--yellow); outline-offset: 2px; }
   @media (max-width: 760px) {
     .sgn-mrail { display: flex; }
   }
 
-  /* ── Swipe hint (mobile, una-tantum a sessione) — chip in basso al
+  /* ── Swipe hint (mobile, una-tantum a sessione) · chip in basso al
         centro del display. Compare all'apertura di un modulo multi-pagina e
         sfuma dopo pochi secondi o al primo scroll. Trattamento "pannello OS":
         fondo paper, hairline, accento giallo a sinistra (niente più pill ink,
         che pesava sul display bianco). ── */
-  /* ── Hint chip (mobile) — chip in basso al centro del display, trattamento
+  /* ── Hint chip (mobile) · chip in basso al centro del display, trattamento
         "pannello OS": fondo paper, hairline, accento giallo a sinistra.
         Appare/sparisce SEMPRE in dissolvenza: lo stato .is-on è pilotato da
         FadePill (mount → fade-in, fade-out → unmount), mai a scatto. ── */
@@ -1432,7 +1386,6 @@ body {
     left: 50%; bottom: 14px;
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--paper); color: var(--ink);
-    border: 0.5px solid var(--border);
     border-left: 2px solid var(--yellow);
     padding: 6px 11px 6px 9px;
     font-family: var(--font-mono); font-size: 9px; font-weight: 700;
@@ -1447,7 +1400,7 @@ body {
   @keyframes sgnNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
   @media (prefers-reduced-motion: reduce) { .sgn-swipe-hint .ar { animation: none; } }
 
-  /* Home module cycle — micro status line sotto il badge subscriber.
+  /* Home module cycle · micro status line sotto il badge subscriber.
      Scrittura/descrittura sul posto: footprint fisso, niente layout shift. */
   .sgn-home-module-cycle {
     position: relative;
@@ -1488,7 +1441,7 @@ body {
   }
 
   /* ══════════════════════════════════════════════════════════════
-     ONBOARDING — micro-coachmark desktop una-tantum che indica la
+     ONBOARDING · micro-coachmark desktop una-tantum che indica la
      riga comandi in topbar (tasti 1–5 · "/" palette). Hairline, niente
      ombra, dismissibile. Solo desktop (hover:hover).
      ══════════════════════════════════════════════════════════════ */
@@ -1511,33 +1464,32 @@ body {
     border-left: 0.5px solid var(--ink); border-top: 0.5px solid var(--ink);
     transform: translateX(-50%) rotate(45deg);
   }
-  .sgn-onboard .ob-rail { align-self: stretch; width: 3px; background: var(--yellow); flex-shrink: 0; }
   .sgn-onboard .ob-txt { font-size: 11px; line-height: 1.5; letter-spacing: 0.01em; color: var(--ink); }
   .sgn-onboard .ob-txt b { font-weight: 700; }
   .sgn-onboard kbd {
     display: inline-block; background: var(--paper);
-    border: 0.5px solid var(--border); padding: 1px 6px; margin: 0 1px;
+    padding: 1px 6px; margin: 0 1px;
     font-family: inherit; font-size: 10px; font-weight: 700;
     letter-spacing: 0.12em; color: var(--ink);
   }
   .sgn-onboard .ob-x {
     appearance: none; cursor: pointer; flex-shrink: 0;
-    background: transparent; border: 0.5px solid var(--border);
+    background: var(--paper); border: none;
     color: var(--ink); font-family: inherit; font-size: 10px; font-weight: 700;
     letter-spacing: 0.14em; padding: 5px 9px;
     transition: background 140ms linear, border-color 140ms linear;
   }
-  .sgn-onboard .ob-x:hover { background: var(--paper); border-color: var(--ink); }
+  .sgn-onboard .ob-x:hover { background: var(--yellow); color: var(--white); }
   @media (max-width: 760px) { .sgn-onboard { display: none; } }
 
 </style>
 
 <!-- ── Cloudflare Web Analytics (privacy-friendly: zero cookie, zero banner).
      DUE strade per attivarlo, scegline una:
-     A) ZERO CODICE — dashboard Cloudflare → Analytics & Logs → Web Analytics
+     A) ZERO CODICE · dashboard Cloudflare → Analytics & Logs → Web Analytics
         → Add site (sgnoogle.com) → spunta "Automatic setup": il beacon viene
         iniettato dal proxy, questo blocco può restare commentato per sempre.
-     B) MANUALE — stesso percorso ma copia il token JS e sostituiscilo a
+     B) MANUALE · stesso percorso ma copia il token JS e sostituiscilo a
         CF_BEACON_TOKEN qui sotto, poi de-commenta il tag.
      Nota: il sito naviga via hash (#01..#05) con replaceState → le viste per
      singolo modulo NON vengono separate; si misurano visite, referrer,
@@ -1550,7 +1502,7 @@ body {
 <!-- Three.js is lazy-loaded by STLLab only when the 3D viewer is requested. -->
 
 <script>
-/* Tiny WebAudio click engine — game-menu style ticks.
+/* Tiny WebAudio click engine · game-menu style ticks.
    v3.3: distinct hover / click / confirm / back / boot envelopes,
    all much quieter and crisper than the v3.1 beeps. */
 
@@ -1597,24 +1549,24 @@ body {
   }
 
   /* Game-menu vocabulary:
-     hover  — very soft high tick when entering a button (UI feedback)
-     tick   — firmer click when activating
-     confirm — two-note ascending (entering a module / picking a lang)
-     back   — two-note descending (leaving a module)
-     boot   — sparse low click during the boot bar fill */
+     hover  · very soft high tick when entering a button (UI feedback)
+     tick   · firmer click when activating
+     confirm · two-note ascending (entering a module / picking a lang)
+     back   · two-note descending (leaving a module)
+     boot   · sparse low click during the boot bar fill */
   const presets = {
-    // hover — precursore soffice e basso (sine, quasi inudibile): introduce il
+    // hover · precursore soffice e basso (sine, quasi inudibile): introduce il
     // click senza esserne uno. Niente più 1400Hz acuti.
     hover:   [{ freq: 760, dur: 0.022, vol: 0.022, type: 'sine', bend: 0.9,  attack: 0.003 }],
-    // tick — IL click universale del sito (pressione Cursor desktop + ogni
+    // tick · IL click universale del sito (pressione Cursor desktop + ogni
     // sound('tick'): lista STL, lingua, palette). Timbro CUPO: sine basso, bend
-    // in giù — niente triangle acuto a 1800Hz, niente pop brillante.
+    // in giù · niente triangle acuto a 1800Hz, niente pop brillante.
     tick:    [{ freq: 660, dur: 0.055, vol: 0.040, type: 'sine', bend: 0.82, attack: 0.004 }],
-    // confirm/back — gesti senza fase di pressione (lingua, palette, flip card,
+    // confirm/back · gesti senza fase di pressione (lingua, palette, flip card,
     // link): stessa famiglia cupa, confirm un filo più alto, back più grave.
     confirm: [{ freq: 760, dur: 0.060, vol: 0.042, type: 'sine', bend: 0.84, attack: 0.004 }],
     back:    [{ freq: 460, dur: 0.075, vol: 0.038, type: 'sine', bend: 0.78, attack: 0.004 }],
-    // tap/tapBack — conferma a UNA nota per il TOUCH, timbro CUPO/caldo (la
+    // tap/tapBack · conferma a UNA nota per il TOUCH, timbro CUPO/caldo (la
     // versione preferita): sine a fondamentale bassa + sub-ottava per il corpo,
     // bend in giù, attacco morbido. tap apre (più alto), tapBack chiude (grave).
     tap: [
@@ -1625,7 +1577,7 @@ body {
       { freq: 420, dur: 0.095, vol: 0.050, type: 'sine', bend: 0.80, attack: 0.006 },
       { freq: 210, dur: 0.095, vol: 0.026, type: 'sine', bend: 0.80, attack: 0.006 },
     ],
-    // release/releaseBack — la RISOLUZIONE del click desktop in 3 fasi:
+    // release/releaseBack · la RISOLUZIONE del click desktop in 3 fasi:
     // hover (annuncio, 1400) → tick alla pressione (attacco, 1800) → UNA
     // nota al rilascio. Prima al rilascio partiva l'intero bicordo
     // confirm/back: col tick di pressione faceva 4 transienti in <300ms,
@@ -1637,7 +1589,7 @@ body {
     release:     [{ freq: 880, dur: 0.075, vol: 0.046, type: 'sine', bend: 0.86, attack: 0.004 }],
     releaseBack: [{ freq: 520, dur: 0.085, vol: 0.042, type: 'sine', bend: 0.82, attack: 0.004 }],
     boot: [{ freq: 1400, dur: 0.014, vol: 0.018, type: 'sine' }],
-    // skill — variazione del 'boot' per il riempimento delle barre competenze:
+    // skill · variazione del 'boot' per il riempimento delle barre competenze:
     // stesso click meccanico, timbro un filo più brillante (triangle, +pitch).
     skill: [{ freq: 1500, dur: 0.016, vol: 0.020, type: 'triangle' }],
     bootReady: [
@@ -1663,7 +1615,7 @@ body {
 
 </script>
 <script>
-/* touch-select — solo su dispositivi senza hover.
+/* touch-select · solo su dispositivi senza hover.
    Il sito esprime la selezione con i corner-mark gialli all'hover; sul
    touch l'hover non esiste, quindi qui replichiamo lo stato "selezionato"
    come PERSISTENTE: un tap mette data-tapped sulla card e lo toglie dalle
@@ -1694,7 +1646,7 @@ body {
 <noscript>
   <div style="font-family:'IBM Plex Mono',monospace;padding:40px 20px;max-width:560px;margin:0 auto;color:#28282C">
     <h1 style="letter-spacing:.04em;font-size:28px">SGNOOGLE</h1>
-    <p>Portfolio di Francesco Sgnaolin — tech creator: video, stampa 3D, app Android.</p>
+    <p>Portfolio di Francesco Sgnaolin · tech creator: video, stampa 3D, app Android.</p>
     <p>Questo sito richiede JavaScript. Nel frattempo:
       <a href="https://www.youtube.com/@sgnoogle">YouTube @sgnoogle</a> ·
       <a href="mailto:francesco.sgnaolin@gmail.com">email</a></p>
@@ -1717,7 +1669,7 @@ const BRAND = {
   release: 'STEEL',
 };
 
-/* CONTACTS — singola fonte di verità per email + social.
+/* CONTACTS · singola fonte di verità per email + social.
    Usata da: modulo 04 (ContactCard / OpenSlot), modulo 05 (Contatti),
    footer/handoff. Cambia QUI e si propaga ovunque. */
 const CONTACTS = {
@@ -1731,7 +1683,7 @@ const CONTACTS = {
 };
 const MAILTO = `mailto:${CONTACTS.email}`;
 
-/* Real channel data the user confirmed. Other figures stay "—" until
+/* Real channel data the user confirmed. Other figures stay "·" until
    we wire a YouTube data fetch, so we never display invented numbers. */
 const CHANNEL = {
   subs:    { value: 67000, fmt: 'short',  source: 'manual',     synced: true  },
@@ -1763,9 +1715,9 @@ const I18N = {
     },
     modules: {
       '01': { label: 'VIDEO',   sub: 'Analisi · opinioni · storie',  count: 'live' },
-      '02': { label: 'OBJECTS', sub: 'Stampa 3D · STL',              count: '—'    },
-      '03': { label: 'APPS',    sub: 'Android · progetti personali', count: '—'    },
-      '04': { label: 'LINK',    sub: 'Collab · slot aperti',         count: '—'    },
+      '02': { label: 'OBJECTS', sub: 'Stampa 3D · STL',              count: '·'    },
+      '03': { label: 'APPS',    sub: 'Android · progetti personali', count: '·'    },
+      '04': { label: 'LINK',    sub: 'Collab · slot aperti',         count: '·'    },
       '05': { label: 'ABOUT',   sub: 'Operatore di sistema',         count: '01'   },
     },
     video: {
@@ -1774,10 +1726,10 @@ const I18N = {
       perfLabel: 'VS MEDIA CANALE',
       rating: 'RATING',
       tier: 'TIER',
-      syncNote: 'Feed live dal canale Francesco Sgnaolin — il riquadro mostra sempre l\u2019ultimo upload.',
+      syncNote: 'Feed live dal canale Francesco Sgnaolin · il riquadro mostra sempre l\u2019ultimo upload.',
     },
     objects: {
-      sub: 'Stampe 3D e modelli. Schede tipo Bambu — STL · materiale · setup.',
+      sub: 'Stampe 3D e modelli. Schede tipo Bambu · STL · materiale · setup.',
       tier: 'TIER',
       complexity: 'COMPLESSITÀ',
       status: 'STATO',
@@ -1875,9 +1827,9 @@ const I18N = {
     },
     modules: {
       '01': { label: 'VIDEO',   sub: 'Analysis · opinions · stories', count: 'live' },
-      '02': { label: 'OBJECTS', sub: '3D printing · STL',             count: '—'    },
-      '03': { label: 'APPS',    sub: 'Android · personal projects',   count: '—'    },
-      '04': { label: 'LINK',    sub: 'Collabs · open slots',          count: '—'    },
+      '02': { label: 'OBJECTS', sub: '3D printing · STL',             count: '·'    },
+      '03': { label: 'APPS',    sub: 'Android · personal projects',   count: '·'    },
+      '04': { label: 'LINK',    sub: 'Collabs · open slots',          count: '·'    },
       '05': { label: 'ABOUT',   sub: 'System operator',               count: '01'   },
     },
     video: {
@@ -1889,7 +1841,7 @@ const I18N = {
       syncNote: 'Live feed from Francesco Sgnaolin \u2014 the panel always shows the latest upload.',
     },
     objects: {
-      sub: '3D printed and modeled. Bambu-style sheets — STL · material · setup.',
+      sub: '3D printed and modeled. Bambu-style sheets · STL · material · setup.',
       tier: 'TIER',
       complexity: 'COMPLEXITY',
       status: 'STATUS',
@@ -1964,7 +1916,7 @@ const I18N = {
   },
 };
 
-/* CHANGELOG — visible on the idle home. Real changes to the SITE, not videos.
+/* CHANGELOG · visible on the idle home. Real changes to the SITE, not videos.
    Show 5 most recent. ISO date · scope · summary. */
 const CHANGELOG = [
   { d: '2026-05-21', s: 'home',  m: 'redesign · terminal layout' },
@@ -1974,9 +1926,9 @@ const CHANGELOG = [
   { d: '2026-05-17', s: 'core',  m: 'sgn-os shell · 5 modules' },
 ];
 
-/* VIDEOS — placeholder feed; will be replaced by YouTube API later.
+/* VIDEOS · placeholder feed; will be replaced by YouTube API later.
    Shown with a "pending sync" banner so it's clear these are samples. */
-/* VIDEOS — feed reale dal canale Francesco Sgnaolin.
+/* VIDEOS · feed reale dal canale Francesco Sgnaolin.
    Il featured incorpora la PLAYLIST UPLOADS del canale (UC… → UU…), così
    mostra sempre l'ultimo video caricato senza bisogno di API / chiavi.
    Le card sotto puntano a video reali del canale. */
@@ -1996,7 +1948,7 @@ const VIDEOS = [
   { id: '01', title: 'ULTIMO CARICAMENTO', cat: 'FRANCESCO SGNAOLIN · FEED LIVE', kind: 'A',
     playlistId: UPLOADS_PID,
     url: 'https://www.youtube.com/c/FrancescoSgnaolin/videos' },
-  /* Fallback curato — usato se la YouTube Data API non risponde. Sono gli upload
+  /* Fallback curato · usato se la YouTube Data API non risponde. Sono gli upload
      reali più recenti del canale (più nuovo → più vecchio); il #01 di cui
      sopra (live) li precede sempre, quindi qui NON va ripetuto l'ultimissimo. */
   { id: '02', title: 'NOTHING (3A) LITE', cat: 'REVIEW', kind: 'A',
@@ -2009,7 +1961,7 @@ const VIDEOS = [
     youtubeId: '4g1rF1OsKdY', url: 'https://www.youtube.com/watch?v=4g1rF1OsKdY' },
 ];
 
-/* OBJECTS — modelli STL reali in /assets/models/. Le voci con `real: true`
+/* OBJECTS · modelli STL reali in /assets/models/. Le voci con `real: true`
    vengono caricate via THREE.STLLoader; altrimenti fallback procedurale. */
 const OBJECTS = [
   { id: '01', name: 'CMF GameBoy Slide', file: 'topslide.stl', real: true, mat: 'PLA · Bambu A1', setup: '0.20mm · 15%', units: 'mm (1:1)',
@@ -2026,17 +1978,17 @@ const OBJECTS = [
     link: 'https://makerworld.com/en/models/564201-cmf-phone-1-volume-power-buttons#profileId-483840', tier: 'A', complexity: 2, type: 'PART' },
 ];
 
-/* APPS — Play Store roster, snapshot MAG 2026.
+/* APPS · Play Store roster, snapshot SET 2026.
    Dev profile: https://play.google.com/store/apps/dev?id=7500616724241351169
    ─ IMPORTANTE ─
    I numeri (rating / reviews / downloads) sono uno SNAPSHOT manuale,
    non un live-sync. La Play Store non ha API pubblica: per sincronizzare
    davvero serve un backend (scraping o servizio terzo) e un cron.
    Le immagini (icone + screenshot) invece sono live: vengono dalla CDN
-   play-lh.googleusercontent.com — qui sotto teniamo solo l'hash,
+   play-lh.googleusercontent.com · qui sotto teniamo solo l'hash,
    APP_LH(hash, size) compone la URL.
-   Ordine: per download decrescenti — l'app più scaricata in cima. */
-const APP_SNAPSHOT = 'MAG 2026';
+   Ordine: per download decrescenti · l'app più scaricata in cima. */
+const APP_SNAPSHOT = 'SET 2026';
 const APP_LH = (hash, size = 'w526-h296') => `https://play-lh.googleusercontent.com/${hash}=${size}`;
 const APP_PROFILE_URL = 'https://play.google.com/store/apps/dev?id=7500616724241351169';
 const APP_PLAY_URL = (pkg) => `https://play.google.com/store/apps/details?id=${pkg}`;
@@ -2075,6 +2027,33 @@ const APPS = [
   },
   {
     id: '02',
+    pkg: 'com.sgnoogle.respiro',
+    name: 'Respiro',
+    subtitle: { it: 'Minimal Launcher', en: 'Minimal Launcher' },
+    /* iconLh/shotsLh: hash play-lh ancora da inserire (sandbox senza accesso
+       alla CDN). Senza iconLh AppIcon mostra il monogramma; senza shotsLh la
+       gallery non viene renderizzata. Numeri: snapshot SET 2026. */
+    iconLh: '',
+    rating: 4.9, reviews: '173', downloads: '1K+',
+    category: { it: 'Personalizzazione', en: 'Personalization' },
+    monetization: { it: 'Premium una tantum', en: 'One-time Premium' },
+    stage: 'release',
+    tagline: {
+      it: 'Una piccola pausa, un rapporto più calmo col telefono che hai in mano.',
+      en: 'A small pause, a calmer relationship with the phone in your hand.',
+    },
+    description: {
+      it: 'Respiro sostituisce la griglia di icone con forme calme che respirano su una tela scura. Niente badge, niente puntini rossi: le app che apri per abitudine si spostano lentamente, e per raggiungerle serve un attimo di intenzione.',
+      en: 'Respiro replaces the icon grid with calm shapes breathing on a still, dark canvas. No badges, no red dots: apps you open out of habit drift slowly, so reaching them takes a beat of intention.',
+    },
+    features: {
+      it: ['Forme che respirano, non icone', 'Zero badge, zero rumore', 'Root: il tempo a schermo spento', 'Nessun permesso speciale'],
+      en: ['Breathing shapes, not icons', 'No badges, no noise', 'Root: your screen-off time', 'No special permissions'],
+    },
+    shotsLh: [],
+  },
+  {
+    id: '03',
     pkg: 'com.sgnoogle.lv29',
     name: 'LV.29',
     subtitle: { it: 'Push-Ups Quest', en: 'Push-Ups Quest' },
@@ -2088,8 +2067,8 @@ const APPS = [
       en: 'Turn your push-up routine into a challenge.',
     },
     description: {
-      it: 'Appoggia il telefono a terra, scendi col petto: il sensore di prossimità conta ogni ripetizione. Dalla LV.00 alla leggendaria LV.29, nessun accessorio — solo determinazione.',
-      en: 'Place your phone on the ground, lower your chest: the proximity sensor counts every rep. From LV.00 to the legendary LV.29, no accessories — just determination.',
+      it: 'Appoggia il telefono a terra, scendi col petto: il sensore di prossimità conta ogni ripetizione. Dalla LV.00 alla leggendaria LV.29, nessun accessorio · solo determinazione.',
+      en: 'Place your phone on the ground, lower your chest: the proximity sensor counts every rep. From LV.00 to the legendary LV.29, no accessories · just determination.',
     },
     features: {
       it: ['Allenamenti adattivi', 'Modalità infinita', 'Statistiche dettagliate', 'Estetica pixel-art retrò'],
@@ -2105,7 +2084,7 @@ const APPS = [
     ],
   },
   {
-    id: '03',
+    id: '04',
     pkg: 'com.sgnoogle.tickdrop',
     name: 'Tickdrop',
     subtitle: { it: 'Notification to-do', en: 'Notification to-do' },
@@ -2139,7 +2118,7 @@ const APPS = [
 
 Object.assign(window, { APP_SNAPSHOT, APP_LH, APP_PROFILE_URL, APP_PLAY_URL });
 
-/* LINKS — sponsor con cui ho collaborato. Logo mono-ink in
+/* LINKS · sponsor con cui ho collaborato. Logo mono-ink in
    /assets/sponsors/, url → video di riferimento. */
 const LINKS = [
   { name: 'Xiaomi', logo: '/assets/sponsors/xiaomi.png', url: 'https://youtu.be/K7vIKft6NOc', status: 'active' },
@@ -2163,13 +2142,13 @@ Object.assign(window, { BRAND, CONTACTS, MAILTO, CHANNEL, I18N, VIDEOS, OBJECTS,
 const C = {
   yellow: '#FFC200',
   paper:  '#F0F1F2',
-  grey:   '#686A6C',
+  grey:   '#787A7C',
   ink:    '#28282C',
   white:  '#FFFFFF',
   borderSoft: 'rgba(120,122,124,0.2)',
   border: 'rgba(120,122,124,0.3)',
   borderHair: 'rgba(120,122,124,0.15)',
-  faint: '#727476',
+  faint: '#787A7C',
   yellowSoft: 'rgba(255,194,0,0.12)',
 };
 
@@ -2212,21 +2191,20 @@ function Caption({ children, style }) {
   );
 }
 
-/* Square pill — key/value chip used as a tag. No rounding (brand). */
+/* Square pill · key/value chip used as a tag. No rounding (brand).
+   v3.2 flat: nessuna cornice, tono su tono. Su giallo si scrive in bianco. */
 function Pill({ k, v, gold, style }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'stretch',
-      border: `0.5px solid ${gold ? C.yellow : C.border}`,
-      background: gold ? C.yellowSoft : C.white,
+      background: gold ? C.yellowSoft : C.paper,
       fontFamily: 'IBM Plex Mono, monospace',
       fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase',
       ...style,
     }}>
       <span style={{
         padding: '4px 8px',
-        color: gold ? C.ink : C.faint,
-        borderRight: `0.5px solid ${gold ? C.yellow : C.borderSoft}`,
+        color: gold ? C.white : C.faint,
         background: gold ? C.yellow : 'transparent',
         fontWeight: 700,
       }}>{k}</span>
@@ -2235,27 +2213,27 @@ function Pill({ k, v, gold, style }) {
   );
 }
 
-/* ───────── BarHeader — section divider giapponese: tacca gialla + label
+/* ───────── BarHeader · section divider giapponese: tacca gialla + label
    + hairline che corre fino a fine riga. Sostituisce i titoli "nudi" e
    dà lo schematismo da spec-sheet (▍ LABEL ─────). */
-function BarHeader({ children, tick = C.yellow, color = C.ink, size = 9, style }) {
+function BarHeader({ children, tick, color = C.ink, size = 9, style }) {
+  /* v3.2: tacca gialla abolita (niente barre decorative): resta solo la label. */
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
       flexShrink: 0, ...style,
     }}>
-      <span style={{ width: 4, height: size + 4, background: tick, flexShrink: 0 }}/>
       <span style={{
         fontFamily: 'IBM Plex Mono, monospace',
         fontSize: size, fontWeight: 700, letterSpacing: '0.28em',
         color, whiteSpace: 'nowrap',
       }}>{children}</span>
-      <span style={{ flex: 1, height: 0, borderTop: `0.5px solid ${C.borderSoft}`, minWidth: 0 }}/>
+      <span style={{ flex: 1, height: 0, minWidth: 0 }}/>
     </div>
   );
 }
 
-/* ───────── Bar — segmented 10-block stat bar.
+/* ───────── Bar · segmented 10-block stat bar.
    `value` 0-10. `active` controls fill animation timing. */
 
 function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay = 0, sound = false }) {
@@ -2301,7 +2279,7 @@ function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay 
   );
 }
 
-/* ───────── Progress — continuous bar (for stage / loading). */
+/* ───────── Progress · continuous bar (for stage / loading). */
 function Progress({ value = 0, gold, active = true, height = 2, delay = 0 }) {
   const [w, setW] = useState(active ? 0 : value);
   useEffect(() => {
@@ -2320,7 +2298,7 @@ function Progress({ value = 0, gold, active = true, height = 2, delay = 0 }) {
   );
 }
 
-/* ───────── TierBadge — S / A / B / C rank tag. S is gold. */
+/* ───────── TierBadge · S / A / B / C rank tag. S is gold. */
 function TierBadge({ tier, size = 28 }) {
   const isS = tier === 'S';
   return (
@@ -2328,15 +2306,14 @@ function TierBadge({ tier, size = 28 }) {
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       width: size, height: size,
       background: isS ? C.yellow : C.white,
-      border: `0.5px solid ${isS ? C.yellow : C.border}`,
       fontFamily: 'IBM Plex Mono, monospace',
       fontWeight: 700, fontSize: size * 0.55,
-      color: C.ink, letterSpacing: '-0.02em',
+      color: isS ? C.white : C.ink, letterSpacing: '-0.02em',
     }}>{tier}</span>
   );
 }
 
-/* ───────── GhostNumber — huge faint section number background. */
+/* ───────── GhostNumber · huge faint section number background. */
 function GhostNumber({ n, top = 0, right = 0, size = '20vw', opacity = 0.06 }) {
   return (
     <span aria-hidden style={{
@@ -2355,7 +2332,7 @@ Object.assign(window, { C, Tag, Label, Caption, Pill, Bar, BarHeader, Progress, 
 </script>
 
 <script type="text/babel">
-/* ModuleIcon — 5 custom geometric icons, one per module.
+/* ModuleIcon · 5 custom geometric icons, one per module.
    Sharp / angular language, no external libraries.
    Same SVG renders on web (small, secondary to number) and mobile (bottom nav).
    Pass `size` and `color` to scale + recolor. */
@@ -2370,7 +2347,7 @@ function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }
   };
   switch (id) {
     case '01':
-      // VIDEO — angular play chevron inside a frame.
+      // VIDEO · angular play chevron inside a frame.
       // Two cuts: outer frame + inward triangle. Reads as "play" without
       // resorting to the cliché filled triangle.
       return (
@@ -2380,7 +2357,7 @@ function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }
         </svg>
       );
     case '02':
-      // OBJECTS — isometric cube, 3 visible faces drawn as polylines.
+      // OBJECTS · isometric cube, 3 visible faces drawn as polylines.
       // Echoes the STL viewer vocabulary.
       return (
         <svg {...props}>
@@ -2390,7 +2367,7 @@ function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }
         </svg>
       );
     case '03':
-      // APPS — 2×2 sharp grid, no rounding, no rounded "app icons" cliche.
+      // APPS · 2×2 sharp grid, no rounding, no rounded "app icons" cliche.
       return (
         <svg {...props}>
           <rect x="3" y="3" width="7.5" height="7.5"/>
@@ -2400,7 +2377,7 @@ function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }
         </svg>
       );
     case '04':
-      // LINK — two interlocking brackets, a chain link drawn from
+      // LINK · two interlocking brackets, a chain link drawn from
       // straight strokes only. No round endcaps.
       return (
         <svg {...props}>
@@ -2410,7 +2387,7 @@ function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }
         </svg>
       );
     case '05':
-      // ABOUT — silhouette as concentric square stack, the system's own
+      // ABOUT · silhouette as concentric square stack, the system's own
       // way to spell "person" without drawing a head-and-shoulders glyph.
       return (
         <svg {...props}>
@@ -2425,7 +2402,7 @@ function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }
 
 Object.assign(window, { ModuleIcon });
 
-/* ChannelGlyph — monogrammi geometrici per le celle contatti.
+/* ChannelGlyph · monogrammi geometrici per le celle contatti.
    Stesso linguaggio di ModuleIcon: viewBox 24, solo tratti, square-cap,
    nessun arrotondamento. NON sono i loghi ufficiali: sono marchi generici
    in stile-casa (busta, play-in-frame, fotocamera squadrata, croce). */
@@ -2480,7 +2457,7 @@ Object.assign(window, { ModuleIcon, ChannelGlyph });
 </script>
 
 <script type="text/babel">
-/* MarathonArrow — usa il PNG reference fornito dall'utente.
+/* MarathonArrow · usa il PNG reference fornito dall'utente.
    Il PNG è black-on-transparent; lo coloriamo tramite CSS mask così
    il `color` viene dal valore di `background-color` (può essere giallo,
    ink, qualsiasi).
@@ -2533,7 +2510,7 @@ Object.assign(window, { MarathonArrow });
 </script>
 
 <script type="text/babel">
-/* PageDeck — paginazione verticale a snap mandatory.
+/* PageDeck · paginazione verticale a snap mandatory.
    Ogni `<Page>` figlio occupa esattamente lo spazio del display, niente
    scroll interno: il contenuto di una pagina deve stare dentro o si
    adatta. La navigazione tra pagine avviene con:
@@ -2542,7 +2519,7 @@ Object.assign(window, { MarathonArrow });
      - side-card pager esterno (vedi index.html .sgn-pager-card)
 
    Ogni Page può portare `label`: PageDeck legge le label tramite
-   React.Children e — quando la pagina attiva cambia — pubblica
+   React.Children e · quando la pagina attiva cambia · pubblica
    { label, index, total, goto, labels } a window.SgnPageMetaContext.
    Così la TopBar può mostrare la sub-label al centro e la side-card
    pager può richiamare goto(i) per saltare a una pagina specifica.
@@ -2559,7 +2536,7 @@ function PageDeck({ children, headerless = false }) {
   const lastScrollSyncRef = React.useRef(0);
   const { setMeta } = React.useContext(SgnPageMetaContext);
 
-  // Goto via scroll — dichiarato prima dell'useEffect che lo publica.
+  // Goto via scroll · dichiarato prima dell'useEffect che lo publica.
   const goto = React.useCallback((i) => {
     const clamped = Math.max(0, Math.min(total - 1, i));
     const el = scrollerRef.current;
@@ -2646,7 +2623,7 @@ function PageDeck({ children, headerless = false }) {
   );
 }
 
-/* Page — singolo pannello. Riempie verticalmente. È un flex column.
+/* Page · singolo pannello. Riempie verticalmente. È un flex column.
    Il contenuto interno DEVE essere dimensionato per stare nello spazio
    (niente overflow). Cinta a margini comuni via padding del PageDeck.
    Accetta `label`: PageDeck la raccoglie e la mostra in TopBar. */
@@ -2661,7 +2638,7 @@ function Page({ children, justify = 'flex-start', align = 'stretch', label }) {
   );
 }
 
-/* PageTitle — header standard di una pagina dentro un deck.
+/* PageTitle · header standard di una pagina dentro un deck.
    Numero pagina (piccolo) + titolo + sottotitolo opzionale.
    Usato dai moduli quando una pagina è "parte di una storia". */
 function PageTitle({ label, sub }) {
@@ -2690,7 +2667,7 @@ Object.assign(window, { PageDeck, Page, PageTitle, SgnPageMetaContext });
 </script>
 
 <script type="text/babel">
-/* Animation primitives — count-up, intersection-based reveal, stagger.
+/* Animation primitives · count-up, intersection-based reveal, stagger.
    All durations linear or sharp-bezier per brand rules (no bounce, no spring). */
 
 const { useState, useEffect, useRef } = React;
@@ -2708,7 +2685,7 @@ function formatStat(raw, fmt) {
   return String(raw);
 }
 
-/* useCountUp — animates from 0 → target while `active` is true.
+/* useCountUp · animates from 0 → target while `active` is true.
    Returns the current display string. Easing: ease-out for "settle" feel. */
 function useCountUp(target, { duration = 1200, fmt = 'int', active = true } = {}) {
   const [value, setValue] = useState(active ? 0 : target);
@@ -2735,7 +2712,7 @@ function useCountUp(target, { duration = 1200, fmt = 'int', active = true } = {}
   return formatStat(value, fmt);
 }
 
-/* useInView — fires `true` once the element scrolls into view.
+/* useInView · fires `true` once the element scrolls into view.
    Returns [ref, inView]. Sticky: stays true after first trigger. */
 function useInView({ threshold = 0.25, once = true } = {}) {
   const ref = useRef(null);
@@ -2763,7 +2740,7 @@ function useInView({ threshold = 0.25, once = true } = {}) {
   return [ref, inView];
 }
 
-/* useStagger — returns delays for an indexed array.
+/* useStagger · returns delays for an indexed array.
    Use as: const delays = useStagger(items.length, 60); */
 function useStagger(count, step = 60, base = 0) {
   return Array.from({ length: count }, (_, i) => base + i * step);
@@ -2774,10 +2751,10 @@ Object.assign(window, { useCountUp, useInView, useStagger, formatStat });
 </script>
 
 <script type="text/babel">
-/* Hero3DMark — wireframe F monogram rotating slowly in 3D background of home.
-   CSS 3D transforms only — no canvas, no WebGL.
+/* Hero3DMark · wireframe F monogram rotating slowly in 3D background of home.
+   CSS 3D transforms only · no canvas, no WebGL.
    Reacts to mouse on desktop (subtle parallax), self-rotates on mobile.
-   Strokes only, monochrome grey/yellow — never the focal point, always
+   Strokes only, monochrome grey/yellow · never the focal point, always
    the *atmosphere* behind the wordmark. */
 
 function Hero3DMark({ mobile, color = C.borderSoft, accent = C.yellow }) {
@@ -2805,7 +2782,7 @@ function Hero3DMark({ mobile, color = C.borderSoft, accent = C.yellow }) {
       perspective: '900px',
     }}>
       {/* Tilt su wrapper SEPARATO dall'elemento animato: l'animation CSS
-         (sgnMarkSpin) vince sugli inline style per la proprietà transform —
+         (sgnMarkSpin) vince sugli inline style per la proprietà transform ·
          sullo stesso div il parallax non aveva alcun effetto visibile. */}
       <div style={{
         transformStyle: 'preserve-3d',
@@ -2825,7 +2802,7 @@ function Hero3DMark({ mobile, color = C.borderSoft, accent = C.yellow }) {
   );
 }
 
-/* FWireframe — stroke-only redraw of the F monogram.
+/* FWireframe · stroke-only redraw of the F monogram.
    Built from the same 3 chevrons as assets/logo-mark.svg, redrawn
    with stroke instead of fill so it reads as wireframe. */
 function FWireframe({ color, accent }) {
@@ -2870,20 +2847,20 @@ Object.assign(window, { Hero3DMark, FWireframe });
 </script>
 
 <script type="text/babel">
-/* STLLab — 3D viewer + lista modelli.
+/* STLLab · 3D viewer + lista modelli.
    v3.3:
-   - sfondo viewer bianco (era paper) — coerente con le card "elevate"
+   - sfondo viewer bianco (era paper) · coerente con le card "elevate"
    - lista cliccabile nel panel destro: ogni voce carica il modello nel viewer
    - schema dati: { id, name, file, mat, desc, link, ... }
    - se l'STL non è disponibile, fallback su geometria procedurale per id
 
-   Phase 1 (now): no real .stl files yet — useremo geometrie procedurali.
+   Phase 1 (now): no real .stl files yet · useremo geometrie procedurali.
    Phase 2 (when files land in /assets/models/): swap il caricamento con
    THREE.STLLoader e fetch del .stl dal path nel data.
 */
 
 
-/* loadThreeSTL — loader on-demand per il modulo Objects.
+/* loadThreeSTL · loader on-demand per il modulo Objects.
    Evita di far pagare Three.js alla home/mobile finché il 3D non serve. */
 let sgnThreePromise = null;
 function loadScriptOnce(src) {
@@ -3001,7 +2978,7 @@ function STLLab({ lang }) {
     return () => { if (id) cancelIdleCallback(id); if (timer) clearTimeout(timer); };
   }, [ready]);
 
-  // Scene setup + interaction loop — runs once when THREE is ready.
+  // Scene setup + interaction loop · runs once when THREE is ready.
   React.useEffect(() => {
     if (!ready || !mountRef.current) return undefined;
     let cancelled = false, innerCleanup = null;
@@ -3018,7 +2995,7 @@ function STLLab({ lang }) {
     const THREE = window.THREE;
     const el = mountRef.current;
     // Guardia: se il layout non ha ancora dato dimensioni al contenitore,
-    // usa fallback ragionevoli — il ResizeObserver correggerà appena il grid
+    // usa fallback ragionevoli · il ResizeObserver correggerà appena il grid
     // risolve l'altezza (evita aspect=NaN e canvas 0×0 → schermo vuoto).
     const w = el.clientWidth  || 600;
     const h = el.clientHeight || 400;
@@ -3046,7 +3023,7 @@ function STLLab({ lang }) {
     grid.position.y = -110;
     scene.add(grid);
 
-    // Group container — we swap its child on model change.
+    // Group container · we swap its child on model change.
     const holder = new THREE.Group();
     scene.add(holder);
 
@@ -3363,13 +3340,12 @@ function STLLab({ lang }) {
       <div className="sgn-stl-viewer" style={{
         position: 'relative',
         background: C.white,
-        border: `0.5px solid ${C.border}`,
         minHeight: 0,
       }}>
         <div ref={mountRef}
           tabIndex={ready ? 0 : -1}
           role="img"
-          aria-label={(lang === 'it' ? 'Modello 3D: ' : '3D model: ') + (current?.name || '') + (lang === 'it' ? ' — usa le frecce per ruotare' : ' — use arrow keys to rotate')}
+          aria-label={(lang === 'it' ? 'Modello 3D: ' : '3D model: ') + (current?.name || '') + (lang === 'it' ? ' · usa le frecce per ruotare' : ' · use arrow keys to rotate')}
           style={{
           position: 'absolute', inset: 0,
           touchAction: 'none', cursor: 'grab', outlineOffset: '-2px',
@@ -3438,12 +3414,11 @@ function STLLab({ lang }) {
         </div>
       </div>
 
-      {/* Side panel — un'unica regione scrollabile: header sticky + lista STL
+      {/* Side panel · un'unica regione scrollabile: header sticky + lista STL
           + scheda del modello attivo. Niente più clipping a qualsiasi altezza:
           quando lo spazio è poco, si scorre. */}
       <div className="sgn-stl-panel" style={{
         background: C.white,
-        border: `0.5px solid ${C.borderSoft}`,
         display: 'flex', flexDirection: 'column',
         minHeight: 0, overflow: 'hidden',
       }}>
@@ -3452,19 +3427,18 @@ function STLLab({ lang }) {
           overscrollBehavior: 'contain',
           display: 'block',
         }}>
-          {/* header lista — sticky, resta in cima mentre si scorre */}
+          {/* header lista · sticky, resta in cima mentre si scorre */}
           <div style={{
             position: 'sticky', top: 0, zIndex: 2,
             background: C.white,
             padding: 'clamp(12px,1.3vw,16px) clamp(14px,1.4vw,18px) 10px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            borderBottom: `0.5px solid ${C.borderSoft}`,
           }}>
             <Label size={9} color={C.faint}>CATALOG</Label>
             <span style={{
               fontFamily: 'IBM Plex Mono, monospace', fontSize: 9, fontWeight: 700,
               letterSpacing: '0.18em', color: C.ink,
-              background: C.paper, border: `0.5px solid ${C.borderSoft}`,
+              background: C.paper,
               padding: '2px 7px',
             }}>{String(OBJECTS.length).padStart(2, '0')}</span>
           </div>
@@ -3490,7 +3464,7 @@ function STLLab({ lang }) {
   );
 }
 
-/* Una riga della lista — toggle giallo a sinistra quando attiva.
+/* Una riga della lista · toggle giallo a sinistra quando attiva.
    Accanto al nome, un link diretto alla pagina MakerWorld del modello
    (Bambu Lab). Il click sul link non seleziona la riga (stopPropagation). */
 function STLListItem({ o, active, onSelect }) {
@@ -3550,7 +3524,7 @@ function STLListItem({ o, active, onSelect }) {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   buildProceduralModel — geometrie procedurali per ogni voce della
+   buildProceduralModel · geometrie procedurali per ogni voce della
    lista. Sostituire con STLLoader.load(path) appena gli .stl reali
    atterrano in /assets/models/.
    Tutti i modelli sono in giallo brand + edges ink, sempre coerenti.
@@ -3567,7 +3541,7 @@ function buildProceduralModel(THREE, id) {
   }
 
   // Fallback procedurale (usato solo se il caricamento dell'STL reale fallisce):
-  // CMF GameBoy Slide — corpo rettangolare con guida laterale.
+  // CMF GameBoy Slide · corpo rettangolare con guida laterale.
   const body = new THREE.BoxGeometry(200, 18, 96);
   body.translate(0, 0, 0);
   addMesh(body);
@@ -3601,10 +3575,10 @@ Object.assign(window, { STLLab, STLListItem, buildProceduralModel });
    No giant background section numbers, no full-screen Section wrapper.
    v3.0: spacious, minimal, mobile-responsive. */
 
-/* ModuleHeader — Japanese-minimal: number + slash + label inline (no §),
-   then a hairline rule. Title lives in IBM Plex Mono, not Neue Machina,
+/* ModuleHeader · Japanese-minimal: number + slash + label inline (no §),
+   then a rule. Title lives in IBM Plex Mono,
    to stop the display font from dominating every screen.
-   Number stays in Neue Machina so it carries the gaming-stat feel. */
+   Number in IBM Plex Mono Bold (v3.2: un solo font, Neue Machina solo nel wordmark). */
 function ModuleHeader({ id, title, sub }) {
   return (
     <header style={{
@@ -3613,11 +3587,10 @@ function ModuleHeader({ id, title, sub }) {
       alignItems: 'center', gap: 'clamp(16px, 2.5vw, 28px)',
       marginBottom: 'clamp(20px, 3vh, 32px)',
       paddingBottom: 'clamp(14px, 2vh, 18px)',
-      borderBottom: `0.5px solid ${C.borderSoft}`,
     }} className="sgn-mod-header">
-      {/* Number — Neue Machina (use #3 of 3) */}
+      {/* Number · IBM Plex Mono Bold */}
       <span style={{
-        fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+        fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
         fontSize: 'clamp(38px, 5vw, 62px)', letterSpacing: '-0.05em',
         color: C.ink, lineHeight: 0.85,
       }}>
@@ -3631,7 +3604,7 @@ function ModuleHeader({ id, title, sub }) {
         textTransform: 'uppercase', margin: 0,
       }}>{title}</h2>
 
-      {/* Vertical subtitle (tategaki) — sits to the right, slim */}
+      {/* Vertical subtitle (tategaki) · sits to the right, slim */}
       {sub && (
         <span className="sgn-vsub" style={{
           writingMode: 'vertical-rl',
@@ -3644,36 +3617,16 @@ function ModuleHeader({ id, title, sub }) {
           maxHeight: 'clamp(40px, 6vh, 70px)',
           overflow: 'hidden',
           paddingLeft: 6,
-          borderLeft: `0.5px solid ${C.border}`,
         }}>{sub}</span>
       )}
     </header>
   );
 }
 
-/* HoverCornerMarks — 4 L-shape yellow corners che appaiono al hover.
-   Si appoggia al parent (deve avere `position: relative`). 180ms linear. */
-function HoverCornerMarks({ size = 10, stroke = 1.5, inset = -1, color = C.yellow }) {
-  const base = {
-    position: 'absolute', width: size, height: size,
-    transition: 'opacity 180ms linear',
-    opacity: 0, pointerEvents: 'none',
-  };
-  return (
-    <>
-      <span className="sgn-cm" style={{ ...base, top: inset, left: inset,
-        borderTop: `${stroke}px solid ${color}`, borderLeft: `${stroke}px solid ${color}` }}/>
-      <span className="sgn-cm" style={{ ...base, top: inset, right: inset,
-        borderTop: `${stroke}px solid ${color}`, borderRight: `${stroke}px solid ${color}` }}/>
-      <span className="sgn-cm" style={{ ...base, bottom: inset, left: inset,
-        borderBottom: `${stroke}px solid ${color}`, borderLeft: `${stroke}px solid ${color}` }}/>
-      <span className="sgn-cm" style={{ ...base, bottom: inset, right: inset,
-        borderBottom: `${stroke}px solid ${color}`, borderRight: `${stroke}px solid ${color}` }}/>
-    </>
-  );
-}
+/* v3.2 · divieto 06: i mirini gialli agli angoli sono stati eliminati dal
+   sistema. Il feedback di selezione è solo tonale (hover paper). */
 
-/* CTA — pulsante canonico del sito. Struttura unica [freccia | label],
+/* CTA · pulsante canonico del sito. Struttura unica [freccia | label],
    tre taglie (md/sm/xs). Rendi come <a> se passi href, come <button>
    altrimenti; come <span> (as="span") quando vive DENTRO un'altra area
    cliccabile (es. la ContactCard è già un mailto): in quel caso non è
@@ -3706,18 +3659,18 @@ function CTA({ label, href, onClick, target, as, size = 'md', dir = 'up-right', 
   );
 }
 
-/* EmptyModuleState — terminal log style.
+/* EmptyModuleState · terminal log style.
    Mostra una riga `> NO RECORDS FOUND` o `AWAITING DATA...` con cursore
    `|` che lampeggia. IBM Plex Mono, --grey. */
 function EmptyModuleState({ status = 'NO RECORDS FOUND', title, body, hint }) {
   return (
     <div style={{
-      background: C.white, border: `0.5px solid ${C.borderSoft}`,
+      background: C.white,
       padding: 'clamp(28px, 4vw, 56px)',
       display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 18,
       fontFamily: 'IBM Plex Mono, monospace',
     }}>
-      {/* Status line — tacca gialla spec-sheet, niente prompt > da shell */}
+      {/* Status line · tacca gialla spec-sheet, niente prompt > da shell */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10,
         fontSize: 13, fontWeight: 700, color: C.ink,
@@ -3752,7 +3705,7 @@ function EmptyModuleState({ status = 'NO RECORDS FOUND', title, body, hint }) {
   );
 }
 
-/* PageHeader — header compatto, una riga, per stare in cima ad ogni
+/* PageHeader · header compatto, una riga, per stare in cima ad ogni
    Page del PageDeck. Titolo modulo + label pagina.
    Niente numero gigante: la sezione è già esposta nella topbar (al centro)
    e nello strip dei moduli in basso, ripeterla qui sarebbe ridondante.
@@ -3762,14 +3715,13 @@ function PageHeader({ id, title, page, showTag = true }) {
     <header style={{
       display: 'flex', alignItems: 'baseline', gap: 'clamp(8px, 1.2vw, 14px)',
       paddingBottom: 'clamp(10px, 1.4vh, 14px)',
-      borderBottom: `0.5px solid ${C.borderSoft}`,
       flexShrink: 0, paddingRight: 160,  /* riserva spazio al PageHUD top-right */
     }}>
       {showTag && (
         <span style={{
           fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, fontWeight: 700,
           letterSpacing: '0.22em', color: C.faint, textTransform: 'uppercase',
-          padding: '3px 6px', border: `0.5px solid ${C.borderSoft}`,
+          padding: '3px 6px',
           lineHeight: 1,
         }}>§ {id}</span>
       )}
@@ -3792,14 +3744,14 @@ function PageHeader({ id, title, page, showTag = true }) {
 
 /* ── Helpers per i metadati live del featured video ── */
 function fmtViews(n) {
-  if (!n) return '—';
+  if (!n) return '·';
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
   if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
   return String(n);
 }
 function fmtDur(iso) {
   const m = iso?.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-  if (!m) return '—';
+  if (!m) return '·';
   const h = parseInt(m[1] || 0), min = parseInt(m[2] || 0), sec = parseInt(m[3] || 0);
   if (h > 0) return `${h}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   return `${min}:${String(sec).padStart(2,'0')}`;
@@ -3813,7 +3765,7 @@ function fmtPubDate(iso, lang) {
   return `${d.getDate()} ${M[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-/* useFeaturedVideoMeta — due fetch dirette a YouTube Data v3 con la key
+/* useFeaturedVideoMeta · due fetch dirette a YouTube Data v3 con la key
    Google Cloud del sito: playlistItems → ultimo upload, poi videos → stats. */
 function useFeaturedVideoMeta() {
   const [meta, setMeta] = React.useState(() => {
@@ -3862,7 +3814,7 @@ function useFeaturedVideoMeta() {
   return meta;
 }
 
-/* useLatestUploads — popola la pagina 2 con gli ULTIMI video reali del canale.
+/* useLatestUploads · popola la pagina 2 con gli ULTIMI video reali del canale.
    Usa direttamente la API key Google Cloud limitata a sgnoogle.com. */
 function useLatestUploads() {
   const [rest, setRest] = React.useState(() => VIDEOS.slice(1));
@@ -3920,7 +3872,7 @@ function VideoModule({ lang }) {
           {rest.map((v, i) => <VideoCard key={v.id} v={v} L={L} delay={i * 60}/>)}
           {/* Coda: accesso reale al resto del catalogo. La lista hard-coded
              invecchia; il canale e la playlist Hi-Tech sono link veri e
-             sempre aggiornati — da qui Claude Code potrà in seguito auto-popolare
+             sempre aggiornati · da qui Claude Code potrà in seguito auto-popolare
              le card dal feed del canale (canale Francesco Sgnaolin). */}
           <MoreVideosCard lang={lang} delay={rest.length * 60}/>
         </div>
@@ -3966,7 +3918,6 @@ function FeaturedVideo({ v, L, lang }) {
       gridTemplateAreas: '"vid info"',
       gridTemplateColumns: 'minmax(0, 1.68fr) minmax(300px, 0.92fr)',
       gridTemplateRows: '1fr',
-      border: `0.5px solid ${C.border}`,
       background: C.white,
       boxSizing: 'border-box',
     }}>
@@ -3985,7 +3936,6 @@ function FeaturedVideo({ v, L, lang }) {
          descrizione tagliata, metadati e CTA in una singola colonna stabile. */}
       <div className="sgn-feat-info" style={{
         padding: CARD_PAD,
-        borderLeft: `0.5px solid ${C.border}`,
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
         gap: 'clamp(10px, 1.35vh, 16px)',
         overflow: 'hidden',
@@ -3995,7 +3945,7 @@ function FeaturedVideo({ v, L, lang }) {
             <Tag color={C.yellow}>{L.video.featured}</Tag>
           </div>
           <div className="sgn-feat-title" style={{
-            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+            fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
             fontSize: 'clamp(24px, 2.4vw, 42px)', letterSpacing: '-0.05em',
             color: C.ink, lineHeight: 0.95, margin: 0, textTransform: 'uppercase',
             display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
@@ -4034,7 +3984,7 @@ function FeaturedVideo({ v, L, lang }) {
 
 
         {meta && (
-          <div className="sgn-feat-stats" style={{ display: 'flex', flexShrink: 0, marginTop: 'auto', borderTop: `0.5px solid ${C.border}`, borderBottom: `0.5px solid ${C.border}` }}>
+          <div className="sgn-feat-stats" style={{ display: 'flex', flexShrink: 0, marginTop: 'auto' }}>
             {[
               { k: 'VIEWS', v: fmtViews(meta.views) },
               { k: 'TIME', v: fmtDur(meta.duration) },
@@ -4047,7 +3997,6 @@ function FeaturedVideo({ v, L, lang }) {
                 paddingBottom: 'clamp(12px, 1.6vh, 16px)',
                 paddingLeft: i > 0 ? 'clamp(12px, 1.4vw, 18px)' : 'clamp(8px, 2.5vw, 16px)',
                 paddingRight: 'clamp(6px, 1.5vw, 12px)',
-                borderLeft: i > 0 ? `0.5px solid ${C.border}` : 'none',
                 textAlign: 'center',
               }}>
                 <span className="sgn-feat-stat-value" style={{
@@ -4066,7 +4015,6 @@ function FeaturedVideo({ v, L, lang }) {
         )}
 
         <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(8px, 1.2vh, 14px)', marginTop: meta ? undefined : 'auto' }}>
-          {!meta && <span aria-hidden="true" style={{ height: '0.5px', background: C.border, display: 'block' }}/>}
           <CTA
             href={videoHref}
             target="_blank"
@@ -4077,12 +4025,11 @@ function FeaturedVideo({ v, L, lang }) {
           />
         </div>
       </div>
-      <HoverCornerMarks/>
     </div>
   );
 }
 
-/* VideoPreview — muted YouTube embed lazy.
+/* VideoPreview · muted YouTube embed lazy.
    Prima paint leggero: thumbnail/placeholder OS; iframe solo quando il riquadro
    entra in viewport o l'utente lo richiede. */
 function VideoPreview({ youtubeId, playlistId, title }) {
@@ -4113,7 +4060,7 @@ function VideoPreview({ youtubeId, playlistId, title }) {
     <div ref={wrapRef} onClick={() => setArmed(true)} style={{
       position: 'relative',
       width: '100%', height: '100%', minHeight: 0,
-      background: C.ink, overflow: 'hidden',
+      background: C.paper, overflow: 'hidden',
       containerType: 'size', cursor: armed ? 'default' : 'pointer',
     }}>
       {armed && (
@@ -4139,16 +4086,16 @@ function VideoPreview({ youtubeId, playlistId, title }) {
       )}
       {(!armed || !loaded) && (
         <div aria-hidden="true" style={{
-          position: 'absolute', inset: 0, background: C.ink,
+          position: 'absolute', inset: 0, background: C.paper,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           pointerEvents: 'none',
         }}>
           <span style={{
             fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, fontWeight: 700,
-            letterSpacing: '0.22em', color: 'rgba(255,255,255,0.55)',
+            letterSpacing: '0.22em', color: C.grey,
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
-            <span style={{ color: C.yellow }}>▸</span>{armed ? 'LOADING' : 'LIVE FEED · STANDBY'}
+            <span style={{ color: C.grey }}>▸</span>{armed ? 'LOADING' : 'LIVE FEED · STANDBY'}
             <span style={{ animation: 'sgnBlink 1s steps(1) infinite' }}>_</span>
           </span>
         </div>
@@ -4165,7 +4112,7 @@ function VideoCard({ v, L, delay = 0 }) {
       rel="noopener noreferrer"
       className="sgn-card-hover sgn-card-hover--media sgn-hot" style={{
       position: 'relative', textDecoration: 'none', color: 'inherit',
-      background: C.white, border: `0.5px solid ${C.borderSoft}`,
+      background: C.white,
       opacity: inView ? 1 : 0,
       // Solo fade, niente translateY: la slide portava la card a una Y
       // frazionaria durante l'animazione e il bordo hairline 0.5px spariva per
@@ -4178,11 +4125,11 @@ function VideoCard({ v, L, delay = 0 }) {
     }}>
       {/* copertina 16:9 a FILO della cornice: niente mat, è la card stessa a
          fare da frame. Una hairline sotto la separa dalla fascia titolo. */}
-      <div style={{ aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden', borderBottom: `0.5px solid ${C.borderSoft}` }}>
+      <div style={{ aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         {v.youtubeId ? <VideoThumb id={v.youtubeId} title={v.title}/> : <VideoArt v={v} fill/>}
       </div>
       <div style={{ flexShrink: 0, padding: CARD_PAD }}>
-        {/* Solo il titolo — verrà recuperato da YouTube a sito pronto.
+        {/* Solo il titolo · verrà recuperato da YouTube a sito pronto.
             Nessun altro metadato (categoria/durata/data) per scelta. */}
         <div style={{
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
@@ -4192,12 +4139,11 @@ function VideoCard({ v, L, delay = 0 }) {
           overflow: 'hidden',
         }}>{v.title}</div>
       </div>
-      <HoverCornerMarks/>
     </a>
   );
 }
 
-/* VideoThumb — copertina REALE del video, presa live da YouTube senza API
+/* VideoThumb · copertina REALE del video, presa live da YouTube senza API
    né chiavi: i.ytimg.com serve sempre la thumbnail aggiornata del video.
    Parto dalla maxres (1280×720, nessuna banda) e ricado su hqdefault per i
    video che non la espongono. È il "dato sempre aggiornato" che riempie le
@@ -4221,13 +4167,13 @@ function VideoThumb({ id, title }) {
       onError={() => setFailed(true)}
       style={{
         position: 'absolute', inset: 0, width: '100%', height: '100%',
-        objectFit: 'cover', display: 'block', background: C.ink,
+        objectFit: 'cover', display: 'block', background: C.paper,
       }}
     />
   );
 }
 
-/* MoreVideosCard — coda della griglia "ultimi video": invece di una lista
+/* MoreVideosCard · coda della griglia "ultimi video": invece di una lista
    hard-coded che invecchia, porta al catalogo reale e sempre aggiornato
    (canale Francesco Sgnaolin + playlist Hi-Tech). Stesso footprint delle VideoCard. */
 function MoreVideosCard({ lang, delay = 0 }) {
@@ -4236,7 +4182,7 @@ function MoreVideosCard({ lang, delay = 0 }) {
   return (
     <div ref={ref} className="sgn-card-hover" style={{
       position: 'relative',
-      background: C.white, border: `0.5px solid ${C.borderSoft}`,
+      background: C.white,
       opacity: inView ? 1 : 0,
       // Solo fade (vedi nota in VideoCard): niente translateY, così il bordo
       // hairline non sparisce durante l'entrata.
@@ -4248,13 +4194,12 @@ function MoreVideosCard({ lang, delay = 0 }) {
          rail giallo + titolo) + fascia inferiore con la CTA. Così nella griglia
          la card "Tutti i video" si allinea alle sorelle senza gradini. */}
       <div style={{
-        aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden',
-        borderBottom: `0.5px solid ${C.borderSoft}`, background: C.paper,
+        aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden', background: C.paper,
         display: 'flex', alignItems: 'flex-end', padding: 'clamp(12px, 1.2vw, 18px)',
       }}>
         <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: C.yellow }}/>
         <div style={{
-          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: 'clamp(18px, 1.8vw, 26px)', letterSpacing: '-0.03em',
           color: C.ink, lineHeight: 1,
         }}>{isIt ? 'Tutti i video' : 'All videos'}</div>
@@ -4263,7 +4208,6 @@ function MoreVideosCard({ lang, delay = 0 }) {
         <CTA href="https://www.youtube.com/c/FrancescoSgnaolin/videos" target="_blank" size="sm"
              label={isIt ? 'CANALE FRANCESCO' : 'FRANCESCO CHANNEL'} />
       </div>
-      <HoverCornerMarks/>
     </div>
   );
 }
@@ -4281,7 +4225,7 @@ function VideoArt({ v, big, fill }) {
       ...sizing,
       background: C.paper, overflow: 'hidden',
     }}>
-      {/* rail giallo: a sinistra (A) o in alto a tutta larghezza (B) — mai giallo a contatto con l'ink */}
+      {/* rail giallo: a sinistra (A) o in alto a tutta larghezza (B) · mai giallo a contatto con l'ink */}
       {isB
         ? <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: big ? 5 : 3, background: C.yellow }}/>
         : <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: big ? 5 : 3, background: C.yellow }}/>}
@@ -4321,7 +4265,7 @@ function ObjectsModule({ lang }) {
    Una pagina del PageDeck per ogni app. Le scorri verticalmente (↑/↓).
    Layout per pagina:
      [icon-grande]  [name / subtitle / tagline / stats / install]
-     [riga screenshot — orizzontale, scrollabile]
+     [riga screenshot · orizzontale, scrollabile]
 */
 function AppsModule({ lang }) {
   const L = I18N[lang];
@@ -4351,7 +4295,7 @@ function AppsModule({ lang }) {
   );
 }
 
-/* AppPage — un singolo "schermo prodotto" che entra intero nel display.
+/* AppPage · un singolo "schermo prodotto" che entra intero nel display.
    Layout: HERO (icona inquadrata + name/sub/tagline + INSTALL) → META BAND
    (stats cell-per-cell, equidistanti) → BODY (descrizione+features | gallery
    con 4 screenshot equispaziati e mai croppati). */
@@ -4361,7 +4305,7 @@ function AppPage({ app, lang }) {
   const category      = app.category?.[lang]      || app.category?.en   || '';
   const monetization  = app.monetization?.[lang]  || app.monetization?.en || '';
   const features      = app.features?.[lang]      || app.features?.en   || [];
-  const snapshot      = window.APP_SNAPSHOT       || '—';
+  const snapshot      = window.APP_SNAPSHOT       || '·';
 
   return (
     <div className="sgn-app-page" style={{
@@ -4384,7 +4328,7 @@ function AppPage({ app, lang }) {
           justifyContent: 'space-between',
         }}>
           <h3 className="sgn-app-title" style={{
-            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+            fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
             fontSize: 'clamp(22px, 3vw, 42px)', letterSpacing: '-0.04em',
             color: C.ink, lineHeight: 1, margin: 0, textTransform: 'lowercase',
           }}>{app.name}</h3>
@@ -4427,7 +4371,9 @@ function AppPage({ app, lang }) {
       <div className="sgn-app-body-grid" style={{
         minHeight: 0, overflow: 'hidden',
         display: 'grid',
-        gridTemplateColumns: 'minmax(0, 0.92fr) minmax(0, 1.08fr)',
+        gridTemplateColumns: (app.shotsLh || []).length > 0
+          ? 'minmax(0, 0.92fr) minmax(0, 1.08fr)'
+          : 'minmax(0, 1fr)',
         gap: 'clamp(16px, 2.2vw, 30px)',
       }}>
         {/* sinistra: descrizione + features */}
@@ -4476,21 +4422,23 @@ function AppPage({ app, lang }) {
           )}
         </div>
 
-        {/* destra: gallery screenshot reali */}
-        <div className="sgn-app-galcol" style={{
-          minHeight: 0, display: 'flex', flexDirection: 'column', gap: 8,
-        }}>
-          <Label size={9} color={C.faint} style={{ display: 'block' }}>
-            {lang === 'it' ? 'SCREENSHOT' : 'SCREENSHOTS'}
-          </Label>
-          <AppGallery shots={app.shotsLh || []} name={app.name}/>
-        </div>
+        {/* destra: gallery screenshot reali (nascosta se non ci sono shot) */}
+        {(app.shotsLh || []).length > 0 && (
+          <div className="sgn-app-galcol" style={{
+            minHeight: 0, display: 'flex', flexDirection: 'column', gap: 8,
+          }}>
+            <Label size={9} color={C.faint} style={{ display: 'block' }}>
+              {lang === 'it' ? 'SCREENSHOT' : 'SCREENSHOTS'}
+            </Label>
+            <AppGallery shots={app.shotsLh || []} name={app.name}/>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-/* AppGallery — striscia orizzontale di screenshot REALI del Play Store,
+/* AppGallery · striscia orizzontale di screenshot REALI del Play Store,
    serviti live dalla CDN play-lh (APP_LH, nessuna API). objectFit: contain →
    mai croppati (regola del sistema); fondo paper a riempire l'eventuale
    margine. Scroll orizzontale, scrollbar nascosta (sgn-stl-scroll), snap. */
@@ -4535,7 +4483,7 @@ function AppGallery({ shots, name }) {
         }}>
           <img
             src={APP_LH(h, 'w512')}
-            alt={`${name} — screenshot ${i + 1}`}
+            alt={`${name} · screenshot ${i + 1}`}
             loading="lazy"
             decoding="async"
             style={{
@@ -4543,18 +4491,13 @@ function AppGallery({ shots, name }) {
               objectFit: 'contain',
             }}
           />
-          <div className="sgn-shot-frame" style={{
-            position: 'absolute', inset: 0,
-            border: `0.5px solid ${C.borderSoft}`,
-            pointerEvents: 'none',
-          }} />
         </div>
       ))}
     </div>
   );
 }
 
-/* AppIcon — icona Play Store inquadrata nel linguaggio del brand:
+/* AppIcon · icona Play Store inquadrata nel linguaggio del brand:
    quadrato paper con hairline, padding fisso (l'icona PNG rounded
    non tocca mai il bordo), quattro corner-marks gialle decorative. */
 function AppIcon({ app }) {
@@ -4563,44 +4506,37 @@ function AppIcon({ app }) {
       position: 'relative', flexShrink: 0,
       width:  'clamp(64px, 7vw, 96px)',
       height: 'clamp(64px, 7vw, 96px)',
-      background: C.paper,
-      border: `0.5px solid ${C.borderSoft}`,
+      /* v3.2 flat: pannello bianco pieno sul fondo acciaio, nessuna cornice,
+         niente mirini agli angoli (divieto 06). */
+      background: C.white,
       padding: 'clamp(8px, 0.8vw, 12px)',
       boxSizing: 'border-box',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <img
-        src={APP_LH(app.iconLh, 'w256-h256')}
-        alt={app.name}
-        loading="lazy"
-        style={{
-          width: '100%', height: '100%',
-          objectFit: 'contain',
-          display: 'block',
-        }}
-      />
-      {/* corner-marks (statiche, sempre visibili sull'icona) */}
-      {[0,1,2,3].map(i => {
-        const top = i < 2, left = i % 2 === 0;
-        return (
-          <span key={i} style={{
-            position: 'absolute',
-            width: 8, height: 8,
-            [top ? 'top' : 'bottom']: -1,
-            [left ? 'left' : 'right']: -1,
-            borderTop:    top  ? `1.5px solid ${C.yellow}` : 'none',
-            borderBottom: !top ? `1.5px solid ${C.yellow}` : 'none',
-            borderLeft:   left ? `1.5px solid ${C.yellow}` : 'none',
-            borderRight:  !left? `1.5px solid ${C.yellow}` : 'none',
-            pointerEvents: 'none',
-          }}/>
-        );
-      })}
+      {app.iconLh ? (
+        <img
+          src={APP_LH(app.iconLh, 'w256-h256')}
+          alt={app.name}
+          loading="lazy"
+          style={{
+            width: '100%', height: '100%',
+            objectFit: 'contain',
+            display: 'block',
+          }}
+        />
+      ) : (
+        /* fallback: monogramma tipografico finché manca l'hash play-lh */
+        <span aria-hidden="true" style={{
+          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
+          fontSize: 'clamp(30px, 3.4vw, 46px)', lineHeight: 1,
+          color: C.ink, letterSpacing: '-0.04em', textTransform: 'lowercase',
+        }}>{(app.name || '?').slice(0, 1)}</span>
+      )}
     </div>
   );
 }
 
-/* AppMetaBand — riga unica di celle equispaziate (grid auto-fit), divisori
+/* AppMetaBand · riga unica di celle equispaziate (grid auto-fit), divisori
    hairline. Sostituisce i chip che andavano a capo in modo irregolare. */
 function AppMetaBand({ cells, lang }) {
   return (
@@ -4609,7 +4545,6 @@ function AppMetaBand({ cells, lang }) {
         display: 'grid',
         gridAutoFlow: 'column',
         gridAutoColumns: 'minmax(0, 1fr)',
-        border: `0.5px solid ${C.borderSoft}`,
         background: C.white,
         overflow: 'hidden',
       }}>
@@ -4617,7 +4552,6 @@ function AppMetaBand({ cells, lang }) {
           <div key={c.k} style={{
             padding: '9px 13px',
             display: 'flex', flexDirection: 'column', gap: 4,
-            borderLeft: i === 0 ? 'none' : `0.5px solid ${C.borderSoft}`,
             minWidth: 0,
           }}>
             <span style={{
@@ -4629,7 +4563,7 @@ function AppMetaBand({ cells, lang }) {
             <span style={{
               fontFamily: 'IBM Plex Mono, monospace',
               fontSize: 'clamp(12px, 1vw, 14px)', fontWeight: 700,
-              color: c.gold ? C.yellow : C.ink, letterSpacing: '0.01em',
+              color: C.ink, letterSpacing: '0.01em',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>{c.v}</span>
           </div>
@@ -4675,7 +4609,6 @@ function AppRow({ a, L, delay = 0 }) {
         <Progress value={a.pct} gold={a.stage === 'release'} active={inView} delay={delay + 200}/>
       </div>
       <Label color={C.faint} size={9} style={{ textAlign: 'right' }}>{a.platform}</Label>
-      <HoverCornerMarks/>
     </div>
   );
 }
@@ -4751,7 +4684,7 @@ function LinkStrip({ L, lang }) {
       flex: 1, minHeight: 0,
       display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 1.6vh, 18px)',
     }}>
-      {/* header — eyebrow + frecce di scorrimento */}
+      {/* header · eyebrow + frecce di scorrimento */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: 12, flexShrink: 0,
@@ -4784,7 +4717,7 @@ function LinkStrip({ L, lang }) {
 
       {/* corpo: solo lo scroller. Desktop scorre in orizzontale, mobile in
           colonna (CSS). Le frecce vivono nell'header (vedi sopra) su entrambi
-          i layout — niente colonna laterale di affordance. */}
+          i layout · niente colonna laterale di affordance. */}
       <div className="sgn-link-body" style={{
         flex: 1, minHeight: 0, display: 'flex',
         gap: 'clamp(8px, 1.4vw, 14px)', alignItems: 'stretch',
@@ -4813,7 +4746,7 @@ function LinkStrip({ L, lang }) {
   );
 }
 
-/* StripArrow — bottone quadrato di scorrimento, stesso linguaggio della
+/* StripArrow · bottone quadrato di scorrimento, stesso linguaggio della
    gallery (paper + hairline, ↑↓ disabilitate ai capi). */
 function StripArrow({ dir, disabled, onClick, lang, small }) {
   const glyph = { left: '←', right: '→', up: '↑', down: '↓' }[dir] || '→';
@@ -4832,7 +4765,6 @@ function StripArrow({ dir, disabled, onClick, lang, small }) {
         width: dim, height: dim,
         appearance: 'none', cursor: disabled ? 'default' : 'pointer',
         background: disabled ? 'transparent' : C.white,
-        border: `0.5px solid ${disabled ? C.borderSoft : C.border}`,
         color: disabled ? C.faint : C.ink,
         fontFamily: 'IBM Plex Mono, monospace', fontSize: small ? 13 : 14, fontWeight: 700,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -4844,7 +4776,7 @@ function StripArrow({ dir, disabled, onClick, lang, small }) {
   );
 }
 
-/* ContactCard — prima scheda della strip: invito a collaborare via mail.
+/* ContactCard · prima scheda della strip: invito a collaborare via mail.
    Quadrata, gialla. Il contenuto è un blocco coeso centrato verticalmente
    (niente space-between che lascia buchi su quadrati alti o sfora su quelli
    bassi); l'indice "00" galleggia in alto a destra in absolute così non
@@ -4862,7 +4794,6 @@ function ContactCard({ L, lang }) {
         minWidth: 'clamp(240px, 30vw, 360px)',
         scrollSnapAlign: 'start',
         background: C.white, textDecoration: 'none', color: C.ink,
-        border: `0.5px solid ${C.borderSoft}`,
         boxSizing: 'border-box', overflow: 'hidden',
         padding: 'clamp(20px, 2.4vw, 32px)',
         paddingLeft: 'clamp(24px, 2.6vw, 38px)',
@@ -4875,14 +4806,14 @@ function ContactCard({ L, lang }) {
         position: 'absolute', top: 0, bottom: 0, left: 0, width: 4, background: C.yellow,
       }}/>
 
-      {/* fondo geometrico in deriva lenta — stessa grammatica hairline 45° del
+      {/* fondo geometrico in deriva lenta · stessa grammatica hairline 45° del
           sistema, sovradimensionato così la deriva non scopre i bordi. Sta
           sotto il rail (z) e dietro testo+CTA (che sono relative). */}
       <span className="sgn-ambient sgn-contact-bg" aria-hidden="true"/>
 
       <div className="sgn-link-hero-title" style={{
         position: 'relative', zIndex: 1,
-        fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+        fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
         fontSize: 'clamp(26px, 3vw, 42px)', letterSpacing: '-0.04em',
         lineHeight: 0.98, color: C.ink, textWrap: 'balance',
       }}>{isIt ? 'Lavoriamo insieme.' : 'Let\u2019s work together.'}</div>
@@ -4898,7 +4829,7 @@ function ContactCard({ L, lang }) {
   );
 }
 
-/* SponsorCard — un brand con cui ho collaborato. Cliccata → video di
+/* SponsorCard · un brand con cui ho collaborato. Cliccata → video di
    riferimento (s.url). Logo mono-ink (ink cotto nell'alpha del PNG) reso
    con object-fit:contain; se manca il logo, placeholder a strisce con la
    sigla del brand. */
@@ -4911,7 +4842,7 @@ function SponsorCard({ s, L, lang }) {
       href={href}
       target={href ? '_blank' : undefined}
       rel="noopener noreferrer"
-      aria-label={href ? `${s.name}${isIt ? ' — guarda il video' : ' — watch the video'}` : s.name}
+      aria-label={href ? `${s.name}${isIt ? ' · guarda il video' : ' · watch the video'}` : s.name}
       data-link-card
       className="sgn-hot sgn-card-hover"
       style={{
@@ -4920,18 +4851,16 @@ function SponsorCard({ s, L, lang }) {
         minWidth: 'clamp(240px, 30vw, 360px)',
         scrollSnapAlign: 'start',
         background: C.white, textDecoration: 'none', color: C.ink,
-        border: `0.5px solid ${C.borderSoft}`,
         boxSizing: 'border-box',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
         fontFamily: 'IBM Plex Mono, monospace',
       }}>
       {/* logo a FILO della cornice: una sola cornice (quella della card) e un
-         solo respiro interno — niente più doppio box + doppio padding che
+         solo respiro interno · niente più doppio box + doppio padding che
          faceva "galleggiare" il logo piccolo. Hairline sotto come divisore. */}
       <div style={{
         flex: 1, minHeight: 0,
-        borderBottom: `0.5px solid ${C.borderSoft}`,
         backgroundImage: s.logo ? 'none' : `repeating-linear-gradient(45deg, ${C.borderSoft} 0 1px, transparent 1px 14px)`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: s.logo ? 'clamp(18px, 2.6vw, 36px)' : 0,
@@ -4942,10 +4871,10 @@ function SponsorCard({ s, L, lang }) {
           }}/>
         ) : (
           <span style={{
-            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+            fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
             fontSize: 'clamp(28px, 3.4vw, 48px)', letterSpacing: '-0.04em',
             color: C.ink, lineHeight: 0.9,
-          }}>{(s.name || '—').slice(0, 2).toUpperCase()}</span>
+          }}>{(s.name || '·').slice(0, 2).toUpperCase()}</span>
         )}
       </div>
 
@@ -4966,19 +4895,17 @@ function SponsorCard({ s, L, lang }) {
         <span aria-hidden="true" className="sgn-ytbtn" style={{
           flexShrink: 0,
           width: 'clamp(28px, 3.2vw, 34px)', height: 'clamp(28px, 3.2vw, 34px)',
-          border: `0.5px solid ${C.border}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           background: 'transparent', color: C.ink,
         }}>
           <ChannelGlyph id="YOUTUBE" size={16} color="currentColor"/>
         </span>
       </div>
-      <HoverCornerMarks/>
     </a>
   );
 }
 
-/* OpenSlotCard — slot di sponsorship ancora libero. Tratteggiato,
+/* OpenSlotCard · slot di sponsorship ancora libero. Tratteggiato,
    numero grande, invito alla collaborazione. */
 function OpenSlotCard({ n, lang }) {
   const isIt = lang === 'it';
@@ -4993,7 +4920,6 @@ function OpenSlotCard({ n, lang }) {
         minWidth: 'clamp(240px, 30vw, 360px)',
         scrollSnapAlign: 'start',
         background: C.paper, textDecoration: 'none', color: C.ink,
-        border: `0.5px dashed ${C.border}`,
         boxSizing: 'border-box',
         padding: 'clamp(18px, 2vw, 28px)',
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
@@ -5006,7 +4932,7 @@ function OpenSlotCard({ n, lang }) {
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         <span style={{
-          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: 'clamp(64px, 9vw, 128px)', letterSpacing: '-0.05em',
           color: 'rgba(120,122,124,0.5)', lineHeight: 0.85,
         }}>{String(n).padStart(2, '0')}</span>
@@ -5041,7 +4967,7 @@ function SelfModule({ lang }) {
   );
 }
 
-/* AutoFit — misura il contenuto e lo scala (transform) per stare SEMPRE
+/* AutoFit · misura il contenuto e lo scala (transform) per stare SEMPRE
    dentro lo spazio disponibile: né scroll né taglio, su qualunque display.
    Il transform non altera scrollHeight/offsetHeight → nessun loop col
    ResizeObserver. Scala solo verso il basso (max 1). */
@@ -5107,7 +5033,7 @@ function AboutProfilePage({ L, lang }) {
         alignItems: 'center',
       }} className="sgn-self-grid">
 
-      {/* ── COLONNA AVATAR — scheda-ID incorniciata ── */}
+      {/* ── COLONNA AVATAR · scheda-ID incorniciata ── */}
       <div style={{
         width: 'clamp(180px, 21vw, 260px)',
         flexShrink: 0,
@@ -5115,7 +5041,7 @@ function AboutProfilePage({ L, lang }) {
         <ProfileCard L={L} lang={lang}/>
       </div>
 
-      {/* ── COLONNA CHARACTER SHEET — riempie la colonna con gerarchia ── */}
+      {/* ── COLONNA CHARACTER SHEET · riempie la colonna con gerarchia ── */}
       <div style={{
         display: 'flex', flexDirection: 'column',
         gap: 'clamp(14px, 1.8vh, 22px)',
@@ -5124,7 +5050,7 @@ function AboutProfilePage({ L, lang }) {
         {/* nome reale grande (mixed-case) + nickname handle */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{
-            fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
+            fontFamily: 'IBM Plex Mono, monospace',
             fontWeight: 900,
             fontSize: 'clamp(30px, 3.4vw, 52px)',
             lineHeight: 0.95, letterSpacing: '-0.03em',
@@ -5137,13 +5063,12 @@ function AboutProfilePage({ L, lang }) {
             }}>@sgnoogle</span>
             <span style={{
               fontFamily: 'IBM Plex Mono, monospace', fontSize: 8.5,
-              letterSpacing: '0.22em', color: C.faint, fontWeight: 700,
-              border: `0.5px solid ${C.borderSoft}`, padding: '2px 6px',
+              letterSpacing: '0.22em', color: C.faint, fontWeight: 700, padding: '2px 6px',
             }}>ALIAS</span>
           </div>
         </div>
 
-        {/* stat band — character sheet a 3 celle */}
+        {/* stat band · character sheet a 3 celle */}
         <div className="sgn-profile-statband" style={{
           display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 1, background: C.borderSoft, padding: 1, boxSizing: 'border-box',
@@ -5228,7 +5153,6 @@ function AboutSkillsPage({ L }) {
                   fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
                   fontSize: 11, letterSpacing: '0.12em',
                   color: C.ink, background: C.white,
-                  border: `0.5px solid ${C.border}`,
                   padding: '5px 9px 5px 0', lineHeight: 1,
                 }}>
                   <span aria-hidden style={{ width: 3, alignSelf: 'stretch', background: C.yellow }}/>
@@ -5281,7 +5205,6 @@ function AboutContactPage({ L, lang }) {
               width: 'clamp(36px, 3.2vw, 46px)',
               height: 'clamp(36px, 3.2vw, 46px)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              border: `0.5px solid ${C.border}`,
               background: C.white, color: C.ink,
             }}>
               <ChannelGlyph id={c.k} size={20}/>
@@ -5294,15 +5217,14 @@ function AboutContactPage({ L, lang }) {
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>{c.v}</span>
             <MarathonArrow size={18}/>
-            <HoverCornerMarks/>
-          </a>
+                </a>
         ))}
       </div>
     </div>
   );
 }
 
-/* ProfileCard — scheda-ID incorniciata, avatar flippabile.
+/* ProfileCard · scheda-ID incorniciata, avatar flippabile.
    Mount: cornice bianca + title-bar (ID / SGN-CARD / A·B) + passe-partout,
    con corner-tick gialli sulla finestra avatar (la "cornice figa").
    Face A: anime PP. Face B: slot real-photo placeholder.
@@ -5315,29 +5237,19 @@ function ProfileCard({ L }) {
   };
   const isReal = view === 'real';
 
-  const armW = 12, armT = 1.5, o = 7;
-  const tickBase = { position: 'absolute', width: armW, height: armW, zIndex: 3, pointerEvents: 'none' };
-  const ticks = {
-    tl: { top: o, left: o,    borderTop: `${armT}px solid ${C.yellow}`, borderLeft: `${armT}px solid ${C.yellow}` },
-    tr: { top: o, right: o,   borderTop: `${armT}px solid ${C.yellow}`, borderRight: `${armT}px solid ${C.yellow}` },
-    bl: { bottom: o, left: o, borderBottom: `${armT}px solid ${C.yellow}`, borderLeft: `${armT}px solid ${C.yellow}` },
-    br: { bottom: o, right: o,borderBottom: `${armT}px solid ${C.yellow}`, borderRight: `${armT}px solid ${C.yellow}` },
-  };
 
   return (
     <div style={{
       position: 'relative',
       background: C.white,
-      border: `0.5px solid ${C.border}`,
       padding: 'clamp(9px, 1vw, 13px)',
     }}>
-      {/* FINESTRA AVATAR — passe-partout + corner-tick gialli. La finestra
+      {/* FINESTRA AVATAR · passe-partout + corner-tick gialli. La finestra
           MORPHA: quadrata per l'avatar (1:1), verticale per la foto (~5:6),
           con transizione su padding-bottom sincronizzata col flip 3D. */}
       <div style={{
         position: 'relative',
         height: 0, paddingBottom: isReal ? '122%' : '100%',
-        border: `0.5px solid ${C.border}`,
         perspective: '1200px', overflow: 'hidden',
         transition: 'padding-bottom 540ms cubic-bezier(0.2,0,0,1)',
       }}>
@@ -5347,7 +5259,7 @@ function ProfileCard({ L }) {
           transition: 'transform 540ms cubic-bezier(0.2,0,0,1)',
           transform: isReal ? 'rotateY(180deg)' : 'rotateY(0)',
         }}>
-          {/* FACE A — anime */}
+          {/* FACE A · anime */}
           <div style={{
             position: 'absolute', inset: 0, overflow: 'hidden',
             backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
@@ -5355,7 +5267,7 @@ function ProfileCard({ L }) {
             <img src="/assets/avatar-anime.webp" alt="Francesco Sgnaolin avatar" loading="lazy" decoding="async"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
           </div>
-          {/* FACE B — real photo */}
+          {/* FACE B · real photo */}
           <div style={{
             position: 'absolute', inset: 0, overflow: 'hidden',
             backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
@@ -5366,13 +5278,7 @@ function ProfileCard({ L }) {
           </div>
         </div>
 
-        {/* CORNER-TICK — la cornice gialla sopra entrambe le facce */}
-        <span style={{ ...tickBase, ...ticks.tl }}/>
-        <span style={{ ...tickBase, ...ticks.tr }}/>
-        <span style={{ ...tickBase, ...ticks.bl }}/>
-        <span style={{ ...tickBase, ...ticks.br }}/>
-
-        {/* TOGGLE — switch segmentato AVATAR / REAL. Fondo bianco, etichette
+        {/* TOGGLE · switch segmentato AVATAR / REAL. Fondo bianco, etichette
             ink, sottolineatura GIALLA che scorre sotto l'attiva: il giallo sta
             sempre su bianco e mai a contatto col nero (regola del sito). */}
         <button
@@ -5385,7 +5291,7 @@ function ProfileCard({ L }) {
           style={{
             position: 'absolute', right: 10, bottom: 10, zIndex: 4,
             display: 'inline-flex', alignItems: 'stretch',
-            background: C.white, border: `0.5px solid ${C.border}`,
+            background: C.white,
             cursor: 'pointer', padding: 0,
             fontFamily: 'IBM Plex Mono, monospace',
           }}>
@@ -5415,12 +5321,12 @@ function ProfileCard({ L }) {
   );
 }
 
-Object.assign(window, { VideoModule, ObjectsModule, AppsModule, LinkModule, SelfModule, ProfileCard, HoverCornerMarks, CTA, PageHeader, AboutProfilePage, AboutSkillsPage, AboutContactPage, AppPage, AppIcon, AppMetaBand });
+Object.assign(window, { VideoModule, ObjectsModule, AppsModule, LinkModule, SelfModule, ProfileCard, CTA, PageHeader, AboutProfilePage, AboutSkillsPage, AboutContactPage, AppPage, AppIcon, AppMetaBand });
 
 </script>
 
 <script type="text/babel">
-/* Console — the SGN-OS shell.
+/* Console · the SGN-OS shell.
    Layout: TopBar / Display / ModuleStrip.
    v3.3 desktop: accordion strip (active tab expands to ~2.5fr).
    v3.3 mobile: Game-Boy-style 5-button bottom nav, icone custom, no scroll.
@@ -5428,15 +5334,15 @@ Object.assign(window, { VideoModule, ObjectsModule, AppsModule, LinkModule, Self
 
 /* ─────────────────────────── TopBar ─────────────────────────── */
 
-/* StatusReadout — readout di stato al centro della topbar: lampeggiatore
+/* StatusReadout · readout di stato al centro della topbar: lampeggiatore
    ● ONLINE + orologio di sistema che ticchetta. La menu-bar di un OS mostra
-   l'ora — telemetria vera, sempre rilevante, mai ridondante. Sostituisce
+   l'ora · telemetria vera, sempre rilevante, mai ridondante. Sostituisce
    "SGN-OS · STEEL" (codename arbitrario fuori contesto qui). */
 function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle = false }) {
   const isIt = lang === 'it';
   // Standby: solo a riposo sull'home (nessuna sezione aperta). Il readout
   // smette di dire "ONLINE + ora" e invita all'azione suggerendo la
-  // scorciatoia — la palette non vive più nel footer, ma qui al centro.
+  // scorciatoia · la palette non vive più nel footer, ma qui al centro.
   const showIdle = idle && !current;
   const [now, setNow] = React.useState(() => new Date());
   React.useEffect(() => {
@@ -5455,8 +5361,8 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
   /* ── Route takeover ───────────────────────────────────────────
      Quando `current` cambia, la status line (ONLINE + orologio) si fa
      da parte in dissolvenza e la barra mostra per ~700ms solo il NOME
-     della sezione aperta — l'unica informazione che non conosci già
-     premendo il tasto — con una hairline gialla 2px che lo sottolinea
+     della sezione aperta · l'unica informazione che non conosci già
+     premendo il tasto · con una hairline gialla 2px che lo sottolinea
      swippando nella direzione del cambio (riusa sgnSweepRight/Left).
      Poi torna l'orologio. I due stati sono layer assoluti sovrapposti →
      zero layout shift, l'orologio ticchetta sotto e riappare aggiornato.
@@ -5479,7 +5385,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
     setRoute({ key: mine, dir: dirRef.current, id: current, label: mod ? mod.label : L.nav.main });
     const t = setTimeout(() => setRoute(r => (r && r.key === mine ? null : r)), 720);
     return () => clearTimeout(t);
-  }, [current]); // eslint-disable-line — lang/direction/variant via ref di proposito
+  }, [current]); // eslint-disable-line · lang/direction/variant via ref di proposito
 
   const hh = String(now.getHours()).padStart(2, '0');
   const mm = String(now.getMinutes()).padStart(2, '0');
@@ -5495,7 +5401,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
       display: 'flex', justifyContent: 'center', alignItems: 'center',
       minWidth: 0, fontFamily: 'IBM Plex Mono, monospace',
     }}>
-      {/* Layer A — a riposo: ● IN ATTESA + scorciatoia "/". Attivo:
+      {/* Layer A · a riposo: ● IN ATTESA + scorciatoia "/". Attivo:
           ● ONLINE + orologio. I due stati condividono la stessa shell
           (dot+label | divisore+contenuto) e si dissolvono l'uno nell'altro. */}
       <div style={{
@@ -5519,15 +5425,14 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
           }}>{showIdle ? (isIt ? 'IN ATTESA' : 'STANDBY') : 'ONLINE'}</span>
         </span>
         <span style={{
-          paddingLeft: 12, borderLeft: `0.5px solid ${C.borderSoft}`,
+          paddingLeft: 12,
           display: 'inline-flex', alignItems: 'center', gap: 7, whiteSpace: 'nowrap',
         }}>
           {showIdle ? (
             <>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                minWidth: 16, height: 16, padding: '0 4px',
-                border: `0.5px solid ${C.border}`, background: C.white,
+                minWidth: 16, height: 16, padding: '0 4px', background: C.white,
                 fontSize: 10, fontWeight: 700, color: C.ink, lineHeight: 1,
                 fontFamily: 'IBM Plex Mono, monospace',
               }}>/</span>
@@ -5549,7 +5454,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
         </span>
       </div>
 
-      {/* Layer B — solo il NOME della sezione (l'unica informazione che non
+      {/* Layer B · solo il NOME della sezione (l'unica informazione che non
           conosci già aprendola), con una hairline gialla che lo sottolinea
           swippando nella direzione del cambio. */}
       <div aria-hidden style={{
@@ -5587,7 +5492,6 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
     <header className={`sgn-topbar${!current ? ' sgn-topbar--home' : ''}`} style={{
       position: 'relative', zIndex: 60,
       height: 44, background: C.white,
-      border: `0.5px solid ${C.borderSoft}`,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 clamp(12px, 2vw, 20px)',
       fontFamily: 'IBM Plex Mono, monospace',
@@ -5651,12 +5555,11 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
         {!mobile && (
           <button onClick={onOpenPalette} className="sgn-hot sgn-topctl" title={lang === 'it' ? 'Apri palette comandi' : 'Open command palette'} style={{
             display: 'inline-flex', alignItems: 'stretch',
-            background: C.paper, border: '0.5px solid rgba(120,122,124,0.45)',
+            background: C.paper,
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
           }}>
             <span style={{
-              padding: '6px 8px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em',
-              borderRight: '0.5px solid rgba(120,122,124,0.35)', color: C.yellow,
+              padding: '6px 8px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: C.yellow,
               display: 'inline-flex', alignItems: 'center',
             }}>/</span>
             <span style={{ padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em', color: C.grey, fontWeight: 700, alignSelf: 'center' }}>CMD</span>
@@ -5664,7 +5567,7 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
         )}
         <button onClick={onToggleSound} className={`sgn-hot sgn-topctl${mobile ? ' sgn-ghostctl' : ''}`} title={soundOn ? 'Sound on' : 'Sound off'} style={{
           display: 'inline-flex', alignItems: 'stretch',
-          background: mobile ? 'transparent' : C.paper, border: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
+          background: mobile ? 'transparent' : C.paper, border: 'none',
           padding: 0, cursor: 'pointer', fontFamily: 'inherit',
           color: C.ink, minHeight: 34, minWidth: mobile ? 34 : 'auto',
         }}>
@@ -5674,7 +5577,6 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
           }}>SND</span>}
           <span style={{
             padding: mobile ? '0 9px' : '6px 8px',
-            borderLeft: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.35)',
             display: 'inline-flex', alignItems: 'center', gap: 7,
           }}>
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden style={{ display: 'block' }}>
@@ -5694,7 +5596,7 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
         <span style={{ position: 'relative', display: 'inline-flex' }}>
           <button onClick={onToggleLang} className={`sgn-hot sgn-topctl sgn-langbtn${mobile ? ' sgn-ghostctl' : ''}${langOpen ? ' is-open' : ''}`} aria-haspopup="menu" aria-expanded={!!langOpen} style={{
             display: 'inline-flex', alignItems: 'stretch',
-            background: mobile ? 'transparent' : C.paper, border: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
+            background: mobile ? 'transparent' : C.paper, border: 'none',
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
           }}>
             {!mobile && <span style={{
@@ -5704,7 +5606,6 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             <span className="sgn-langbtn__val" style={{
               padding: '6px 8px', fontSize: 11, fontWeight: 700,
               letterSpacing: '0.18em', color: C.ink,
-              borderLeft: mobile ? 'none' : '0.5px solid rgba(120,122,124,0.45)',
               background: mobile ? 'transparent' : C.paper,
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}>
@@ -5724,7 +5625,7 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
 }
 
 /* ─────────────────────────── IdleDisplay ─────────────────────────── */
-/* HomeModuleCycle — typewriter in componente FOGLIA: lo stato che cambia
+/* HomeModuleCycle · typewriter in componente FOGLIA: lo stato che cambia
    ogni 48-76ms vive qui, così ri-renderizza SOLO questa riga e non l'intera
    home (prima: ~15 re-render/secondo di tutto l'albero IdleDisplay). */
 function HomeModuleCycle() {
@@ -5845,7 +5746,7 @@ function IdleDisplay({ lang, mobile, focused }) {
         {/* In STANDBY il wordmark CAMBIA STATO: SGNOOGLE sfuma e al suo posto
            appare STANDBY, sbiadito, col wireframe che continua a girare
            dietro. Niente altre scritte (badge, ciclo moduli e label sotto
-           svaniscono): la home non parla più, segnala uno stato — come un
+           svaniscono): la home non parla più, segnala uno stato · come un
            vero OS. Crossfade a livelli: zero scatti di testo. */}
         <h1 style={{
           fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
@@ -5893,7 +5794,7 @@ function IdleDisplay({ lang, mobile, focused }) {
           </div>
         )}
 
-        {/* Prompt fisso ◀ SCORRI LATERALMENTE ▶ — solo mobile (sul desktop si
+        {/* Prompt fisso ◀ SCORRI LATERALMENTE ▶ · solo mobile (sul desktop si
            naviga da tab/tastiera). NB: era gated da uno stato showSideHint
            mai impostato → non appariva MAI (residuo del rework). */}
         {!preview && mobile && !sideNavUsed && (
@@ -5933,12 +5834,12 @@ function IdleDisplay({ lang, mobile, focused }) {
   );
 }
 
-/* ModulePreview — scheda densa "spec sheet" sull'hover.
+/* ModulePreview · scheda densa "spec sheet" sull'hover.
    Sostituisce il vecchio Gran-Turismo-style (titolo 220px centrato).
    Layout: card a sinistra del display, header con §-tag + status,
    titolo medio + sub, riga con preview surface (thumbnail / icon /
    wireframe / avatar / mark) + meta in colonna, footer con hint
-   "PREMI N PER ENTRARE". Tutti i moduli usano la stessa shell —
+   "PREMI N PER ENTRARE". Tutti i moduli usano la stessa shell ·
    cambia solo la surface e i meta. */
 function ModulePreview({ id, module, lang }) {
   const [mounted, setMounted] = React.useState(false);
@@ -5949,7 +5850,7 @@ function ModulePreview({ id, module, lang }) {
   return (
     <div style={{
       /* Pannello spec-sheet a due compartimenti: SCHEDA (identità + dati)
-         | ANTEPRIMA (media grande). Riempie la larghezza del display —
+         | ANTEPRIMA (media grande). Riempie la larghezza del display ·
          niente più mezzo schermo vuoto a destra. Grid 2 colonne divise da
          una hairline; ogni colonna gestisce il proprio overflow.
          Aspect-ratio fisso → il pannello ha la stessa forma e gli stessi
@@ -5958,7 +5859,6 @@ function ModulePreview({ id, module, lang }) {
       width: '100%', maxWidth: 1140,
       aspectRatio: '1140 / 580', maxHeight: '100%',
       background: C.white,
-      border: `0.5px solid ${C.border}`,
       boxSizing: 'border-box',
       position: 'relative',
       fontFamily: 'IBM Plex Mono, monospace',
@@ -5970,18 +5870,15 @@ function ModulePreview({ id, module, lang }) {
       gridTemplateColumns: 'minmax(0, 0.82fr) minmax(0, 1.18fr)',
       overflow: 'hidden',
     }}>
-      <PreviewCornerMarks/>
-
       {/* ───── COMPARTIMENTO A · SCHEDA (solo titolo + descrizione) ───── */}
       <div style={{
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
         padding: 'clamp(16px, 1.8vw, 26px)',
-        borderRight: `0.5px solid ${C.border}`,
         minWidth: 0, minHeight: 0, overflow: 'hidden',
       }}>
-        {/* titolo grande — niente underscore terminale */}
+        {/* titolo grande · niente underscore terminale */}
         <h2 style={{
-          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: 'clamp(30px, 3.6vw, 54px)',
           letterSpacing: '-0.04em', color: C.ink,
           lineHeight: 0.9, margin: '0 0 clamp(12px, 1.6vh, 18px)',
@@ -5995,7 +5892,7 @@ function ModulePreview({ id, module, lang }) {
       {/* ───── COMPARTIMENTO B · ANTEPRIMA ─────
           Fondale vivo: l'elemento relativo al modulo riempie tutto il
           compartimento, zoomatissimo e sfocato (la bassa risoluzione non si
-          nota) e scorre lentamente — niente più anteprima statica. Sopra,
+          nota) e scorre lentamente · niente più anteprima statica. Sopra,
           la didascalia (tag + titolo) su una velatura paper che ne tiene
           la leggibilità. Nessuna ombra: solo tono del fondo + hairline. */}
       <div style={{
@@ -6015,10 +5912,9 @@ function ModulePreview({ id, module, lang }) {
         {/* hairline interno per ancorare il fondale al telaio della scheda */}
         <div aria-hidden style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          border: `0.5px solid ${C.borderSoft}`,
         }}/>
 
-        {/* didascalia sovrapposta — in basso a sinistra */}
+        {/* didascalia sovrapposta · in basso a sinistra */}
         <div style={{
           position: 'absolute', left: 'clamp(16px, 1.8vw, 26px)',
           bottom: 'clamp(16px, 1.8vw, 26px)', right: 'clamp(16px, 1.8vw, 26px)',
@@ -6031,7 +5927,7 @@ function ModulePreview({ id, module, lang }) {
             }}>{meta.head.tag}</span>
           </span>
           <span style={{
-            fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+            fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
             fontSize: 'clamp(16px, 1.6vw, 24px)', color: C.ink,
             letterSpacing: '-0.02em', lineHeight: 1.0,
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -6042,34 +5938,10 @@ function ModulePreview({ id, module, lang }) {
   );
 }
 
-/* PreviewCornerMarks — 4 L-shapes in yellow alle angoli della card.
-   Brand-canonical 1.5px stroke. */
-function PreviewCornerMarks() {
-  const armW = 10, armT = 1.5, off = -0.5;
-  const common = {
-    position: 'absolute', width: armW, height: armW,
-    pointerEvents: 'none',
-  };
-  return (
-    <>
-      <span style={{ ...common, top: off, left: off,
-        borderTop: `${armT}px solid ${C.yellow}`,
-        borderLeft: `${armT}px solid ${C.yellow}` }}/>
-      <span style={{ ...common, top: off, right: off,
-        borderTop: `${armT}px solid ${C.yellow}`,
-        borderRight: `${armT}px solid ${C.yellow}` }}/>
-      <span style={{ ...common, bottom: off, left: off,
-        borderBottom: `${armT}px solid ${C.yellow}`,
-        borderLeft: `${armT}px solid ${C.yellow}` }}/>
-      <span style={{ ...common, bottom: off, right: off,
-        borderBottom: `${armT}px solid ${C.yellow}`,
-        borderRight: `${armT}px solid ${C.yellow}` }}/>
-    </>
-  );
-}
+/* v3.2 · divieto 06: mirini gialli eliminati dal sistema. */
 
-/* PreviewAmbient — fondale vivo che riempie il compartimento ANTEPRIMA.
-   UNIFICATO (v3.8): ogni sezione parla la STESSA lingua della 04 — una
+/* PreviewAmbient · fondale vivo che riempie il compartimento ANTEPRIMA.
+   UNIFICATO (v3.8): ogni sezione parla la STESSA lingua della 04 · una
    griglia di "oggetti" hairline grigi che deriva in diagonale (sgnDrift,
    lineare, meccanico, niente blur). Via le foto sfocate (01/03) e i glyph
    organici (02/05): cambia solo il glifo del tile, non il trattamento, così
@@ -6105,7 +5977,7 @@ function PreviewAmbient({ id }) {
     );
   }
   // 02 OBJECTS → esaedro isometrico "pieno" (stesso marchio della ModuleIcon
-  //   e dell'STL Lab): SOLO le 3 facce frontali — niente diagonali che
+  //   e dell'STL Lab): SOLO le 3 facce frontali · niente diagonali che
   //   attraversano fino al retro (che facevano leggere il cubo come un
   //   esagono "a fette"). Spigoli dal centro ai 3 vertici vicini.
   if (id === '02') {
@@ -6138,13 +6010,13 @@ function PreviewAmbient({ id }) {
       `</g>`, 28
     );
   }
-  // 04 LINK → slot tratteggiato (motivo "posti liberi") — il riferimento, invariato.
+  // 04 LINK → slot tratteggiato (motivo "posti liberi") · il riferimento, invariato.
   return tile(
     `<rect x='26' y='26' width='80' height='80' fill='none' stroke='${G}' stroke-width='1' stroke-dasharray='4 5'/>`, 24
   );
 }
 
-/* buildPreviewMeta — tag + titolo dell'header della card preview di ogni
+/* buildPreviewMeta · tag + titolo dell'header della card preview di ogni
    modulo (l'unico dato consumato da ModulePreview). Live quando esiste,
    fallback se la sezione è vuota. */
 function buildPreviewMeta(id, lang) {
@@ -6164,7 +6036,7 @@ function buildPreviewMeta(id, lang) {
   if (id === '04') {
     const hasLinks = typeof LINKS !== 'undefined' && LINKS.length > 0;
     const f = hasLinks ? LINKS[0] : null;
-    return { head: { tag: isIt ? 'STATO' : 'STATUS', title: hasLinks ? (f.name || '—') : (isIt ? 'Aperto a collaborazioni' : 'Open for collabs') } };
+    return { head: { tag: isIt ? 'STATO' : 'STATUS', title: hasLinks ? (f.name || '·') : (isIt ? 'Aperto a collaborazioni' : 'Open for collabs') } };
   }
   if (id === '05') {
     return { head: { tag: isIt ? 'PROFILO' : 'PROFILE', title: 'SGNOOGLE' } };
@@ -6210,7 +6082,6 @@ function CornerChangelog({ armed, mobile, dimmed }) {
       <div style={{
         fontSize: 9, letterSpacing: '0.22em', color: C.faint, fontWeight: 600,
         marginBottom: 8, paddingBottom: 6,
-        borderBottom: `0.5px dashed ${C.borderSoft}`,
         display: 'flex', justifyContent: 'space-between',
       }}>
         <span>CHANGELOG</span>
@@ -6289,15 +6160,14 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
       onBlur={() => { onCancel(); onFocusOut?.(); }}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick && onClick(); } }}
       aria-current={active ? 'true' : undefined}
-      aria-label={label + (sub ? ' — ' + sub : '')}
+      aria-label={label + (sub ? ' · ' + sub : '')}
       style={{
         position: 'relative',
-        background: expanded ? C.white : C.paper,
-        // Bordo intero su tutti e 4 i lati — così la tab è una card
-        // indipendente che fluttua sul paper, non un segmento di un blocco.
-        // Il giallo vive SOLO nel top-rail (vedi span sotto): i lati restano
-        // hairline neutri anche da attiva.
-        border: `0.5px solid ${expanded ? C.border : C.borderSoft}`,
+        // v3.2 flat: la tab è un pannello bianco pieno sul fondo acciaio del
+        // display · nessuna cornice. Lo stato attivo lo dicono larghezza,
+        // icona ink e top-rail giallo.
+        background: C.white,
+        border: 'none',
         outline: armed ? `1px solid ${C.yellow}` : 'none',
         outlineOffset: '-1px',
         padding: 'clamp(14px, 2vh, 22px) clamp(14px, 1.6vw, 22px)',
@@ -6313,7 +6183,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
       }}
       className="sgn-tab"
     >
-      {/* Module icon — top-left, sempre visibile, dà identità a ogni tab */}
+      {/* Module icon · top-left, sempre visibile, dà identità a ogni tab */}
       <span style={{
         position: 'absolute', top: 10, left: 12, zIndex: 2,
         lineHeight: 0, pointerEvents: 'none',
@@ -6327,7 +6197,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         />
       </span>
 
-      {/* MarathonArrow — top-right. Affordance di stato:
+      {/* MarathonArrow · top-right. Affordance di stato:
           · hover (focused) → punta ↗ (NE): "apri questa sezione"
           · attiva (expanded) → ruota a ↓: chevron "aperta", come un accordion.
           La rotazione di stato vive su un wrapper interno per non entrare in
@@ -6376,7 +6246,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         transition: 'gap 320ms cubic-bezier(0.2,0,0,1)',
       }}>
         <span style={{
-          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
           // Collassata → numero più piccolo (lascia aria all'etichetta sotto);
           // riposo/aperta → numero pieno.
           fontSize: dim ? 'clamp(30px, 4.6vh, 52px)' : 'clamp(48px, 8vh, 88px)',
@@ -6418,7 +6288,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
   );
 }
 
-/* ModuleStrip — accordion 1fr / 2.5fr, tab fluttuanti scollegati.
+/* ModuleStrip · accordion 1fr / 2.5fr, tab fluttuanti scollegati.
    Niente outer border o background-divider: ogni tab è una card
    indipendente, separata dalle altre da un gap visibile su paper. */
 function ModuleStrip({ current, focused, setFocused, lang, onSelect, mobile, sound }) {
@@ -6483,7 +6353,7 @@ function ModuleStrip({ current, focused, setFocused, lang, onSelect, mobile, sou
    Five distinct chunky buttons, icone custom, no scroll.
    Active: --yellow background. Inactive: --paper + 0.5px border.
    3px bottom border simulates the raised key. On press the button slides
-   down 2px and the bottom border collapses to 1px — no box-shadow used. */
+   down 2px and the bottom border collapses to 1px · no box-shadow used. */
 function GameBoyStrip({ ids, L, current, onSelect, sound }) {
   return (
     <div style={{
@@ -6521,9 +6391,10 @@ function GameBoyKey({ id, n, label, active, onPress }) {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPress?.(); } }}
       style={{
         position: 'relative',
-        // Stessa lingua del desktop: la tab attiva diventa BIANCA, le inattive
-        // restano paper. Stacco affidato a hairline + tono del fondo, mai ombre.
-        background: active ? C.white : C.paper,
+        // v3.2 flat: il display è acciaio, quindi la tab attiva diventa PAPER
+        // (si fonde col display via ponte), le inattive sono pannelli bianchi.
+        // Stacco affidato al tono del fondo, mai ombre né cornici.
+        background: active ? C.paper : C.white,
         color: C.ink,
         /* ATTIVA SENZA CORNICE + PONTE NEL BOX: la tab cliccata si fonde con
            la view (pannello senza bordi) in un'unica forma bianca. Il
@@ -6531,10 +6402,10 @@ function GameBoyKey({ id, n, label, active, onPress }) {
            è il background che dipinge sotto il bordo (background-clip
            default). UN SOLO box dipinto → i fianchi di ponte e tab sono la
            STESSA geometria: nessun passo sub-pixel possibile (uno span
-           separato arrotondava la larghezza in modo indipendente — ~1 device
+           separato arrotondava la larghezza in modo indipendente · ~1 device
            px di rientro, misurato). margin-top e min-height compensano:
            contenuto e riga della strip non si muovono di un pixel. */
-        border: `0.5px solid ${active ? 'transparent' : C.borderSoft}`,
+        border: '0.5px solid transparent',
         borderTopWidth: active ? 'calc(var(--frame-gap, 16px) + 2px)' : '0.5px',
         marginTop: active ? 'calc(-1 * var(--frame-gap, 16px) - 1.5px)' : 0,
         paddingTop: 11, paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
@@ -6572,7 +6443,7 @@ Object.assign(window, { TopBar, IdleDisplay, ModuleTab, ModuleStrip,
 </script>
 
 <script type="text/babel">
-/* TapToStart — stessa estetica del BootScreen (sfondo paper, logo, barra
+/* TapToStart · stessa estetica del BootScreen (sfondo paper, logo, barra
    vuota), ma statica. Un tap sblocca l'AudioContext e avvia il boot.
    Niente fade-out: onStart() è sincrono così non c'è mai un frame
    in cui né TapToStart né BootScreen sono visibili. */
@@ -6661,7 +6532,7 @@ function TapToStart({ lang = 'it', onStart, sound }) {
         </div>
       </div>
 
-      {/* Start button — centrato, bordo completo, full-width */}
+      {/* Start button · centrato, bordo completo, full-width */}
       <div style={{
         width: '100%', maxWidth: 440, boxSizing: 'border-box',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -6684,7 +6555,7 @@ Object.assign(window, { TapToStart });
 </script>
 
 <script type="text/babel">
-/* BootScreen — boot mechanico, tacche che si riempiono in giallo da
+/* BootScreen · boot mechanico, tacche che si riempiono in giallo da
    sinistra a destra. Stagger 30ms per segmento (~720ms a piena fila su
    24 segmenti), beat finale di ~280ms prima dello sweep di uscita.
    Total ≈ 1500ms. Tap/click per saltare. */
@@ -6692,7 +6563,7 @@ Object.assign(window, { TapToStart });
 function BootScreen({ lang = 'it', onDone, sound }) {
   const SEGMENTS = 24;
   const STAGGER = 30;       // ms tra un segmento e il successivo
-  const FILL_END = SEGMENTS * STAGGER;  // = 720ms — quando l'ultima tacca scatta
+  const FILL_END = SEGMENTS * STAGGER;  // = 720ms · quando l'ultima tacca scatta
   const TOTAL = 1500;
   const [filled, setFilled] = React.useState(0);
   const [phase, setPhase] = React.useState('loading');
@@ -6702,7 +6573,7 @@ function BootScreen({ lang = 'it', onDone, sound }) {
   const onDoneRef = React.useRef(onDone);
   onDoneRef.current = onDone;
 
-  /* Micro-status — riga di stato mostrata sotto la barra, cambia in 4 step.
+  /* Micro-status · riga di stato mostrata sotto la barra, cambia in 4 step.
      Niente bla-bla di marketing: messaggi da manuale tecnico. */
   const STATUS = React.useMemo(() => lang === 'en' ? [
     'KERNEL · MOUNT /paper',
@@ -6796,7 +6667,7 @@ function BootScreen({ lang = 'it', onDone, sound }) {
           fontSize: 11, letterSpacing: '0.32em', color: C.ink, fontWeight: 700,
         }}>{BRAND.product}</span>
 
-        {/* segmented bar — tacche SEPARATE in sequenza (vedi nota in TapToStart
+        {/* segmented bar · tacche SEPARATE in sequenza (vedi nota in TapToStart
             sul bordo a 1px), riempimento giallo a contatore meccanico. */}
         <div style={{ display: 'flex', gap: 2, width: '100%', boxSizing: 'border-box' }}>
           {Array.from({ length: SEGMENTS }, (_, i) => {
@@ -6859,9 +6730,9 @@ Object.assign(window, { BootScreen });
 </script>
 
 <script type="text/babel">
-/* LangPopover — compact locale switcher anchored under the topbar LANG button.
+/* LangPopover · compact locale switcher anchored under the topbar LANG button.
    Replaces the old fullscreen modal: a small hairline dropdown (IT / EN) that
-   expands next to the trigger. No backdrop takeover, no yellow sweep — those
+   expands next to the trigger. No backdrop takeover, no yellow sweep · those
    were abandoned. Current locale gets an isolated yellow tick; hover/keyboard
    focus arms a row with an ink left-rail (giallo e ink non si toccano mai).
    Keyboard: ↑/↓ (or ←/→) move, ↵ confirm, Esc close; click-outside closes. */
@@ -6900,7 +6771,7 @@ function LangPopover({ lang, onPick, onClose, sound }) {
       {/* header strip */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '7px 11px', borderBottom: `0.5px solid ${C.borderSoft}`,
+        padding: '7px 11px',
       }}>
         <span style={{ fontSize: 8, letterSpacing: '0.28em', color: C.grey, fontWeight: 700 }}>LOCALE</span>
         <span style={{ fontSize: 8, letterSpacing: '0.2em', color: C.faint, fontWeight: 600 }}>SGN·OS</span>
@@ -6923,22 +6794,17 @@ function LangPopover({ lang, onPick, onClose, sound }) {
               display: 'flex', alignItems: 'center', gap: 11,
               padding: '12px 13px', cursor: 'pointer',
               background: active ? C.paper : 'transparent',
-              border: 'none', borderTop: i ? `0.5px solid ${C.borderSoft}` : 'none',
+              border: 'none',
               fontFamily: 'inherit', textAlign: 'left', color: C.ink,
               transition: 'background 120ms linear',
             }}>
-            {/* ink arm-rail — appears on hover/keyboard focus */}
-            <span aria-hidden style={{
-              position: 'absolute', left: 0, top: 0, bottom: 0, width: 2.5,
-              background: C.ink,
-              transform: active ? 'scaleY(1)' : 'scaleY(0)', transformOrigin: 'center',
-              transition: 'transform 150ms cubic-bezier(0.2,0,0,1)',
-            }}/>
+            {/* v3.2: niente barre laterali né hairline tra le righe: lo stato
+               attivo lo dice solo il fondo paper. */}
             <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '0.04em', minWidth: 22 }}>{r.code}</span>
             <span style={{ flex: 1, fontSize: 11, letterSpacing: '0.02em',
               color: active ? C.ink : C.grey, transition: 'color 120ms linear' }}>{r.name}</span>
             {current ? (
-              <span aria-hidden title="current" style={{ width: 6, height: 6, background: C.ink, flexShrink: 0 }}/>
+              <span aria-hidden title="current" style={{ width: 6, height: 6, background: C.grey, flexShrink: 0 }}/>
             ) : (
               <span aria-hidden style={{ fontSize: 9, letterSpacing: '0.14em', fontWeight: 700,
                 color: C.faint, opacity: active ? 1 : 0, transition: 'opacity 120ms linear' }}>SET ▸</span>
@@ -6955,8 +6821,8 @@ Object.assign(window, { LangPopover });
 </script>
 
 <script type="text/babel">
-/* Crosshair cursor — desktop only.
-   Only mounts when (hover: hover) AND (pointer: fine) — never on touch / mobile.
+/* Crosshair cursor · desktop only.
+   Only mounts when (hover: hover) AND (pointer: fine) · never on touch / mobile.
    Hairline geometric sight: quiet cross at rest, sharp corner/tick marks on
    hover. No heavy ring; the target state stays delicate and technical. */
 
@@ -7112,10 +6978,10 @@ Object.assign(window, { Cursor });
 </script>
 
 <script type="text/babel">
-/* ClickRipple — global yellow sonar ring on every click.
+/* ClickRipple · global yellow sonar ring on every click.
    Mounts a single layer over the whole viewport; spawns a short-lived
    ring at the cursor position on every primary click, animates outward,
-   then removes itself. No state per ripple — DOM elements are the source
+   then removes itself. No state per ripple · DOM elements are the source
    of truth, garbage-collected by their own animationend listener. */
 
 function ClickRipple({ enabled = true }) {
@@ -7125,9 +6991,9 @@ function ClickRipple({ enabled = true }) {
     if (!enabled) return undefined;
 
     function onDown(e) {
-      // Only primary-button clicks — secondary/middle aren't a "select".
+      // Only primary-button clicks · secondary/middle aren't a "select".
       if (e.button !== 0) return;
-      // Solo mouse: su touch (e pen) il sonar a ogni tap è ridondante —
+      // Solo mouse: su touch (e pen) il sonar a ogni tap è ridondante ·
       // sul mobile il feedback c'è già (card selezionata, pulsante pieno).
       // pointerType distingue l'input anche sui dispositivi ibridi.
       if (e.pointerType && e.pointerType !== 'mouse') return;
@@ -7340,7 +7206,7 @@ function useTweaks(defaults) {
     setValues((prev) => ({ ...prev, ...edits }));
     window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
     // Same-window signal so in-page listeners (deck-stage rail thumbnails)
-    // can react — the parent message only reaches the host, not peers.
+    // can react · the parent message only reaches the host, not peers.
     window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
   }, []);
   return [values, setTweak];
@@ -7348,7 +7214,7 @@ function useTweaks(defaults) {
 
 // ── TweaksPanel ─────────────────────────────────────────────────────────────
 // Floating shell. Registers the protocol listener BEFORE announcing
-// availability — if the announce ran first, the host's activate could land
+// availability · if the announce ran first, the host's activate could land
 // before our handler exists and the toolbar toggle would silently no-op.
 // The close button posts __edit_mode_dismissed so the host's toolbar toggle
 // flips off in lockstep; the host echoes __deactivate_edit_mode back which
@@ -7360,7 +7226,7 @@ function TweaksPanel({ title = 'Tweaks', noDeckControls = false, children }) {
   // toggle drives the deck's per-viewer _railVisible via window message;
   // state is mirrored from the same localStorage key the deck reads so
   // the control reflects reality across reloads. The mechanism is the
-  // message — authors who want custom placement can post it directly
+  // message · authors who want custom placement can post it directly
   // and pass noDeckControls to suppress this one.
   const hasDeckStage = React.useMemo(
     () => typeof document !== 'undefined' && !!document.querySelector('deck-stage'),
@@ -7369,7 +7235,7 @@ function TweaksPanel({ title = 'Tweaks', noDeckControls = false, children }) {
   // deck-stage enables its rail in connectedCallback, but this panel can
   // mount before that element has upgraded. The initial read catches the
   // common case; the listener covers mounting first. (Older deck-stage.js
-  // copies still wait for the host's __omelette_rail_enabled postMessage —
+  // copies still wait for the host's __omelette_rail_enabled postMessage ·
   // same listener handles those.)
   const [railEnabled, setRailEnabled] = React.useState(
     () => hasDeckStage && !!document.querySelector('deck-stage')?._railEnabled,
@@ -7530,20 +7396,20 @@ function TweakRadio({ label, value, options, onChange }) {
   const trackRef = React.useRef(null);
   const [dragging, setDragging] = React.useState(false);
   // The active value is read by pointer-move handlers attached for the lifetime
-  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  // of a drag · ref it so a stale closure doesn't fire onChange for every move.
   const valueRef = React.useRef(value);
   valueRef.current = value;
 
   // Segments wrap mid-word once per-segment width runs out. The track is
   // ~248px (280 panel − 28 body pad − 4 seg pad), each button loses 12px
-  // to its own padding, and 11.5px system-ui averages ~6.3px/char — so 2
+  // to its own padding, and 11.5px system-ui averages ~6.3px/char · so 2
   // options fit ~16 chars each, 3 fit ~10. Past that (or >3 options), fall
   // back to a dropdown rather than wrap.
   const labelLen = (o) => String(typeof o === 'object' ? o.label : o).length;
   const maxLen = options.reduce((m, o) => Math.max(m, labelLen(o)), 0);
   const fitsAsSegments = maxLen <= ({ 2: 16, 3: 10 }[options.length] ?? 0);
   if (!fitsAsSegments) {
-    // <select> emits strings — map back to the original option value so the
+    // <select> emits strings · map back to the original option value so the
     // fallback stays type-preserving (numbers, booleans) like the segment path.
     const resolve = (s) => {
       const m = options.find((o) => String(typeof o === 'object' ? o.value : o) === s);
@@ -7655,7 +7521,7 @@ function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) 
   );
 }
 
-// Relative-luminance contrast pick — checkmarks drawn over a swatch need to
+// Relative-luminance contrast pick · checkmarks drawn over a swatch need to
 // read on both #111 and #fafafa without per-option configuration. Hex input
 // only (#rgb / #rrggbb); named or rgb()/hsl() colors fall through to "light".
 function __twkIsLight(hex) {
@@ -7675,8 +7541,8 @@ const __TwkCheck = ({ light }) => (
   </svg>
 );
 
-// TweakColor — curated color/palette picker. Each option is either a single
-// hex string or an array of 1-5 hex strings; the card adapts — a lone color
+// TweakColor · curated color/palette picker. Each option is either a single
+// hex string or an array of 1-5 hex strings; the card adapts · a lone color
 // renders solid, a palette renders colors[0] as the hero (left ~2/3) with the
 // rest stacked in a sharp column on the right. onChange emits the
 // option in the shape it was passed (string stays string, array stays array).
@@ -7826,7 +7692,7 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
       const m = I18N[lang].modules[id];
       list.push({
         kind: 'module', id,
-        glyph: '§',
+        glyph: '',
         label: `${lang === 'it' ? 'Apri' : 'Open'} ${m.label}`,
         sub: m.sub,
         kbd: id.slice(-1),
@@ -7957,7 +7823,7 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
   );
 }
 
-/* PagerCard — scheda laterale stretta-e-alta col pager a barre verticali.
+/* PagerCard · scheda laterale stretta-e-alta col pager a barre verticali.
    Mostrata solo quando il modulo attivo è un PageDeck con più di una pagina.
    Le barre sono stackate verticalmente (una sopra l'altra), non orizzontali.
    Click su una barra → goto(i). Frecce ↑↓ saltano fra le barre.
@@ -8020,13 +7886,13 @@ function PagerCard({ index, total, labels, goto, lang, sound }) {
   );
 }
 
-/* MobilePageRail — eco verticale della PagerCard, overlay sul bordo destro
+/* MobilePageRail · eco verticale della PagerCard, overlay sul bordo destro
    del display. Solo mobile (CSS) + moduli multi-pagina. Tap su una barra
    salta alla pagina. */
 function MobilePageRail({ index, total, goto, lang, sound }) {
   // Rail discreto a riposo: vive a bassa opacità per non rubare spazio agli
-  // screenshot/contenuti. "Sveglia" (piena opacità) ad ogni cambio pagina —
-  // cioè appena si scorre tra le pagine della sezione — poi sfuma di nuovo.
+  // screenshot/contenuti. "Sveglia" (piena opacità) ad ogni cambio pagina ·
+  // cioè appena si scorre tra le pagine della sezione · poi sfuma di nuovo.
   const [awake, setAwake] = React.useState(false);
   const firstRef = React.useRef(true);
   React.useEffect(() => {
@@ -8056,7 +7922,7 @@ function MobilePageRail({ index, total, goto, lang, sound }) {
   );
 }
 
-/* FadePill — shell comune dei chip-hint: monta col fade-in e smonta DOPO il
+/* FadePill · shell comune dei chip-hint: monta col fade-in e smonta DOPO il
    fade-out (mai comparse/sparizioni a scatto). Doppio rAF: lo stato "off"
    deve dipingersi prima che parta la transizione. */
 function FadePill({ show, children }) {
@@ -8081,9 +7947,9 @@ function FadePill({ show, children }) {
   );
 }
 
-/* SwipeHint — chip "SCORRI ↕" nei moduli multipagina (lì il verticale esiste).
+/* SwipeHint · chip "SCORRI ↕" nei moduli multipagina (lì il verticale esiste).
    In home invece NESSUN chip: il prompt fisso "◀ SCORRI LATERALMENTE ▶" fa
-   già da guida — il chip una-tantum (MobileNavHint) duplicava il messaggio
+   già da guida · il chip una-tantum (MobileNavHint) duplicava il messaggio
    20px più in alto ed è stato rimosso. */
 function SwipeHint({ lang, show }) {
   return (
@@ -8093,7 +7959,7 @@ function SwipeHint({ lang, show }) {
   );
 }
 
-/* OnboardHint — coachmark desktop una-tantum: indica la nav da tastiera. */
+/* OnboardHint · coachmark desktop una-tantum: indica la nav da tastiera. */
 function OnboardHint({ lang, onClose }) {
   return (
     <div className="sgn-onboard" role="dialog" aria-label={lang === 'it' ? 'Suggerimento navigazione' : 'Navigation tip'}>
@@ -8140,11 +8006,11 @@ function App() {
      dell'useEffect di PageDeck azzera già al unmount del modulo precedente,
      e il nuovo deck ripopola al primo commit. Un reset qui (parent) girerebbe
      DOPO l'effect del figlio (child→parent) e cancellerebbe la label appena
-     scritta — race condition diagnosticata dal verifier. */
+     scritta · race condition diagnosticata dal verifier. */
 
   /* Stable identity for the provider value, così non causa re-render a cascata. */
   const pageMetaCtx = React.useMemo(() => ({ setMeta: setPageMeta }), []);
-  /* PageMetaContext live su window — riassegna a un identificatore PascalCase
+  /* PageMetaContext live su window · riassegna a un identificatore PascalCase
      così il JSX <PageMeta.Provider> compila pulito sotto Babel. */
   const PageMeta = window.SgnPageMetaContext;
 
@@ -8295,7 +8161,7 @@ function App() {
     } catch (e) {}
   }, [current, lang]);
 
-  /* URL hash sync — leggi al mount + scrivi quando cambia `current`.
+  /* URL hash sync · leggi al mount + scrivi quando cambia `current`.
      Se l'utente naviga avanti/indietro col browser, popstate ri-applica. */
   useEffect(() => {
     writeHash(current, (pageMeta.total > 1) ? pageMeta.index : 0);
@@ -8326,7 +8192,7 @@ function App() {
     }
   }, [pageMeta.goto, pageMeta.total]);
 
-  /* Focus management — al cambio modulo sposta il focus nel display, così
+  /* Focus management · al cambio modulo sposta il focus nel display, così
      tastiera e screen-reader seguono la nuova schermata. preventScroll per
      non disturbare il layout fisso. Solo dopo il boot. */
   useEffect(() => {
@@ -8354,7 +8220,7 @@ function App() {
     }
   }, [pageMeta.index]);
 
-  /* Onboarding desktop (una-tantum, persistente) — appare dopo il boot e
+  /* Onboarding desktop (una-tantum, persistente) · appare dopo il boot e
      sparisce alla prima navigazione o su OK. */
   useEffect(() => {
     if (mobile || !booted) return;
@@ -8369,7 +8235,7 @@ function App() {
   useEffect(() => { if (current && onboard) dismissOnboard(); }, [current]);
   useEffect(() => { if (paletteOpen && onboard) dismissOnboard(); }, [paletteOpen]);
 
-  /* Keyboard nav — [11] tasti 1-5, ESC, ↑↓, `/` palette */
+  /* Keyboard nav · [11] tasti 1-5, ESC, ↑↓, `/` palette */
   useEffect(() => {
     function onKey(e) {
       const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
@@ -8397,7 +8263,7 @@ function App() {
           }));
         }
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        // ←/→ scorrono i moduli in carosello circolare — speculare allo
+        // ←/→ scorrono i moduli in carosello circolare · speculare allo
         // swipe mobile, stessa select/goHome (suono+slide coerenti). Il
         // viewer STL ha la precedenza: se ha già gestito lui le frecce
         // (preventDefault sul mount focusato), qui non si naviga.
