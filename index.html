@@ -180,6 +180,11 @@ body {
 /* v3.2: sfondi sempre chiari · su giallo si scrive in bianco */
 ::selection { background: var(--yellow); color: var(--white); }
 
+/* v3.2 flat: i <button> senza bordo dichiarato NON devono ereditare il
+   bevel 3D di default del browser (cornice+ombra UA). Chi vuole un bordo
+   (es. .sgn-cta) lo dichiara esplicitamente e vince su questo reset. */
+button { border: none; }
+
 
   /* ──────────────────────────────────────────────────────────
      SGN-OS shell · floating layout v3.3
@@ -462,6 +467,7 @@ body {
   .sgn-pager-bar {
     appearance: none; padding: 0; margin: 0; cursor: pointer;
     background: rgba(120,122,124,0.3);
+    border: none;
     width: 6px;
     height: clamp(28px, 6vh, 56px);
     transition:
@@ -1353,6 +1359,7 @@ body {
     appearance: none; margin: 0; padding: 0; cursor: pointer;
     position: relative;
     background: rgba(120,122,124,0.35);
+    border: none;
     width: 5px; height: 22px;
     transition: height 200ms cubic-bezier(0.2,0,0,1),
                 background 160ms linear, border-color 160ms linear;
@@ -2048,7 +2055,6 @@ const APPS = [
       en: ['Breathing shapes, not icons', 'No badges, no noise', 'Root: your screen-off time', 'No special permissions'],
     },
     shotsLh: [
-      'gr1CbVHmcSj61YR0zT4meb5dDXNOYPw66pAWp7rGan1bn5jysGzayua42BHD-l03ZUPExGXgSFAQQiFaKtUM',
       'Q2RSyamKHA0H4lQfHhmikpaX89BzN4tpsBPUQtJU0qfQAeKHQTAZcFrwVaaQZPPgL4ztkibADOTh0i6i4YRe1w',
       'h5wxQV7bBUX_SziI3OOLgpdkaZNn_Gv1qOC5cu7zDQYyDCpYlXzxmNC3ghZ_LP9NBNj4uarZbWiHW1dDLTPUZg',
       'OZu0uak4OHVMYfJOk4swUyW5PwfnBxBTU_ApqKm-ZpFInBpVRlH4-u7nX843ul6CaOpqHNQSe3hqbQPwHvXGkg',
