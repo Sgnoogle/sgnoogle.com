@@ -1,4 +1,4 @@
-# SGNOOGLE.COM · SGN-OS v3.3
+# SGNOOGLE.COM · SGN-OS v4
 
 Personal portfolio of Francesco Sgnaolin (@sgnoogle). Single-page "operating
 system" themed site. Deployed on **Cloudflare Pages** · every `git push` to
@@ -30,38 +30,35 @@ After editing, always: `git add index.html sgnoogle.html && git commit && git pu
 - Fonts: IBM Plex Mono (Google Fonts) + Neue Machina (inlined as base64 in the
   built `sgnoogle.html`).
 
-## Design system · FS Brand Guidelines v3.2 "Flat"
+## Design system · FS Brand Guidelines v4 (2026)
 
-La fonte di verità estetica è `project/assets/FS_BrandGuidelines_v3.2.md`
-(trascrizione delle guidelines del proprietario). Palette esposta sia come CSS
-vars (`--paper`, `--ink`, etc.) che come oggetto JS `C` negli inline styles:
+La fonte di verità estetica è `project/assets/FS_BrandGuidelines_v4.0.md`
+(trascrizione del deck del proprietario, originale in
+`project/uploads/FS_BrandGuidelines_v4.0.html`). Sostituisce la v3.2: NON
+seguire più le regole v3.x (fondo acciaio, Neue Machina solo nel wordmark,
+testo giallo per parole chiave). Palette esposta come CSS vars e come oggetto
+JS `C` negli inline styles:
 
-- `C.paper` `#F0F1F2` (acciaio, sfondo principale) · `C.ink` `#28282C`
-  (antracite: SOLO testo, mai sfondo) · `C.yellow` `#FFC200`
-- `C.white` `#FFFFFF` · `C.grey` `#787A7C` (testo di default)
-- `--bg-outer` `#E8E9EA`: desktop background dietro la shell
-
-Type: IBM Plex Mono OVUNQUE (unico font). Neue Machina vive SOLO nel wordmark
-SGNOOGLE della home: mai per titoli o numeri. Sizes use `clamp()` heavily:
-**every element must scale with viewport** (phone ↔ desktop).
-Uppercase+tracking largo solo per marcatori brevi (label, tag, numeri sezione).
-
-**SUPERFICI FLAT (v3.2)**: le hairline grigie 0.5px sono ABOLITE su pannelli,
-card, liste e immagini. La separazione è solo tonale: pannelli bianchi pieni
-sul fondo acciaio (`.sgn-display` è paper, le card sono bianche senza bordo),
-blocchi distanziati con gap. Restano solo: outline gialle di focus (a11y) e
-bordi ink sui controlli interattivi (CTA, coachmark, popover). Niente ombre,
-niente border-radius, niente grana/texture, niente barre decorative, NIENTE
-mirini/corner-mark gialli (aboliti, divieto 06). Niente em dash in nessun
-testo, commenti inclusi: usare `:` `,` `.` o il separatore `·`.
-
-**HARD RULE · YELLOW and INK must NEVER touch** ("nastro di pericolo"):
-su giallo si scrive SOLO in bianco (v3.2), mai antracite; no yellow fill
-adjacent to ink blocks. `::selection` è giallo con testo bianco.
-
-**iOS/WebKit**: il blocco `@supports (-webkit-touch-callout: none)` ora
-indurisce solo il bordo ink della CTA a 1px. Le altre hairline non esistono
-più (v3.2 flat): non reintrodurle.
+- Cinque colori PIENI, nessuna trasparenza (niente rgba/opacity per colorare):
+  `C.white` `#FFFFFF` fondo del sito · `C.paper` `#F0F1F2` acciaio (superfici
+  per media/video, binari delle barre, frasi brevi) · `C.yellow` `#FFC200`
+  superficie · `C.grey` `#6B6D70` testo · `C.ink` `#28282C` titoli.
+- Il bianco è il fondo di tutto (body, shell, display). Nessun `--bg-outer`.
+- Giallo = superficie, MAI inchiostro: niente testo giallo. Tre usi soltanto:
+  superficie (etichette, tab attiva, divisori, CTA: testo bianco sopra),
+  segno (marchio, quadratino 12px della nota), riempimento (barre/progress).
+- Antracite solo per titoli e valori, mai sul giallo. Sul giallo solo bianco.
+- Mai box dentro box: lo spazio separa. Niente pannelli bianchi su fondo
+  acciaio con card dentro; niente hairline, niente barre laterali gialle.
+- Tipografia: due font, due pesi (400 · 700), sei taglie. Neue Machina
+  Ultrabold per marchio/wordmark e NUMERI DI SEZIONE (01-05 della nav); IBM
+  Plex Mono per tutto il resto. Nessun testo sotto 12px. Marcatori (label)
+  in Plex Mono 700 maiuscolo, tracking 0.12em, grigio.
+- Kit: Marchio (fulmine giallo, in un angolo) · Etichetta (bianco su giallo)
+  · Dato (chiave bianca su giallo + valore grigio su acciaio) · Nota
+  (quadratino giallo + testo grigio) · Barra (l'unica che si anima).
+- Invariati: zero ombre, zero border-radius, niente grana, niente em dash
+  in nessun testo (commenti inclusi): usare `:` `,` `.` o `·`.
 
 **Sound vocabulary** (WebAudio engine, `presets` in index.html):
 - Desktop module tabs are a 3-phase gesture, ONE note per phase:
@@ -79,7 +76,7 @@ più (v3.2 flat): non reintrodurle.
 - **`.sgn-page` is a SHARED class name**: it's the outer shell AND each inner
   snap-scroll page inside `PageDeck`. So shell-only styling (`background`,
   `max-width`, centering) MUST be scoped to **`#root > .sgn-page`** · never bare
-  `.sgn-page`, or you'll paint over `.sgn-display`'s background (paper, v3.2)
+  `.sgn-page`, or you'll paint over `.sgn-display`'s background
   and break module widths. (This caused the "About lost its bg / video card too
   narrow" regression.)
 - Desktop layout: **FULL-WIDTH (horizontal), by owner decision** · the old
@@ -160,10 +157,10 @@ cp node_modules/react-dom/umd/react-dom.production.min.js vendor/
 cp node_modules/@babel/standalone/babel.min.js vendor/
 cp node_modules/three/build/three.min.js vendor/
 cp node_modules/three/examples/js/loaders/STLLoader.js vendor/
-ln -sfn /home/claude/repo/assets /tmp/site/assets
+ln -sfn /home/claude/sgnoogle.com/assets /tmp/site/assets
 ```
 
-Build step (rerun after每 edit): copy repo `index.html` to `/tmp/site/` while
+Build step (rerun after each edit): copy repo `index.html` to `/tmp/site/` while
 rewriting the five unpkg URLs to `./vendor/...` and stripping the babel SRI
 attribute. Serve with `python3 -m http.server 8819` from `/tmp/site` (NB: the
 server dies between Bash calls · restart it). In Puppeteer:
