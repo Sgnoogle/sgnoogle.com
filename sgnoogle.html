@@ -386,11 +386,17 @@ button { border: none; }
     gap: clamp(12px, 1vw, 14px);
     min-height: 0; min-width: 0;
   }
-  .sgn-display-area.has-pager {
-    grid-template-columns: 1fr clamp(36px, 3vw, 48px);
-  }
+  /* Lo schermo ha SEMPRE la stessa larghezza (tutta la griglia). Il pager
+     vive DENTRO lo schermo, come striscia a destra; le pagine dei moduli
+     gli lasciano sempre lo stesso spazio (--sgn-pager-space), anche quando
+     il modulo ha una pagina sola: nessuna larghezza cambia mai. La home,
+     che non ha pagine, arriva al bordo della griglia. */
+  :root { --sgn-pager-space: calc(clamp(36px, 3vw, 48px) + clamp(12px, 1vw, 14px)); }
+  @media (max-width: 760px) { :root { --sgn-pager-space: 0px; } }
   /* Pager card · barre verticali stackate, una pagina sopra l'altra. */
   .sgn-pager-card {
+    position: absolute; top: 0; right: 0; bottom: 0; z-index: 25;
+    width: clamp(36px, 3vw, 48px);
     background: transparent;
     box-sizing: border-box;
     display: flex; flex-direction: column;
@@ -2126,6 +2132,34 @@ function Odometer({ value, delay = 380, sound = true }) {   /* 380ms: parte a te
     io.observe(el);
     return () => { io.disconnect(); clearTimeout(t); };
   }, [reduce, delay]);
+  /* Finestra del rullo STRETTA: invece dell'intera riga (1em, con aria
+     sopra e sotto dove si intravedono le cifre vicine) il clip taglia sulla
+     fascia reale delle cifre nel font corrente, misurata con TextMetrics.
+     Rimisura quando i font web finiscono di caricare. */
+  const [win, setWin] = React.useState(null);
+  React.useLayoutEffect(() => {
+    if (reduce) return undefined;
+    let alive = true;
+    const measure = () => {
+      const el = ref.current;
+      if (!el || !alive) return;
+      const cs = getComputedStyle(el);
+      const fs = parseFloat(cs.fontSize) || 16;
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const m = ctx.measureText('0123456789');
+      if (m.fontBoundingBoxAscent == null || m.actualBoundingBoxAscent == null) return;
+      const base = (fs - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2 + m.fontBoundingBoxAscent;
+      const pad = fs * 0.04;
+      setWin({
+        top: Math.max(0, base - m.actualBoundingBoxAscent - pad),
+        bottom: Math.max(0, fs - (base + m.actualBoundingBoxDescent) - pad),
+      });
+    };
+    measure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    return () => { alive = false; };
+  }, [reduce]);
   const digitCount = (text.match(/[0-9]/g) || []).length;
   React.useEffect(() => {
     if (!go || !sound || !digitCount) return undefined;
@@ -2141,7 +2175,10 @@ function Odometer({ value, delay = 380, sound = true }) {   /* 380ms: parte a te
         if (!/[0-9]/.test(c)) return <span key={i} aria-hidden style={cell}>{c}</span>;
         const d = +c, k = di++;
         return (
-          <span key={i} aria-hidden style={{ ...cell, overflow: 'hidden' }}>
+          <span key={i} aria-hidden style={{
+            ...cell, overflow: 'hidden',
+            clipPath: win ? `inset(${win.top}px 0 ${win.bottom}px 0)` : undefined,
+          }}>
             <span style={{ visibility: 'hidden' }}>{c}</span>
             <span style={{
               position: 'absolute', left: '50%', top: 0,
@@ -2603,7 +2640,7 @@ function PageDeck({ children, headerless = false }) {
             boxSizing: 'border-box',
             /* verticale per il respiro; orizzontale 0 = contenuti a filo
                della griglia della pagina */
-            padding: 'clamp(16px, 2.5vw, 32px) 0',
+            padding: 'clamp(16px, 2.5vw, 32px) var(--sgn-pager-space) clamp(16px, 2.5vw, 32px) 0',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
           }}>
@@ -2915,6 +2952,25 @@ function loadCachedSTLGeometry(THREE, obj) {
 function hasCachedSTLGeometry(obj) {
   return !!sgnSTLGeometryCache.get(sgnSTLGeometryPath(obj))?.geometry;
 }
+function sgnWarmup() {
+  if (window.__sgnWarm) return;
+  window.__sgnWarm = true;
+  try { if (navigator.connection && navigator.connection.saveData) return; } catch (e) {}
+  const keep = window.__sgnWarmImgs = [];
+  const img = (src) => { if (!src) return; const i = new Image(); i.decoding = 'async'; i.src = src; keep.push(i); };
+  // 1 · immagini (stessi URL esatti usati dai componenti → cache hit)
+  img('/assets/avatar-anime.webp');
+  img('/assets/avatar-real.webp?v=4');
+  (typeof APPS !== 'undefined' ? APPS : []).forEach(a => {
+    if (a.iconLh) img(APP_LH(a.iconLh, 'w256-h256'));
+    (a.shotsLh || []).forEach(h => img(APP_LH(h, 'w512')));
+  });
+  (typeof LINKS !== 'undefined' ? LINKS : []).forEach(l => img(l.logo));
+  // 2 · motore 3D + tutte le geometrie STL (download + parse in cache)
+  loadThreeSTL().then(THREE => preloadAllSTLGeometries(THREE)).catch(() => {});
+}
+window.sgnWarmup = sgnWarmup;
+
 function preloadAllSTLGeometries(THREE) {
   if (!THREE?.STLLoader) return;
   OBJECTS.filter(o => o.real && o.file).forEach(o => {
@@ -3031,10 +3087,10 @@ function STLLab({ lang }) {
       holder.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(holder);
       if (box.isEmpty()) return;
-      printAnim = { start: performance.now(), dur: 2400, layers: 56, min: box.min.y, max: box.max.y };
+      printAnim = { start: performance.now(), dur: 1500, layers: 40, min: box.min.y, max: box.max.y };
       lastLayer = -1;
       shared.uBackMode.value = 0;
-      shared.uLayer.value = (box.max.y - box.min.y) / 56 * 1.5;
+      shared.uLayer.value = (box.max.y - box.min.y) / 40 * 1.2;
       // subito sotto il piano: nemmeno un fotogramma del pezzo finito
       printPlane.constant = box.min.y - 1;
       shared.uPrintH.value = box.min.y - 1;
@@ -3201,14 +3257,16 @@ function STLLab({ lang }) {
         inY *= 0.95; inX *= 0.9;
       }
       if (printAnim) {
-        const p = Math.min(1, (now - printAnim.start) / printAnim.dur);
+        const lin = Math.min(1, (now - printAnim.start) / printAnim.dur);
+        // parte decisa e rallenta sugli ultimi strati: più "secca"
+        const p = 1 - Math.pow(1 - lin, 1.6);
         const layer = Math.ceil(p * printAnim.layers);
         const hgt = printAnim.min + (layer / printAnim.layers) * (printAnim.max - printAnim.min);
         printPlane.constant = hgt + 0.01;
         shared.uPrintH.value = hgt + 0.01;
-        if (layer !== lastLayer && layer % 8 === 0 && window.sgnTick) window.sgnTick('boot');
+        if (layer !== lastLayer && layer % 10 === 0 && window.sgnTick) window.sgnTick('boot');
         lastLayer = layer;
-        if (p >= 1) cancelPrint();
+        if (lin >= 1) cancelPrint();
       }
       if (spinOn && !dragging) {
         const targetX = -0.24 + Math.sin(now * 0.00055) * 0.1;
@@ -8265,6 +8323,9 @@ function App() {
     // statico, identico per misura e posizione
     g.querySelectorAll('svg').forEach(s => { if (s.style.visibility === 'hidden') s.style.visibility = 'visible'; });
     g.className = 'sgn-display-inner sgn-ghost ' + (dir > 0 ? 'back' : 'fwd');
+    // misure congelate in px: la copia non si riadatta mai durante l'uscita
+    g.style.right = 'auto'; g.style.bottom = 'auto';
+    g.style.width = src.offsetWidth + 'px'; g.style.height = src.offsetHeight + 'px';
     g.removeAttribute('tabindex');
     g.setAttribute('aria-hidden', 'true');
     host.appendChild(g);
@@ -8433,6 +8494,21 @@ function App() {
     if (!el) return;
     try { el.focus({ preventScroll: true }); } catch (e) { try { el.focus(); } catch (e2) {} }
   }, [current, transKey, booted]);
+
+  /* PRE-CARICAMENTO · appena il sito è avviato e il browser è libero,
+     scarica in cache tutto ciò che altrimenti farebbe aspettare: foto
+     profilo, icone e screenshot delle app, loghi dei brand, motore 3D e
+     TUTTI i modelli STL già analizzati. Aprire una sezione = contenuto
+     pronto. (Salta con "risparmio dati" attivo.) */
+  useEffect(() => {
+    if (!booted) return undefined;
+    let idle = null;
+    const t = setTimeout(() => {
+      if (window.requestIdleCallback) idle = requestIdleCallback(sgnWarmup, { timeout: 2000 });
+      else sgnWarmup();
+    }, 700);
+    return () => { clearTimeout(t); if (idle && window.cancelIdleCallback) cancelIdleCallback(idle); };
+  }, [booted]);
 
   /* Swipe hint (mobile, una-tantum a sessione) sui moduli multi-pagina. */
   useEffect(() => {
@@ -8637,7 +8713,9 @@ function App() {
             idle={idle}
           />
 
-          <div className={`sgn-display-area${pageMeta.total > 1 && pageMeta.goto ? ' has-pager' : ''}`}>
+          {/* Larghezza dello schermo sempre identica: il pager sta dentro
+              (vedi --sgn-pager-space), niente allargamenti al cambio sezione. */}
+          <div className="sgn-display-area">
             <section
               className="sgn-display"
               id="sgn-main"
@@ -8667,17 +8745,17 @@ function App() {
                 <i style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
                 {lang === 'it' ? 'GAMEPAD CONNESSO · A ENTRA · B ESCE' : 'GAMEPAD CONNECTED · A ENTER · B BACK'}
               </FadePill>
+              {pageMeta.total > 1 && pageMeta.goto && (
+                <PagerCard
+                  index={pageMeta.index}
+                  total={pageMeta.total}
+                  labels={pageMeta.labels || []}
+                  goto={pageMeta.goto}
+                  lang={lang}
+                  sound={sound}
+                />
+              )}
             </section>
-            {pageMeta.total > 1 && pageMeta.goto && (
-              <PagerCard
-                index={pageMeta.index}
-                total={pageMeta.total}
-                labels={pageMeta.labels || []}
-                goto={pageMeta.goto}
-                lang={lang}
-                sound={sound}
-              />
-            )}
           </div>
           </div>
 

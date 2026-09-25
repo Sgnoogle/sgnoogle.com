@@ -118,6 +118,18 @@ JS `C` negli inline styles:
   moment comes from the symbol: `.sgn-ico--01..05` micro-animations (play
   nudge, cube spin, grid pop, link twist, about hop), also on desktop tabs.
   Mobile page BARRA lives in the topbar center (`MobilePageRail`).
+- **Constant display width** (owner: "solidità"): the display section is
+  ALWAYS full grid width. The desktop pager is an absolute strip INSIDE the
+  display (right), and every PageDeck page reserves `--sgn-pager-space` on
+  the right even for single-page modules; home (no deck) reaches the grid
+  edge. The outgoing ghost is frozen at its px size. Never reintroduce a
+  grid column that appears/disappears with the pager.
+- **Warm-up cache** (`sgnWarmup`, App effect after boot, idle): avatar
+  images, all app icons/screenshots (same URLs as the components), sponsor
+  logos, Three.js and ALL STL geometries parsed. Skipped with saveData.
+- **Odometer window**: digit cells are clipped (`clip-path: inset`) to the
+  real digit band of the current font (TextMetrics, re-measured on
+  `document.fonts.ready`), so neighbouring digits never peek.
 - **Layout grid**: topbar, PageDeck pages and home have NO horizontal
   padding: every left/right edge sits on the page padding (43px at 1440).
   Keep it that way when adding sections.
@@ -140,7 +152,7 @@ JS `C` negli inline styles:
   (`sgnIco3d01..05`), on desktop tab hover it tilts to show its depth.
 - **STL viewer tools**: `renderer.localClippingEnabled` + two shared planes.
   `printPlane` (-Y) = PRINT: the first model of a visit (and the STAMPA
-  button) grows layer by layer. `startPrint` is SYNCHRONOUS (plane set below
+  button) grows layer by layer (1.5s, 40 layers, eased). `startPrint` is SYNCHRONOUS (plane set below
   the model before the first frame: never a flash of the finished part),
   edges are hidden while printing, the cut shows flat yellow (uBackMode 0)
   and the freshly deposited layer is painted white in the shader
