@@ -97,6 +97,27 @@ JS `C` negli inline styles:
   `env(safe-area-inset-*)`. Use `100dvh` (not `100vh`) so Safari's dynamic
   toolbar is followed.
 
+## Motion system (v4 · "videogioco elegante")
+
+- **Module transition** = yellow band (`.sgn-wipe`, 18% of the display)
+  crossing the screen in the nav direction while the new content is revealed
+  exactly behind it (`sgnRevealFwd/Back` clip-path). Band and clip share the
+  same travel (-18% → 100%) and curve: change them together.
+- **HeroMark3D** (home yellow block): the monogram extruded in Three.js,
+  flat white `MeshBasicMaterial` (no lights: nothing grey on yellow). Uses
+  the shared `loadThreeSTL()` loader; static SVG until ready / reduced
+  motion. Click on the block = full spin.
+- **Odometer**: rolling digits for every number (home subs, all `Datum`
+  values). Starts on IntersectionObserver + 380ms (after the wipe).
+- **STL explode**: per-geometry `aOffset` attribute (3×3×3 chunks) +
+  `uExplode` uniform injected via `onBeforeCompile`; enter 1→0, exit 0→0.6.
+- **Physical keys**: desktop tabs and mobile keys travel 3px down on press.
+- **Gamepad** (App): buttons are translated to the equivalent keydown and
+  dispatched to the focused element (d-pad/stick = arrows with repeat,
+  A = Enter, B = Esc, Start = `/`, Y = `l`, X = `m`). Never add parallel
+  gamepad-only logic: extend the keyboard handlers instead.
+- Every animation must degrade under `prefers-reduced-motion`.
+
 ## Three.js / STL viewer (OBJECTS module) · READ BEFORE TOUCHING
 
 The viewer (`STLLab` component) uses the **UMD global `window.THREE`**, polled

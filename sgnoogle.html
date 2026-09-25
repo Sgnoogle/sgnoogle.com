@@ -700,8 +700,34 @@ button { border: none; }
   }
 
   /* ── Slide-in container per il display content ── */
-  .sgn-slide-forward { animation: sgnSlideInFromRight 280ms cubic-bezier(0.2,0,0,1); }
-  .sgn-slide-back    { animation: sgnSlideInFromLeft  280ms cubic-bezier(0.2,0,0,1); }
+  /* ── Transizione tra moduli · "onda gialla". Una banda gialla (18% del
+        display) attraversa lo schermo nel verso della navigazione e il nuovo
+        contenuto si rivela ESATTAMENTE dietro di lei: il bordo della banda e
+        il bordo del clip-path percorrono la stessa corsa (da -18% a 100%)
+        con la stessa curva, quindi restano incollati per tutto il tragitto.
+        translateX della banda è in % della sua larghezza: 100/18 = 555.56%. */
+  .sgn-slide-forward { animation: sgnRevealFwd 620ms cubic-bezier(0.65,0,0.35,1) both; }
+  .sgn-slide-back    { animation: sgnRevealBack 620ms cubic-bezier(0.65,0,0.35,1) both; }
+  @keyframes sgnRevealFwd {
+    from { clip-path: polygon(-18% 0, -18% 0, -18% 100%, -18% 100%); }
+    to   { clip-path: polygon(-18% 0, 100% 0, 100% 100%, -18% 100%); }
+  }
+  @keyframes sgnRevealBack {
+    from { clip-path: polygon(118% 0, 118% 0, 118% 100%, 118% 100%); }
+    to   { clip-path: polygon(0% 0, 118% 0, 118% 100%, 0% 100%); }
+  }
+  .sgn-wipe {
+    position: absolute; top: 0; bottom: 0; left: 0; width: 18%;
+    background: var(--yellow); z-index: 30; pointer-events: none;
+  }
+  .sgn-wipe.fwd  { animation: sgnWipeFwd 620ms cubic-bezier(0.65,0,0.35,1) both; }
+  .sgn-wipe.back { animation: sgnWipeBack 620ms cubic-bezier(0.65,0,0.35,1) both; }
+  @keyframes sgnWipeFwd  { from { transform: translateX(-100%); } to { transform: translateX(555.56%); } }
+  @keyframes sgnWipeBack { from { transform: translateX(555.56%); } to { transform: translateX(-100%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .sgn-wipe { display: none; }
+    .sgn-slide-forward, .sgn-slide-back { animation: none; }
+  }
 
   /* ── Featured video: grid-area nomi (valgono sia desktop che mobile) ── */
   .sgn-feat-label-row { grid-area: tag; }
@@ -1991,10 +2017,71 @@ function Pill({ k, v, gold, style }) {
   );
 }
 
+/* ───────── Odometer · contatore meccanico a rulli. Ogni cifra è una colonna
+   0-9 (ripetuta due volte) che scorre fino al valore quando il numero entra
+   in vista: un giro completo e poi lo scatto, sfalsato da sinistra a destra.
+   I caratteri non numerici (K . + ★ :) restano fermi. La larghezza di ogni
+   cella è quella della cifra FINALE (spaziatura naturale anche con font
+   proporzionali come Neue Machina). Reduced-motion → testo semplice. */
+function Odometer({ value, delay = 380, sound = true }) {   /* 380ms: parte a tendina gialla passata */
+  const text = String(value ?? '');
+  const ref = React.useRef(null);
+  const [go, setGo] = React.useState(false);
+  const reduce = React.useMemo(() => {
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }, []);
+  React.useEffect(() => {
+    if (reduce) return undefined;
+    const el = ref.current;
+    if (!el) return undefined;
+    let t;
+    const io = new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) {
+        t = setTimeout(() => setGo(true), 40 + delay);
+        io.disconnect();
+      }
+    }, { threshold: 0.4 });
+    io.observe(el);
+    return () => { io.disconnect(); clearTimeout(t); };
+  }, [reduce, delay]);
+  const digitCount = (text.match(/[0-9]/g) || []).length;
+  React.useEffect(() => {
+    if (!go || !sound || !digitCount) return undefined;
+    const t = setTimeout(() => { if (window.sgnTick) window.sgnTick('skill'); }, 900 + digitCount * 160);
+    return () => clearTimeout(t);
+  }, [go]);
+  if (reduce) return <span>{text}</span>;
+  let di = 0;
+  return (
+    <span ref={ref} aria-label={text} role="text" style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
+      {text.split('').map((c, i) => {
+        const cell = { position: 'relative', display: 'inline-block', height: '1em', lineHeight: '1em', verticalAlign: 'top' };
+        if (!/[0-9]/.test(c)) return <span key={i} aria-hidden style={cell}>{c}</span>;
+        const d = +c, k = di++;
+        return (
+          <span key={i} aria-hidden style={{ ...cell, overflow: 'hidden' }}>
+            <span style={{ visibility: 'hidden' }}>{c}</span>
+            <span style={{
+              position: 'absolute', left: '50%', top: 0,
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              transform: `translate(-50%, ${-(go ? 10 + d : 0)}em)`,
+              transition: go ? `transform ${1050 + k * 140}ms cubic-bezier(0.22, 1, 0.36, 1) ${k * 80}ms` : 'none',
+            }}>
+              {Array.from({ length: 20 }, (_, n) => (
+                <span key={n} style={{ height: '1em', lineHeight: '1em' }}>{n % 10}</span>
+              ))}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 /* ───────── Datum · v4 kit "Dato": chiave bianca su giallo + valore grigio
    su acciaio, affiancati senza spazio. `onWhite=false` quando il fondo è
    già acciaio (allora il valore va su bianco). */
-function Datum({ k, v, onPaper = false, size = 'md', style }) {
+function Datum({ k, v, onPaper = false, size = 'md', roll = true, style }) {
   const S = size === 'sm'
     ? { fs: 12, p: '8px 10px' }
     : { fs: 'clamp(12px, 0.95vw, 14px)', p: 'clamp(9px, 0.8vw, 12px) clamp(10px, 0.95vw, 14px)' };
@@ -2007,7 +2094,9 @@ function Datum({ k, v, onPaper = false, size = 'md', style }) {
       ...style,
     }}>
       <span style={{ background: C.yellow, color: C.white, padding: S.p, textTransform: 'uppercase' }}>{k}</span>
-      <span style={{ background: onPaper ? C.white : C.paper, color: C.grey, padding: S.p }}>{v}</span>
+      <span style={{ background: onPaper ? C.white : C.paper, color: C.grey, padding: S.p }}>
+        {roll && /[0-9]/.test(String(v)) ? <Odometer value={v}/> : v}
+      </span>
     </span>
   );
 }
@@ -2124,7 +2213,7 @@ function GhostNumber({ n, top = 0, right = 0, size = '20vw', opacity = 0.06 }) {
   );
 }
 
-Object.assign(window, { C, Tag, Label, Caption, Pill, Datum, Bar, BarHeader, Progress, TierBadge, GhostNumber });
+Object.assign(window, { C, Tag, Label, Caption, Pill, Datum, Odometer, Bar, BarHeader, Progress, TierBadge, GhostNumber });
 
 </script>
 
@@ -2922,9 +3011,18 @@ function STLLab({ lang }) {
     el.addEventListener('wheel', onWheel, { passive: false });
 
     let raf;
-    const tick = () => {
+    let spinVel = 0;
+    const tick = (now = 0) => {
       raf = requestAnimationFrame(tick);
-      if (spinRef.current.autoSpin) rotY += 0.0035;
+      // Rotazione "cinematografica": la velocità accelera e decelera
+      // dolcemente invece di partire a scatto, e in autospin l'inclinazione
+      // respira piano attorno a una vista leggermente dall'alto.
+      spinVel += ((spinRef.current.autoSpin ? 0.0042 : 0) - spinVel) * 0.03;
+      rotY += spinVel;
+      if (spinRef.current.autoSpin && !dragging) {
+        const targetX = -0.24 + Math.sin(now * 0.00055) * 0.1;
+        rotX += (targetX - rotX) * 0.012;
+      }
       holder.rotation.x = rotX;
       holder.rotation.y = rotY;
       renderer.render(scene, camera);
@@ -3031,7 +3129,8 @@ function STLLab({ lang }) {
       const mats = collectMaterials(group);
       mats.forEach(m => { if (m) m.transparent = true; });
       const start = performance.now();
-      const duration = 220;
+      const ux = group.userData.explode;
+      const duration = ux ? 320 : 220;
       const initialScale = group.scale.x || 1;
       const targetScale = initialScale * 0.985;
       const ease = t => 1 - Math.pow(1 - t, 3);
@@ -3039,7 +3138,8 @@ function STLLab({ lang }) {
         if (!group.parent) { resolve(); return; }
         const p = Math.min(1, (now - start) / duration);
         const e = ease(p);
-        group.scale.setScalar(initialScale + (targetScale - initialScale) * e);
+        if (ux) ux.value = 0.6 * p * p;       // si apre accelerando
+        else group.scale.setScalar(initialScale + (targetScale - initialScale) * e);
         mats.forEach(m => { if (m) m.opacity = 1 - e; });
         if (p < 1) requestAnimationFrame(tick);
         else { removeGroup(group); resolve(); }
@@ -3053,28 +3153,84 @@ function STLLab({ lang }) {
         return;
       }
       const start = performance.now();
-      const duration = 560;
+      const ux = group.userData.explode;
+      const edgeMat = group.userData.edgeMat;
+      const duration = ux ? 1100 : 560;
       const finalScale = group.scale.x || 1;
       const startScale = finalScale * 0.965;
-      group.scale.setScalar(startScale);
+      if (!ux) group.scale.setScalar(startScale);
+      if (ux) ux.value = 1;
       materials.forEach(m => { if (m) { m.transparent = true; m.opacity = 0; } });
       setModelReady(true);
       const ease = t => 1 - Math.pow(1 - t, 3);
+      const easeOutExpo = t => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
       const tick = (now) => {
         if (cancelled || !group.parent) return;
         const p = Math.min(1, (now - start) / duration);
         const e = ease(p);
-        group.scale.setScalar(startScale + (finalScale - startScale) * e);
-        materials.forEach(m => { if (m) m.opacity = e; });
+        if (ux) {
+          // i pezzi volano dentro e si incastrano; gli spigoli compaiono solo
+          // a modello ricomposto (sarebbero fermi mentre la mesh si muove)
+          ux.value = 1 - easeOutExpo(p);
+          materials.forEach(m => { if (m && m !== edgeMat) m.opacity = Math.min(1, p * 4); });
+          if (edgeMat) edgeMat.opacity = Math.max(0, (p - 0.72) / 0.28);
+        } else {
+          group.scale.setScalar(startScale + (finalScale - startScale) * e);
+          materials.forEach(m => { if (m) m.opacity = e; });
+        }
         if (p < 1) requestAnimationFrame(tick);
         else materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
       };
       requestAnimationFrame(tick);
     };
+    /* ESPLOSO · ogni triangolo appartiene a un "pezzo" (cella di una griglia
+       3×3×3 sul bounding box) e riceve lo spostamento del suo pezzo: via dal
+       centro, con ampiezza leggermente casuale. Calcolato una sola volta per
+       geometria (cache), animato sulla GPU con un uniform: uExplode 1 → 0 =
+       i pezzi volano dentro e si ricompongono; 0 → 0.6 = il modello si apre
+       mentre esce. Nessun costo per frame lato CPU. */
+    const ensureExplodeOffsets = (geometry) => {
+      if (geometry.getAttribute('aOffset')) return;
+      const pos = geometry.getAttribute('position');
+      if (!pos) return;
+      geometry.computeBoundingBox();
+      const bb = geometry.boundingBox;
+      const c = bb.getCenter(new THREE.Vector3());
+      const size = bb.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const N = 3, cells = new Map();
+      const out = new Float32Array(pos.count * 3);
+      const cellOf = (v, axis) => Math.min(N - 1, Math.max(0, Math.floor(((v - bb.min[axis]) / (size[axis] || 1)) * N)));
+      for (let t = 0; t + 2 < pos.count; t += 3) {
+        const cx = (pos.getX(t) + pos.getX(t + 1) + pos.getX(t + 2)) / 3;
+        const cy = (pos.getY(t) + pos.getY(t + 1) + pos.getY(t + 2)) / 3;
+        const cz = (pos.getZ(t) + pos.getZ(t + 1) + pos.getZ(t + 2)) / 3;
+        const key = cellOf(cx, 'x') + ',' + cellOf(cy, 'y') + ',' + cellOf(cz, 'z');
+        let off = cells.get(key);
+        if (!off) {
+          const [ix, iy, iz] = key.split(',').map(Number);
+          const dir = new THREE.Vector3(ix - 1, iy - 1, iz - 1);
+          if (dir.lengthSq() === 0) dir.set(Math.random() - 0.5, Math.random() - 0.5, 1);
+          dir.normalize().add(new THREE.Vector3((Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4)).normalize();
+          off = dir.multiplyScalar(maxDim * (0.42 + Math.random() * 0.22));
+          cells.set(key, off);
+        }
+        for (let k = 0; k < 3; k++) { out[(t + k) * 3] = off.x; out[(t + k) * 3 + 1] = off.y; out[(t + k) * 3 + 2] = off.z; }
+      }
+      geometry.setAttribute('aOffset', new THREE.BufferAttribute(out, 3));
+    };
     const buildSTLGroup = (geometry) => {
       // v4: giallo brand pieno; gli spigoli sono BIANCHI (sul giallo solo
       // bianco, mai antracite).
+      ensureExplodeOffsets(geometry);
+      const uExplode = { value: 0 };
       const fillMat = new THREE.MeshLambertMaterial({ color: 0xFFC200, transparent: true, opacity: 0 });
+      fillMat.onBeforeCompile = (shader) => {
+        shader.uniforms.uExplode = uExplode;
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', '#include <common>\nattribute vec3 aOffset;\nuniform float uExplode;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += aOffset * uExplode;');
+      };
       const edgeMat = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 1, transparent: true, opacity: 0 });
       const mesh  = new THREE.Mesh(geometry, fillMat);
       const edges = new THREE.EdgesGeometry(geometry, 15);
@@ -3082,6 +3238,8 @@ function STLLab({ lang }) {
       const group = new THREE.Group();
       group.add(mesh);
       group.add(lines);
+      group.userData.explode = uExplode;
+      group.userData.edgeMat = edgeMat;
       // Scale to fit ~180 units (geometria già centrata sull'origine)
       const box3   = new THREE.Box3().setFromObject(group);
       const size   = box3.getSize(new THREE.Vector3());
@@ -5375,6 +5533,123 @@ function HomeModuleCycle() {
   );
 }
 
+/* HeroMark3D · il monogramma (tre chevron: F + fulmine) estruso in Three.js,
+   BIANCO PIENO sulla superficie gialla della home (sul giallo solo bianco,
+   nessuna luce che lo sporchi di grigio: la profondità si legge dal profilo
+   che cambia mentre ruota). Oscilla lento, segue il puntatore, e a ogni
+   click sul blocco fa un giro completo come un logo da schermata titolo.
+   Three.js arriva dallo stesso loader on-demand del modulo Objects; finché
+   non è pronto (o con reduced-motion / WebGL assente) resta il marchio SVG
+   statico nella stessa posizione, quindi non c'è mai un buco. */
+const SGN_MARK_POLYS = [
+  [[51.44, 100.64], [154.75, 100.64], [0, 201.44]],
+  [[102.79, 0], [206.1, 0], [51.35, 100.8]],
+  [[84.44, 0], [33, 100.8], [8.4, 100.8], [59.83, 0]],
+];
+function HeroMark3D({ spinSignal = 0 }) {
+  const mountRef = React.useRef(null);
+  const [ready, setReady] = React.useState(false);
+  const spinRef = React.useRef({ target: 0, value: 0 });
+  React.useEffect(() => { spinRef.current.target += Math.PI * 2; }, [spinSignal]);
+  React.useEffect(() => {
+    let reduce = false;
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (reduce) return undefined;
+    let cancelled = false, cleanup = null;
+    const t0 = setTimeout(() => {
+      loadThreeSTL().then((THREE) => {
+        if (cancelled || !mountRef.current) return;
+        try { cleanup = mount(THREE); } catch (e) { /* WebGL assente: resta l'SVG */ }
+      }).catch(() => {});
+    }, 380);
+    function mount(THREE) {
+      const el = mountRef.current;
+      const w = el.clientWidth || 300, h = el.clientHeight || 300;
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+      renderer.setClearColor(0x000000, 0);
+      renderer.setSize(w, h);
+      renderer.domElement.style.display = 'block';
+      el.appendChild(renderer.domElement);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(24, w / h, 1, 5000);
+      camera.position.z = 1000;
+      const shapes = SGN_MARK_POLYS.map(poly => {
+        const s = new THREE.Shape();
+        poly.forEach(([x, y], i) => (i ? s.lineTo(x, -y) : s.moveTo(x, -y)));
+        s.closePath();
+        return s;
+      });
+      const geo = new THREE.ExtrudeGeometry(shapes, { depth: 38, bevelEnabled: false });
+      geo.center();
+      const mat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+      const mesh = new THREE.Mesh(geo, mat);
+      const holder = new THREE.Group();
+      holder.add(mesh);
+      scene.add(holder);
+      const fit = () => {
+        const W = el.clientWidth, H = el.clientHeight;
+        if (!W || !H) return;
+        camera.aspect = W / H;
+        camera.updateProjectionMatrix();
+        renderer.setSize(W, H);
+        const visH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI / 180) / 2);
+        const visW = visH * camera.aspect;
+        const s = Math.min(visH * 0.62 / 201.44, visW * 0.62 / 206.1);
+        holder.scale.setScalar(s);
+      };
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(el);
+      const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
+      const onMove = (e) => {
+        ptr.tx = (e.clientX / window.innerWidth) * 2 - 1;
+        ptr.ty = (e.clientY / window.innerHeight) * 2 - 1;
+      };
+      window.addEventListener('pointermove', onMove, { passive: true });
+      let raf, first = true;
+      const t0 = performance.now();
+      const tick = (now) => {
+        raf = requestAnimationFrame(tick);
+        if (document.hidden) return;
+        const t = now - t0;
+        ptr.x += (ptr.tx - ptr.x) * 0.06;
+        ptr.y += (ptr.ty - ptr.y) * 0.06;
+        const sp = spinRef.current;
+        sp.value += (sp.target - sp.value) * 0.075;
+        holder.rotation.y = Math.sin(t * 0.00042) * 0.62 + ptr.x * 0.42 + sp.value;
+        holder.rotation.x = Math.sin(t * 0.00031) * 0.1 + ptr.y * 0.26;
+        renderer.render(scene, camera);
+        if (first) { first = false; setReady(true); }
+      };
+      raf = requestAnimationFrame(tick);
+      return () => {
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        window.removeEventListener('pointermove', onMove);
+        if (renderer.domElement.parentNode === el) el.removeChild(renderer.domElement);
+        geo.dispose(); mat.dispose();
+        requestAnimationFrame(() => { try { renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); } catch (e) {} });
+      };
+    }
+    return () => { cancelled = true; clearTimeout(t0); if (cleanup) cleanup(); };
+  }, []);
+  return (
+    <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+      <svg viewBox="0 0 206.1 201.44" style={{
+        position: 'absolute', left: '50%', top: '50%', width: '38%',
+        transform: 'translate(-50%, -50%)',
+        opacity: ready ? 0 : 1, transition: 'opacity 240ms linear',
+      }}>
+        <g fill={C.white}>
+          {SGN_MARK_POLYS.map((p, i) => <polygon key={i} points={p.map(q => q.join(' ')).join(' ')}/>)}
+        </g>
+      </svg>
+      <div ref={mountRef} style={{ position: 'absolute', inset: 0 }}/>
+    </div>
+  );
+}
+
 function IdleDisplay({ lang, mobile, focused }) {
   // Dopo il primo swipe laterale della sessione il prompt non ricompare
   // (IdleDisplay rimonta a ogni ritorno in home → rilegge il flag).
@@ -5388,7 +5663,8 @@ function IdleDisplay({ lang, mobile, focused }) {
     const t = setTimeout(() => setArmed(true), 80);
     return () => clearTimeout(t);
   }, []);
-  const subs = useCountUp(CHANNEL.subs.value, { duration: 1500, fmt: 'short', active: armed });
+  const subs = formatStat(CHANNEL.subs.value, 'short');
+  const [spin, setSpin] = React.useState(0);
 
   const preview = focused && L.modules[focused];
   if (preview) {
@@ -5422,8 +5698,11 @@ function IdleDisplay({ lang, mobile, focused }) {
         ? 'clamp(8px, 2vh, 20px) clamp(4px, 1vw, 8px) clamp(8px, 2vh, 20px)'
         : 'clamp(12px, 2vh, 24px) clamp(20px, 3vw, 48px) clamp(24px, 5vh, 56px)',
     }}>
-      {/* superficie gialla · dato live */}
-      <div style={{
+      {/* superficie gialla · marchio 3D + dato live. Click → giro completo */}
+      <div
+        onClick={() => { setSpin(s => s + 1); if (window.sgnTick) window.sgnTick('confirm'); }}
+        style={{
+        position: 'relative', cursor: 'pointer',
         alignSelf: 'flex-end',
         width: mobile ? 'min(82%, 340px)' : 'clamp(200px, min(25vw, 42vh), 400px)',
         aspectRatio: '480 / 560',
@@ -5435,13 +5714,18 @@ function IdleDisplay({ lang, mobile, focused }) {
         gap: 10,
         ...reveal(200),
       }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, top: '4%', bottom: '48%' }}>
+          <HeroMark3D spinSignal={spin}/>
+        </div>
         <span style={{
+          position: 'relative',
           fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: mobile ? 'clamp(52px, 17vw, 76px)' : 'clamp(64px, 7vw, 120px)',
           lineHeight: 0.85, letterSpacing: '-0.01em', color: C.white,
           fontVariantNumeric: 'tabular-nums',
-        }}>{subs}</span>
+        }}><Odometer value={subs} delay={500}/></span>
         <span style={{
+          position: 'relative',
           fontSize: mobile ? 13 : 'clamp(13px, 1vw, 16px)', fontWeight: 400,
           color: C.white, lineHeight: 1.3,
         }}>{isIt ? 'iscritti su YouTube' : 'YouTube subscribers'}</span>
@@ -5808,13 +6092,14 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         // testo bianchi. Nessuna cornice, nessuna barra decorativa.
         background: expanded ? C.yellow : C.paper,
         border: 'none',
-        outline: armed ? `2px solid ${C.grey}` : 'none',
-        outlineOffset: '-2px',
+        outline: 'none',
+        /* TASTO FISICO: premuto affonda di 3px, al rilascio torna su */
+        transform: armed ? 'translateY(3px)' : 'none',
         padding: 'clamp(14px, 2vh, 22px) clamp(14px, 1.6vw, 22px)',
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
-        transition: 'background 200ms linear, outline-color 80ms linear',
+        transition: 'background 200ms linear, transform 90ms cubic-bezier(0.2,0,0,1)',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
         gap: 10,
         minHeight: 'clamp(140px, 22vh, 200px)',
@@ -6056,7 +6341,7 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         // Press feedback minimale: micro-scala, niente bordo-rialzo né shadow.
         // 'none' a riposo: un transform permanente rasterizza i bordi su un
         // layer non-snappato (hairline più morbide di quelle circostanti).
-        transform: (pressed && !active) ? 'scale(0.96)' : 'none',
+        transform: pressed ? 'translateY(3px)' : 'none',
         /* In CHIUSURA il colore del border-top torna grigio solo a larghezza
            rientrata (delay = durata della corsa), altrimenti il bordo ancora
            alto si tinge → 'ombra' sotto il ponte che si ritira. In apertura
@@ -7855,6 +8140,64 @@ function App() {
   useEffect(() => { if (current && onboard) dismissOnboard(); }, [current]);
   useEffect(() => { if (paletteOpen && onboard) dismissOnboard(); }, [paletteOpen]);
 
+  /* GAMEPAD · il sito si guida come un gioco. Ogni pulsante viene tradotto
+     nel tasto equivalente e spedito all'elemento con il focus (bolla fino a
+     window): così palette, menu lingua e deck riusano la logica tastiera
+     esistente, zero percorsi paralleli. Croce/levetta = frecce (con
+     auto-repeat), A = Invio, B = Esc (home), Start = palette, Y = lingua,
+     X = audio. */
+  const [padToast, setPadToast] = useState(false);
+  useEffect(() => {
+    if (!navigator.getGamepads) return undefined;
+    let raf = null, toastT = null;
+    const held = {};
+    const MAP = { 12: 'ArrowUp', 13: 'ArrowDown', 14: 'ArrowLeft', 15: 'ArrowRight',
+                  0: 'Enter', 1: 'Escape', 9: '/', 3: 'l', 2: 'm' };
+    const press = (key) => {
+      const target = document.activeElement && document.activeElement !== document.body
+        ? document.activeElement : window;
+      const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+      target.dispatchEvent(ev);
+      if (key === 'Enter' && target !== window && typeof target.click === 'function'
+          && !['INPUT', 'TEXTAREA'].includes(target.tagName) && !ev.defaultPrevented) target.click();
+    };
+    const poll = () => {
+      raf = requestAnimationFrame(poll);
+      const pads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
+      if (!pads.length) return;
+      const gp = pads[0];
+      const now = performance.now();
+      const down = {};
+      Object.keys(MAP).forEach(i => { if (gp.buttons[i]?.pressed) down[MAP[i]] = true; });
+      const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
+      if (ax < -0.55) down.ArrowLeft = true;
+      if (ax > 0.55) down.ArrowRight = true;
+      if (ay < -0.55) down.ArrowUp = true;
+      if (ay > 0.55) down.ArrowDown = true;
+      Object.values(MAP).concat(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']).forEach(k => {
+        if (down[k]) {
+          const h = held[k];
+          const repeatable = k.startsWith('Arrow');
+          if (!h) { held[k] = { next: now + 450 }; press(k); }
+          // passo di ripetizione ~ durata della tendina: mai più veloce dell'occhio
+          else if (repeatable && now >= h.next) { h.next = now + 320; press(k); }
+        } else delete held[k];
+      });
+    };
+    const onConnect = () => {
+      setPadToast(true); clearTimeout(toastT);
+      toastT = setTimeout(() => setPadToast(false), 2600);
+      if (!raf) raf = requestAnimationFrame(poll);
+    };
+    window.addEventListener('gamepadconnected', onConnect);
+    if (Array.from(navigator.getGamepads() || []).some(Boolean)) raf = requestAnimationFrame(poll);
+    return () => {
+      window.removeEventListener('gamepadconnected', onConnect);
+      if (raf) cancelAnimationFrame(raf);
+      clearTimeout(toastT);
+    };
+  }, []);
+
   /* Keyboard nav · [11] tasti 1-5, ESC, ↑↓, `/` palette */
   useEffect(() => {
     function onKey(e) {
@@ -7960,6 +8303,10 @@ function App() {
               aria-label={current
                 ? `${current} ${I18N[lang].modules[current].label}${pageMeta.total > 1 ? ` · ${lang === 'it' ? 'pagina' : 'page'} ${pageMeta.index + 1}/${pageMeta.total}` : ''}`
                 : (lang === 'it' ? 'Menu principale' : 'Main menu')}>
+              {direction !== 0 && (
+                <span key={`wipe-${current || 'idle'}-${transKey}`} aria-hidden
+                  className={`sgn-wipe ${direction > 0 ? 'fwd' : 'back'}`}/>
+              )}
               <PageMeta.Provider value={pageMetaCtx}>
                 <div
                   key={`mod-${current || 'idle'}-${transKey}`}
@@ -7972,6 +8319,10 @@ function App() {
                 </div>
               </PageMeta.Provider>
               <SwipeHint lang={lang} show={swipeHint}/>
+              <FadePill show={padToast}>
+                <i style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
+                {lang === 'it' ? 'GAMEPAD CONNESSO · A ENTRA · B ESCE' : 'GAMEPAD CONNECTED · A ENTER · B BACK'}
+              </FadePill>
             </section>
             {pageMeta.total > 1 && pageMeta.goto && (
               <PagerCard
