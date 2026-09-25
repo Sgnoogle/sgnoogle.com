@@ -102,11 +102,22 @@ JS `C` negli inline styles:
 - **Module transition** = yellow band (`.sgn-wipe`, 18% of the display)
   crossing the screen in the nav direction while the new content is revealed
   exactly behind it (`sgnRevealFwd/Back` clip-path). Band and clip share the
-  same travel (-18% → 100%) and curve: change them together.
+  same travel (-18% → 100%) and curve: change them together. The OUTGOING
+  section is a DOM clone (`ghostOut` in App, canvas/iframe stripped, scroll
+  positions copied) whose clip retreats behind the band's far edge, so the
+  old screen is wiped by the band instead of vanishing early.
+- **Nav keys**: two layers (acciaio face + yellow face clipped from the
+  bottom). Desktop hover = 6px of yellow "charge", active = full fill.
+  Mobile active key rises (bridge) into the page BARRA docked at the
+  display bottom (`MobilePageRail`, full width): key + bar form one "T".
+- **Layout grid**: topbar, PageDeck pages and home have NO horizontal
+  padding: every left/right edge sits on the page padding (43px at 1440).
+  Keep it that way when adding sections.
 - **HeroMark3D** (home yellow block): the monogram extruded in Three.js,
-  flat white `MeshBasicMaterial` (no lights: nothing grey on yellow). Uses
-  the shared `loadThreeSTL()` loader; static SVG until ready / reduced
-  motion. Click on the block = full spin.
+  flat white `MeshBasicMaterial` (no lights: nothing grey on yellow). STILL
+  by default (owner request): it only tilts toward the mouse (desktop) or
+  with device orientation (phone, iOS permission asked on tap). Click on
+  the block = one full spin. Static SVG until ready / reduced motion.
 - **Odometer**: rolling digits for every number (home subs, all `Datum`
   values). Starts on IntersectionObserver + 380ms (after the wipe).
 - **STL explode**: per-geometry `aOffset` attribute (3×3×3 chunks) +

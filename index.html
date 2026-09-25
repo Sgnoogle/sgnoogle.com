@@ -510,6 +510,18 @@ button { border: none; }
      a riposo hairline + glifo ink; al hover/press della card si riempie di
      ink e il glifo (currentColor) diventa paper. */
   .sgn-ytbtn { transition: background 140ms linear, border-color 140ms linear, color 140ms linear; }
+  /* v4 · card "piatte" (brand, video): nessun fondo grigio al passaggio,
+     che le trasformava in un box con il nome a filo. Il media si avvicina
+     di un soffio e il pulsante video si accende. */
+  .sgn-card-plain { background: transparent !important; }
+  .sgn-card-plain .sgn-card-media,
+  .sgn-card-plain img { transition: transform 420ms cubic-bezier(0.2,0,0,1); }
+  .sgn-card-plain:hover .sgn-card-media,
+  .sgn-card-plain:focus-visible .sgn-card-media,
+  .sgn-card-plain:hover img { transform: scale(1.04); }
+  .sgn-card-plain:focus-visible { outline: 2px solid var(--grey); outline-offset: 4px; }
+  .sgn-card-plain:hover .sgn-ytbtn,
+  .sgn-card-plain:active .sgn-ytbtn,
   .sgn-card-hover:hover .sgn-ytbtn,
   .sgn-card-hover:active .sgn-ytbtn {
     background: var(--yellow) !important;
@@ -625,78 +637,91 @@ button { border: none; }
     from { opacity: 0; }
     to   { opacity: 1; }
   }
+  /* v4 · palette comandi: pannello bianco sull'acciaio pieno. Ogni riga ha
+     un "tasto" quadrato a sinistra (numero del modulo o simbolo), titolo
+     700 antracite + sottotitolo 400 grigio, e a destra il keycap della
+     scorciatoia. Riga attiva: fondo acciaio, tasto che diventa ETICHETTA
+     gialla con testo bianco. */
   .sgn-cp {
-    width: min(560px, 92vw);
+    width: min(620px, 92vw);
     background: var(--white);
     box-sizing: border-box;
     font-family: var(--font-mono);
     color: var(--ink);
     display: flex; flex-direction: column;
+    padding: 8px;
+    animation: sgnCpIn 180ms cubic-bezier(0.2,0,0,1);
   }
+  @keyframes sgnCpIn { from { transform: translateY(-8px); } to { transform: none; } }
   .sgn-cp-input-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 16px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 12px 16px;
   }
   .sgn-cp-prompt {
-    color: var(--grey); font-weight: 700; font-size: 12px;
-    letter-spacing: 0.12em;
+    width: 36px; height: 36px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--yellow); color: var(--white);
+    font-weight: 700; font-size: 16px;
   }
   .sgn-cp-input {
     flex: 1;
     appearance: none; border: 0; outline: none;
     background: transparent;
-    font: inherit; font-size: 14px; font-weight: 400;
+    font: inherit; font-size: 17px; font-weight: 400;
     color: var(--ink);
-    letter-spacing: 0.02em;
   }
-  .sgn-cp-input::placeholder { color: #6B6D70; }
+  .sgn-cp-input::placeholder { color: var(--grey); }
   .sgn-cp-list {
     max-height: 56vh;
     overflow-y: auto;
     list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 2px;
   }
   .sgn-cp-item {
     display: grid;
-    grid-template-columns: 24px 28px 1fr auto;
-    gap: 12px;
+    grid-template-columns: 36px 1fr auto;
+    gap: 14px;
     align-items: center;
-    padding: 10px 16px;
+    padding: 10px 12px;
     cursor: pointer;
     transition: background 80ms linear;
   }
-  .sgn-cp-item:last-child { border-bottom: none; }
-  .sgn-cp-item.active { background: #F0F1F2; }
-  .sgn-cp-item .glyph {
-    color: var(--faint, #F0F1F2);
-    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
-    text-align: center;
+  .sgn-cp-item.active { background: var(--paper); }
+  .sgn-cp-item .key {
+    width: 36px; height: 36px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--paper); color: var(--grey);
+    font-weight: 700; font-size: 14px;
+    transition: background 120ms linear, color 120ms linear;
   }
-  .sgn-cp-item.active .glyph { color: var(--ink); }
-  .sgn-cp-item .num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700; font-size: 14px; color: var(--ink);
-    letter-spacing: -0.02em;
-  }
+  .sgn-cp-item.active .key { background: var(--yellow); color: var(--white); }
+  .sgn-cp-item .txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .sgn-cp-item .label {
-    font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.04em;
+    font-size: 15px; font-weight: 700; color: var(--ink);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .sgn-cp-item .sub {
+    font-size: 13px; font-weight: 400; color: var(--grey);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .sgn-cp-item .kbd {
-    font-size: 12px; letter-spacing: 0.12em; color: #6B6D70;
-    font-weight: 700; text-transform: uppercase;
-    padding: 2px 6px;
+    min-width: 30px; height: 30px; padding: 0 8px; box-sizing: border-box;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--ink);
+    background: var(--paper);
   }
+  .sgn-cp-item.active .kbd { background: var(--white); }
   .sgn-cp-foot {
-    padding: 8px 16px;
-    display: flex; gap: 16px; align-items: center;
-    font-size: 12px; letter-spacing: 0.12em; color: #6B6D70;
-    font-weight: 700; text-transform: uppercase;
+    padding: 14px 12px 8px;
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+    font-size: 13px; color: var(--grey);
+    font-weight: 400;
   }
   .sgn-cp-foot kbd {
     background: var(--paper);
-    padding: 1px 6px;
+    padding: 4px 8px; margin-right: 6px;
     font-family: inherit; font-size: 12px; font-weight: 700;
-    letter-spacing: 0.12em; color: var(--ink);
+    color: var(--ink);
   }
 
   /* ── Slide-in container per il display content ── */
@@ -715,6 +740,19 @@ button { border: none; }
   @keyframes sgnRevealBack {
     from { clip-path: polygon(118% 0, 118% 0, 118% 100%, 118% 100%); }
     to   { clip-path: polygon(0% 0, 118% 0, 118% 100%, 0% 100%); }
+  }
+  /* La sezione USCENTE resta visibile finché la banda non ci passa sopra:
+     il suo clip si ritira esattamente sul bordo opposto della banda. */
+  .sgn-ghost { pointer-events: none; z-index: 20; }
+  .sgn-ghost.fwd  { animation: sgnGhostFwd 620ms cubic-bezier(0.65,0,0.35,1) both; }
+  .sgn-ghost.back { animation: sgnGhostBack 620ms cubic-bezier(0.65,0,0.35,1) both; }
+  @keyframes sgnGhostFwd {
+    from { clip-path: polygon(0% 0, 118% 0, 118% 100%, 0% 100%); }
+    to   { clip-path: polygon(118% 0, 118% 0, 118% 100%, 118% 100%); }
+  }
+  @keyframes sgnGhostBack {
+    from { clip-path: polygon(-18% 0, 100% 0, 100% 100%, -18% 100%); }
+    to   { clip-path: polygon(-18% 0, -18% 0, -18% 100%, -18% 100%); }
   }
   .sgn-wipe {
     position: absolute; top: 0; bottom: 0; left: 0; width: 18%;
@@ -736,7 +774,7 @@ button { border: none; }
 
   /* ── Mobile (<=760) ── */
   @media (max-width: 760px) {
-    .sgn-page { padding: clamp(12px, 2vh, 16px) clamp(12px, 3vw, 20px) max(20px, env(safe-area-inset-bottom, 0px)); }
+    .sgn-page { padding: clamp(8px, 2vh, 16px) max(clamp(16px, 5vw, 24px), env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-bottom, 0px)); }
     .sgn-frame {
       --frame-gap: clamp(12px, 2.5vh, 20px);
       grid-template-rows: 1fr auto;
@@ -1146,25 +1184,29 @@ button { border: none; }
      Solo mobile + moduli multi-pagina.
      ══════════════════════════════════════════════════════════════ */
   .sgn-mrail {
-    /* v4 · BARRA: segmenti pieni in orizzontale, al centro della topbar
-       mobile (prima era un overlay semi-trasparente che copriva le card). */
-    display: flex; align-items: center; gap: 6px;
+    /* v4 · BARRA delle pagine agganciata al bordo basso dello schermo
+       mobile: segmenti pieni a tutta larghezza (attivo giallo). Il tasto
+       attivo della nav sale fino a toccarla: tasto e barra fanno una "T". */
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 32;
+    display: flex; align-items: flex-end; gap: 4px;
+    height: 6px;
   }
   .sgn-mrail-bar {
     appearance: none; margin: 0; padding: 0; cursor: pointer;
-    position: relative;
+    position: relative; flex: 1;
     background: var(--paper);
     border: none;
-    width: 22px; height: 6px;
-    transition: width 200ms cubic-bezier(0.2,0,0,1), background 160ms linear;
+    height: 6px;
+    transition: background 200ms linear;
   }
-  /* area tap ampia, senza zone morte tra i segmenti */
+  /* area tap generosa sopra la barra */
   .sgn-mrail-bar::after {
     content: ''; position: absolute;
-    top: -16px; bottom: -16px; left: -3px; right: -3px;
+    top: -18px; bottom: 0; left: 0; right: 0;
   }
-  .sgn-mrail-bar.active { width: 34px; background: var(--yellow); }
+  .sgn-mrail-bar.active { background: var(--yellow); }
   .sgn-mrail-bar:focus-visible { outline: 2px solid var(--grey); outline-offset: 2px; }
+  @media (min-width: 761px) { .sgn-mrail { display: none; } }
 
   /* ── Swipe hint (mobile, una-tantum a sessione) · chip in basso al
         centro del display. Compare all'apertura di un modulo multi-pagina e
@@ -2498,7 +2540,9 @@ function PageDeck({ children, headerless = false }) {
             height: '100%',
             minHeight: '100%',
             boxSizing: 'border-box',
-            padding: 'clamp(16px, 2.5vw, 32px)',
+            /* verticale per il respiro; orizzontale 0 = contenuti a filo
+               della griglia della pagina */
+            padding: 'clamp(16px, 2.5vw, 32px) 0',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
           }}>
@@ -4030,7 +4074,7 @@ function VideoCard({ v, L, delay = 0 }) {
     <a ref={ref} href={v.url || undefined}
       target={v.url ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className="sgn-card-hover sgn-hot" style={{
+      className="sgn-card-plain sgn-hot" style={{
       position: 'relative', textDecoration: 'none', color: 'inherit',
       background: C.white,
       opacity: inView ? 1 : 0,
@@ -4048,7 +4092,7 @@ function VideoCard({ v, L, delay = 0 }) {
       <div style={{ aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         {v.youtubeId ? <VideoThumb id={v.youtubeId} title={v.title}/> : <VideoArt v={v} fill/>}
       </div>
-      <div style={{ flexShrink: 0, padding: CARD_PAD }}>
+      <div style={{ flexShrink: 0, padding: 'clamp(12px, 1.2vw, 16px) 0' }}>
         {/* Solo il titolo · verrà recuperato da YouTube a sito pronto.
             Nessun altro metadato (categoria/durata/data) per scelta. */}
         <div style={{
@@ -4721,7 +4765,7 @@ function SponsorCard({ s, L, lang }) {
       rel="noopener noreferrer"
       aria-label={href ? `${s.name}${isIt ? ' · guarda il video' : ' · watch the video'}` : s.name}
       data-link-card
-      className="sgn-hot sgn-card-hover"
+      className="sgn-hot sgn-card-plain"
       style={{
         position: 'relative', flexShrink: 0,
         height: '100%', aspectRatio: '1 / 1',
@@ -4743,7 +4787,7 @@ function SponsorCard({ s, L, lang }) {
         padding: s.logo ? 'clamp(18px, 2.6vw, 36px)' : 0,
       }}>
         {s.logo ? (
-          <img src={s.logo} alt={s.name} loading="lazy" style={{
+          <img className="sgn-card-media" src={s.logo} alt={s.name} loading="lazy" style={{
             maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block',
           }}/>
         ) : (
@@ -5345,7 +5389,9 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       position: 'relative', zIndex: 60,
       height: 44, background: C.white,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 clamp(12px, 2vw, 20px)',
+      /* GRIGLIA: niente padding orizzontale, marchio e controlli stanno sugli
+         stessi bordi della pagina, dei contenuti e della barra dei moduli */
+      padding: 0,
       fontFamily: 'IBM Plex Mono, monospace',
       gap: 10, flexShrink: 0,
     }}>
@@ -5411,9 +5457,7 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       )}
       {/* Mobile · la BARRA delle pagine del modulo vive al centro della
           topbar: niente più rail sovrapposto al bordo delle card. */}
-      {mobile && pageTotal > 1 && pageGoto && (
-        <MobilePageRail index={pageIndex} total={pageTotal} goto={pageGoto} lang={lang} sound={sound}/>
-      )}
+
 
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 6 }}>
         {!mobile && (
@@ -5460,7 +5504,7 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
           }}>
             <span className="sgn-langbtn__val" style={{
-              padding: '6px 10px', fontSize: 12, fontWeight: 700,
+              padding: '6px 0 6px 10px', fontSize: 12, fontWeight: 700,
               letterSpacing: '0.12em', color: C.ink,
               background: 'transparent',
               display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -5550,7 +5594,11 @@ function HeroMark3D({ spinSignal = 0 }) {
   const mountRef = React.useRef(null);
   const [ready, setReady] = React.useState(false);
   const spinRef = React.useRef({ target: 0, value: 0 });
-  React.useEffect(() => { spinRef.current.target += Math.PI * 2; }, [spinSignal]);
+  const firstSpin = React.useRef(true);
+  React.useEffect(() => {
+    if (firstSpin.current) { firstSpin.current = false; return; }   // fermo all'arrivo
+    spinRef.current.target += Math.PI * 2;
+  }, [spinSignal]);
   React.useEffect(() => {
     let reduce = false;
     try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
@@ -5580,7 +5628,7 @@ function HeroMark3D({ spinSignal = 0 }) {
         s.closePath();
         return s;
       });
-      const geo = new THREE.ExtrudeGeometry(shapes, { depth: 38, bevelEnabled: false });
+      const geo = new THREE.ExtrudeGeometry(shapes, { depth: 16, bevelEnabled: false });
       geo.center();
       const mat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
       const mesh = new THREE.Mesh(geo, mat);
@@ -5602,23 +5650,36 @@ function HeroMark3D({ spinSignal = 0 }) {
       const ro = new ResizeObserver(fit);
       ro.observe(el);
       const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
+      // Desktop: si orienta verso il cursore (il marchio "guarda" il mouse).
+      // Telefono: segue l'inclinazione del dispositivo. Fermo altrimenti.
       const onMove = (e) => {
-        ptr.tx = (e.clientX / window.innerWidth) * 2 - 1;
-        ptr.ty = (e.clientY / window.innerHeight) * 2 - 1;
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        ptr.tx = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth * 0.5)));
+        ptr.ty = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight * 0.5)));
+      };
+      let baseBeta = null;
+      const onTilt = (e) => {
+        if (e.gamma == null || e.beta == null) return;
+        if (baseBeta == null) baseBeta = e.beta;
+        ptr.tx = Math.max(-1, Math.min(1, e.gamma / 30));
+        ptr.ty = Math.max(-1, Math.min(1, (e.beta - baseBeta) / 30));
       };
       window.addEventListener('pointermove', onMove, { passive: true });
+      window.addEventListener('deviceorientation', onTilt, { passive: true });
       let raf, first = true;
       const t0 = performance.now();
       const tick = (now) => {
         raf = requestAnimationFrame(tick);
         if (document.hidden) return;
         const t = now - t0;
-        ptr.x += (ptr.tx - ptr.x) * 0.06;
-        ptr.y += (ptr.ty - ptr.y) * 0.06;
+        ptr.x += (ptr.tx - ptr.x) * 0.08;
+        ptr.y += (ptr.ty - ptr.y) * 0.08;
         const sp = spinRef.current;
-        sp.value += (sp.target - sp.value) * 0.075;
-        holder.rotation.y = Math.sin(t * 0.00042) * 0.62 + ptr.x * 0.42 + sp.value;
-        holder.rotation.x = Math.sin(t * 0.00031) * 0.1 + ptr.y * 0.26;
+        sp.value += (sp.target - sp.value) * 0.07;
+        holder.rotation.y = ptr.x * 0.5 + sp.value;
+        holder.rotation.x = ptr.y * 0.34;
         renderer.render(scene, camera);
         if (first) { first = false; setReady(true); }
       };
@@ -5627,6 +5688,7 @@ function HeroMark3D({ spinSignal = 0 }) {
         cancelAnimationFrame(raf);
         ro.disconnect();
         window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('deviceorientation', onTilt);
         if (renderer.domElement.parentNode === el) el.removeChild(renderer.domElement);
         geo.dispose(); mat.dispose();
         requestAnimationFrame(() => { try { renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); } catch (e) {} });
@@ -5695,12 +5757,21 @@ function IdleDisplay({ lang, mobile, focused }) {
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       fontFamily: 'IBM Plex Mono, monospace',
       padding: mobile
-        ? 'clamp(8px, 2vh, 20px) clamp(4px, 1vw, 8px) clamp(8px, 2vh, 20px)'
-        : 'clamp(12px, 2vh, 24px) clamp(20px, 3vw, 48px) clamp(24px, 5vh, 56px)',
+        ? 'clamp(8px, 2vh, 20px) 0 clamp(16px, 2.5vh, 24px)'
+        : 'clamp(12px, 2vh, 24px) 0 clamp(24px, 4vh, 44px)',
     }}>
       {/* superficie gialla · marchio 3D + dato live. Click → giro completo */}
       <div
-        onClick={() => { setSpin(s => s + 1); if (window.sgnTick) window.sgnTick('confirm'); }}
+        onClick={() => {
+          setSpin(s => s + 1);
+          if (window.sgnTick) window.sgnTick('confirm');
+          // iOS: l'inclinazione va autorizzata da un gesto dell'utente
+          try {
+            if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) {
+              DeviceOrientationEvent.requestPermission().catch(() => {});
+            }
+          } catch (err) {}
+        }}
         style={{
         position: 'relative', cursor: 'pointer',
         alignSelf: 'flex-end',
@@ -6070,6 +6141,75 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
   };
   const onCancel = () => { setArmed(false); };
 
+  /* Faccia della tab. onY=false: colori a riposo su acciaio; onY=true:
+     tutto bianco, per lo strato giallo sovrapposto. */
+  const face = (onY) => (
+    <>
+      <span style={{
+        position: 'absolute', top: 12, left: 14, zIndex: 2,
+        lineHeight: 0, pointerEvents: 'none',
+      }}>
+        <ModuleIcon id={id} size={20} color={onY ? C.white : (expanded ? C.ink : C.grey)} strokeWidth={1.3}/>
+      </span>
+      <span style={{
+        position: 'absolute', top: 11, right: 11, zIndex: 2,
+        lineHeight: 0,
+        opacity: (expanded || focused) ? 1 : 0,
+        transform: (expanded || focused) ? 'translate(0, 0)' : 'translate(4px, -4px)',
+        transition: 'opacity 180ms linear, transform 220ms cubic-bezier(0.2,0,0,1)',
+        pointerEvents: 'none',
+      }}>
+        <span style={{
+          display: 'inline-block', lineHeight: 0,
+          transform: expanded ? 'rotate(135deg)' : 'rotate(0deg)',
+          transition: 'transform 360ms cubic-bezier(0.34,1.4,0.5,1)',
+        }}>
+          <MarathonArrow size={18} dir="up-right" color={onY ? C.white : C.ink}/>
+        </span>
+      </span>
+      <div style={{
+        display: 'flex',
+        flexDirection: expanded ? 'row' : 'column',
+        alignItems: expanded ? 'flex-end' : 'flex-start',
+        gap: expanded ? 16 : 'clamp(2px, 0.5vh, 6px)', minHeight: 0,
+      }}>
+        <span style={{
+          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+          fontSize: dim ? 'clamp(32px, 4.8vh, 54px)' : 'clamp(48px, 8.4vh, 92px)',
+          color: onY ? C.white : C.ink, letterSpacing: '-0.02em', lineHeight: 0.85,
+          flexShrink: 0,
+          transition: 'font-size 340ms cubic-bezier(0.2,0,0,1)',
+        }}>{id}</span>
+        <div style={{
+          flex: expanded ? 1 : 'none', minWidth: 0, maxWidth: '100%',
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'flex-end',
+          gap: expanded ? 4 : 0,
+          paddingBottom: expanded ? 'clamp(3px, 0.6vh, 9px)' : 0,
+          overflow: 'hidden',
+        }}>
+          <span style={{
+            fontWeight: 700, letterSpacing: '0.12em',
+            color: onY ? C.white : (expanded ? C.ink : C.grey),
+            whiteSpace: 'nowrap', overflow: 'hidden',
+            textOverflow: expanded ? 'ellipsis' : 'clip',
+            fontSize: expanded ? 'clamp(15px, 1.5vw, 22px)' : 12,
+            transition: 'font-size 340ms cubic-bezier(0.2,0,0,1)',
+          }}>{label}</span>
+          {sub && (
+            <span style={{
+              fontSize: 13, fontWeight: 400, color: onY ? C.white : C.grey,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              maxHeight: expanded ? 20 : 0,
+              opacity: expanded ? 1 : 0,
+              transition: 'max-height 320ms cubic-bezier(0.2,0,0,1), opacity 220ms linear 60ms',
+            }}>{sub}</span>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <button
       ref={tabRef}
@@ -6090,7 +6230,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         // v4: a riposo la tab è acciaio pieno sul fondo bianco; aperta
         // diventa SUPERFICIE gialla (come i divisori del deck) con numero e
         // testo bianchi. Nessuna cornice, nessuna barra decorativa.
-        background: expanded ? C.yellow : C.paper,
+        background: C.paper,
         border: 'none',
         outline: 'none',
         /* TASTO FISICO: premuto affonda di 3px, al rilascio torna su */
@@ -6099,7 +6239,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
-        transition: 'background 200ms linear, transform 90ms cubic-bezier(0.2,0,0,1)',
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1)',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
         gap: 10,
         minHeight: 'clamp(140px, 22vh, 200px)',
@@ -6107,99 +6247,24 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
       }}
       className="sgn-tab"
     >
-      {/* Module icon · top-left, sempre visibile, dà identità a ogni tab */}
-      <span style={{
-        position: 'absolute', top: 10, left: 12, zIndex: 2,
-        lineHeight: 0, pointerEvents: 'none',
-        transition: 'opacity 200ms linear',
-      }}>
-        <ModuleIcon
-          id={id}
-          size={20}
-          color={expanded ? C.white : C.grey}
-          strokeWidth={1.3}
-        />
-      </span>
-
-      {/* MarathonArrow · top-right. Affordance di stato:
-          · hover (focused) → punta ↗ (NE): "apri questa sezione"
-          · attiva (expanded) → ruota a ↓: chevron "aperta", come un accordion.
-          La rotazione di stato vive su un wrapper interno per non entrare in
-          conflitto col translate d'ingresso dello span esterno. */}
-      <span style={{
-        position: 'absolute', top: 9, right: 9, zIndex: 2,
-        lineHeight: 0,
-        opacity: (expanded || focused) ? 1 : 0,
-        transform: (expanded || focused) ? 'translate(0, 0)' : 'translate(4px, -4px)',
-        transition: 'opacity 180ms linear, transform 220ms cubic-bezier(0.2,0,0,1)',
+      {face(false)}
+      {/* SUPERFICIE GIALLA che si "carica" dal basso come un tasto che si
+          illumina: stessa impaginazione della faccia acciaio (stesso padding,
+          stesso flusso), colori bianchi, rivelata da un clip-path. Hover =
+          si carica di 6px (anteprima), attiva = piena, uscita = si svuota. */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0,
+        background: C.yellow,
+        padding: 'clamp(14px, 2vh, 22px) clamp(14px, 1.6vw, 22px)',
+        boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: 10,
+        clipPath: expanded ? 'inset(0 0 0 0)' : (focused ? 'inset(calc(100% - 6px) 0 0 0)' : 'inset(100% 0 0 0)'),
+        transition: expanded
+          ? 'clip-path 460ms cubic-bezier(0.65,0,0.35,1)'
+          : 'clip-path 300ms cubic-bezier(0.2,0,0,1)',
         pointerEvents: 'none',
       }}>
-        <span style={{
-          display: 'inline-block', lineHeight: 0,
-          transform: expanded ? 'rotate(135deg)' : 'rotate(0deg)',
-          transition: 'transform 360ms cubic-bezier(0.34,1.4,0.5,1)',
-        }}>
-          <MarathonArrow size={18} dir="up-right" color={expanded ? C.white : C.ink}/>
-        </span>
-      </span>
-
-
-      {/* BOTTOM: numero + etichetta SEMPRE visibile (wayfinding anche a
-          riposo). Tre stati, animati:
-          · RIPOSO (niente di aperto)  → numero grande, etichetta SOTTO, grigia.
-          · COLLASSATA (un'altra aperta) → numero rimpicciolito, etichetta SOTTO:
-            così la colonna stretta NON tronca mai il nome (zero "puntini").
-          · APERTA (questa attiva)     → numero grande, etichetta AFFIANCATA che
-            cresce di corpo+colore e rivela il sottotitolo, sfruttando la
-            larghezza extra dell'accordion.
-          Tra riposo e collassata cambia solo il CORPO del numero → niente
-          riflow di direzione, transizione fluida; solo l'apertura ruota in riga. */}
-      <div style={{
-        display: 'flex',
-        flexDirection: expanded ? 'row' : 'column',
-        alignItems: expanded ? 'flex-end' : 'flex-start',
-        gap: expanded ? 16 : 'clamp(2px, 0.5vh, 6px)', minHeight: 0,
-        transition: 'gap 320ms cubic-bezier(0.2,0,0,1)',
-      }}>
-        <span style={{
-          /* v4 · numero di sezione in Neue Machina Ultrabold */
-          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
-          // Collassata → numero più piccolo (lascia aria all'etichetta sotto);
-          // riposo/aperta → numero pieno.
-          fontSize: dim ? 'clamp(32px, 4.8vh, 54px)' : 'clamp(48px, 8.4vh, 92px)',
-          color: expanded ? C.white : C.ink, letterSpacing: '-0.02em', lineHeight: 0.85,
-          flexShrink: 0,
-          transition: 'font-size 340ms cubic-bezier(0.2,0,0,1), color 200ms linear',
-        }}>{id}</span>
-
-        {/* Blocco etichetta: label (scala rest→active) + sub (solo da aperta) */}
-        <div style={{
-          flex: expanded ? 1 : 'none', minWidth: 0, maxWidth: '100%',
-          display: 'flex', flexDirection: 'column',
-          justifyContent: 'flex-end',
-          gap: expanded ? 4 : 0,
-          paddingBottom: expanded ? 'clamp(3px, 0.6vh, 9px)' : 0,
-          overflow: 'hidden',
-        }}>
-          <span style={{
-            fontWeight: 700, letterSpacing: '0.12em',
-            color: expanded ? C.white : C.grey,
-            whiteSpace: 'nowrap', overflow: 'hidden',
-            textOverflow: expanded ? 'ellipsis' : 'clip',
-            fontSize: expanded ? 'clamp(15px, 1.5vw, 22px)' : 12,
-            transition: 'font-size 340ms cubic-bezier(0.2,0,0,1), color 220ms linear',
-          }}>{label}</span>
-          {sub && (
-            <span style={{
-              fontSize: 13, fontWeight: 400, color: C.white,
-              letterSpacing: '0.02em', whiteSpace: 'nowrap',
-              overflow: 'hidden', textOverflow: 'ellipsis',
-              maxHeight: expanded ? 20 : 0,
-              opacity: expanded ? 1 : 0,
-              transition: 'max-height 320ms cubic-bezier(0.2,0,0,1), opacity 220ms linear 60ms',
-            }}>{sub}</span>
-          )}
-        </div>
+        {face(true)}
       </div>
     </button>
   );
@@ -6296,7 +6361,16 @@ function GameBoyStrip({ ids, L, current, onSelect, sound }) {
 
 function GameBoyKey({ id, n, label, active, onPress }) {
   const [pressed, setPressed] = React.useState(false);
-
+  const face = (onY) => (
+    <>
+      <ModuleIcon id={id} size={22} color={onY ? C.white : C.grey} strokeWidth={1.4}/>
+      <span style={{
+        fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
+        color: onY ? C.white : C.grey,
+      }}>{label}</span>
+    </>
+  );
+  const pad = { paddingTop: 12, paddingRight: 4, paddingBottom: 11, paddingLeft: 4 };
   return (
     <button
       aria-label={label}
@@ -6308,55 +6382,42 @@ function GameBoyKey({ id, n, label, active, onPress }) {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPress?.(); } }}
       style={{
         position: 'relative',
-        // v3.2 flat: il display è acciaio, quindi la tab attiva diventa PAPER
-        // (si fonde col display via ponte), le inattive sono pannelli bianchi.
-        // Stacco affidato al tono del fondo, mai ombre né cornici.
-        // v4: tasti acciaio pieni sul fondo bianco; attivo = superficie
-        // gialla con icona e nome bianchi. Niente "ponte" verso il display:
-        // il display è bianco, non c'è più un pannello da raccordare.
-        background: active ? C.yellow : C.paper,
+        background: C.paper,
         color: C.ink,
-        /* ATTIVA SENZA CORNICE + PONTE NEL BOX: la tab cliccata si fonde con
-           la view (pannello senza bordi) in un'unica forma bianca. Il
-           raccordo è il BORDER-TOP TRASPARENTE del bottone stesso: il bianco
-           è il background che dipinge sotto il bordo (background-clip
-           default). UN SOLO box dipinto → i fianchi di ponte e tab sono la
-           STESSA geometria: nessun passo sub-pixel possibile (uno span
-           separato arrotondava la larghezza in modo indipendente · ~1 device
-           px di rientro, misurato). margin-top e min-height compensano:
-           contenuto e riga della strip non si muovono di un pixel. */
-        /* PONTE · il tasto attivo sale fino a toccare lo schermo che ha
-           aperto: il border-top TRASPARENTE lascia dipingere sotto di sé il
-           fondo giallo, quindi tasto e ponte sono un'unica forma (niente
-           passi sub-pixel). margin-top e min-height compensano: icona e
-           label non si muovono di un pixel. */
+        /* PONTE · il tasto attivo SALE (border-top trasparente + margin-top
+           negativo: contenuto fermo, forma unica senza passi sub-pixel) fino
+           a innestarsi nella BARRA delle pagine sul bordo basso dello
+           schermo: tasto e schermo diventano una forma sola. */
         border: 'none',
         borderTop: '0 solid transparent',
         borderTopWidth: active ? 'var(--frame-gap, 16px)' : 0,
         marginTop: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
-        paddingTop: 12, paddingRight: 4, paddingBottom: 11, paddingLeft: 4,
+        ...pad,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
-        // Press feedback minimale: micro-scala, niente bordo-rialzo né shadow.
-        // 'none' a riposo: un transform permanente rasterizza i bordi su un
-        // layer non-snappato (hairline più morbide di quelle circostanti).
         transform: pressed ? 'translateY(3px)' : 'none',
-        /* In CHIUSURA il colore del border-top torna grigio solo a larghezza
-           rientrata (delay = durata della corsa), altrimenti il bordo ancora
-           alto si tinge → 'ombra' sotto il ponte che si ritira. In apertura
-           il grigio sparisce subito. */
-        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-top-width 340ms cubic-bezier(0.2,0,0,1), margin-top 340ms cubic-bezier(0.2,0,0,1), min-height 340ms cubic-bezier(0.2,0,0,1)',
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), border-top-width 380ms cubic-bezier(0.2,0,0,1), margin-top 380ms cubic-bezier(0.2,0,0,1), min-height 380ms cubic-bezier(0.2,0,0,1)',
         minHeight: active ? 'calc(64px + var(--frame-gap, 16px))' : 64,
       }}>
-      <ModuleIcon id={id} size={22} color={active ? C.white : C.grey} strokeWidth={1.4}/>
-      {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
-          10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
-      <span style={{
-        fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
-        color: active ? C.white : C.grey,
-        transition: 'color 160ms linear',
-      }}>{label}</span>
+      {face(false)}
+      {/* strato giallo: si carica dal basso e copre anche il ponte */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', left: 0, right: 0, bottom: 0,
+        top: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
+        background: C.yellow,
+        ...pad,
+        paddingTop: active ? 'calc(12px + var(--frame-gap, 16px))' : 12,
+        boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+        clipPath: active ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)',
+        transition: active
+          ? 'clip-path 440ms cubic-bezier(0.65,0,0.35,1), top 380ms cubic-bezier(0.2,0,0,1), padding-top 380ms cubic-bezier(0.2,0,0,1)'
+          : 'clip-path 260ms cubic-bezier(0.2,0,0,1), top 380ms cubic-bezier(0.2,0,0,1), padding-top 380ms cubic-bezier(0.2,0,0,1)',
+        pointerEvents: 'none',
+      }}>
+        {face(true)}
+      </div>
     </button>
   );
 }
@@ -7619,7 +7680,7 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
     });
     list.push({
       kind: 'nav', id: 'home',
-      glyph: '◇',
+      glyph: '00',
       label: lang === 'it' ? 'Torna alla home' : 'Back to home',
       sub: lang === 'it' ? 'menu principale' : 'main menu',
       kbd: 'ESC',
@@ -7628,13 +7689,13 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
     });
     list.push({
       kind: 'lang', id: 'lang-it',
-      glyph: '⌘', label: 'Italiano', sub: 'lang · it',
+      glyph: 'IT', label: 'Italiano', sub: lang === 'it' ? 'lingua del sito' : 'site language',
       kbd: 'IT', action: () => actions.setLang('it'),
       hidden: lang === 'it',
     });
     list.push({
       kind: 'lang', id: 'lang-en',
-      glyph: '⌘', label: 'English', sub: 'lang · en',
+      glyph: 'EN', label: 'English', sub: lang === 'it' ? 'lingua del sito' : 'site language',
       kbd: 'EN', action: () => actions.setLang('en'),
       hidden: lang === 'en',
     });
@@ -7644,14 +7705,14 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
       label: actions.soundOn
         ? (lang === 'it' ? 'Disattiva suoni' : 'Mute sounds')
         : (lang === 'it' ? 'Attiva suoni' : 'Unmute sounds'),
-      sub: 'click feedback',
+      sub: lang === 'it' ? 'feedback sonoro dei tasti' : 'key sound feedback',
       kbd: 'M', action: () => actions.toggleSound(),
     });
     list.push({
       kind: 'boot', id: 'replay-boot',
       glyph: '⟲',
       label: lang === 'it' ? 'Rigioca boot sequence' : 'Replay boot sequence',
-      sub: 'sgn-os · boot',
+      sub: lang === 'it' ? 'la schermata di avvio' : 'the start-up screen',
       kbd: '',
       action: () => actions.replayBoot(),
     });
@@ -7712,7 +7773,7 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
         <ul className="sgn-cp-list" role="listbox">
           {filtered.length === 0 && (
             <li className="sgn-cp-item" style={{ cursor: 'default', gridTemplateColumns: '1fr' }}>
-              <span className="label" style={{ color: '#6B6D70' }}>
+              <span className="label" style={{ color: C.grey, fontWeight: 400 }}>
                 {lang === 'it' ? 'Nessun risultato.' : 'No results.'}
               </span>
             </li>
@@ -7724,17 +7785,19 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
               onMouseEnter={() => setIdx(i)}
               onMouseDown={(e) => { e.preventDefault(); run(it); }}
               role="option" aria-selected={i === idx}>
-              <span className="glyph">{it.glyph}</span>
-              <span className="num">{it.kind === 'module' ? it.id : ''}</span>
-              <span className="label">{it.label}</span>
-              <span className="kbd">{it.kbd}</span>
+              <span className="key" aria-hidden="true">{it.kind === 'module' ? it.id : it.glyph}</span>
+              <span className="txt">
+                <span className="label">{it.label}</span>
+                {it.sub && <span className="sub">{it.sub}</span>}
+              </span>
+              {it.kbd ? <span className="kbd">{it.kbd}</span> : <span/>}
             </li>
           ))}
         </ul>
         <div className="sgn-cp-foot">
-          <span><kbd>↑↓</kbd> nav</span>
-          <span><kbd>↵</kbd> {lang === 'it' ? 'esegui' : 'run'}</span>
-          <span><kbd>ESC</kbd> {lang === 'it' ? 'chiudi' : 'close'}</span>
+          <span><kbd>{'↑↓\uFE0E'}</kbd>{lang === 'it' ? 'scegli' : 'choose'}</span>
+          <span><kbd>↵</kbd>{lang === 'it' ? 'esegui' : 'run'}</span>
+          <span><kbd>ESC</kbd>{lang === 'it' ? 'chiudi' : 'close'}</span>
         </div>
       </div>
     </div>
@@ -7823,7 +7886,7 @@ function MobilePageRail({ index, total, goto, lang, sound }) {
             aria-selected={active}
             aria-label={`${lang === 'it' ? 'Pagina' : 'Page'} ${i + 1}`}
             className={`sgn-mrail-bar${active ? ' active' : ''}`}
-            onClick={() => { if (!active) { goto(i); sound?.('tick'); } }}
+            onClick={() => { if (!active && goto) { goto(i); sound?.('tick'); } }}
           />
         );
       })}
@@ -7951,8 +8014,39 @@ function App() {
     if (tweaks.sound && window.sgnTick) window.sgnTick(kind);
   }, [tweaks.sound]);
 
+  /* ghostOut · fotografa (clone DOM) la sezione che sta per uscire e la
+     lascia sopra la nuova, con un clip che si ritira dietro la banda
+     gialla: così la vecchia schermata non sparisce "a distanza" ma viene
+     cancellata dalla banda mentre passa. Canvas/iframe non si clonano
+     (resterebbero vuoti): al loro posto resta il fondo del contenitore. */
+  const currentRef = useRef(current);
+  currentRef.current = current;
+  const ghostOut = useCallback((dir) => {
+    const src = displayInnerRef.current, host = displaySectionRef.current;
+    if (!src || !host || !dir) return;
+    try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+    host.querySelectorAll('.sgn-ghost').forEach(n => n.remove());
+    const g = src.cloneNode(true);
+    const from = src.querySelectorAll('*'), to = g.querySelectorAll('*');
+    const scrolls = [];
+    from.forEach((n, i) => { if (n.scrollTop || n.scrollLeft) scrolls.push([to[i], n.scrollTop, n.scrollLeft]); });
+    g.querySelectorAll('canvas, iframe, video').forEach(n => n.remove());
+    g.querySelectorAll('svg').forEach(s => { if (s.style.opacity === '0') s.style.opacity = '1'; });
+    g.className = 'sgn-display-inner sgn-ghost ' + (dir > 0 ? 'fwd' : 'back');
+    g.removeAttribute('tabindex');
+    g.setAttribute('aria-hidden', 'true');
+    host.appendChild(g);
+    scrolls.forEach(([n, t, l]) => { if (n) { n.scrollTop = t; n.scrollLeft = l; } });
+    setTimeout(() => g.remove(), 700);
+  }, []);
+
   const select = useCallback((id, dirOverride) => {
     if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico (Android; iOS ignora)
+    {
+      const prev0 = currentRef.current;
+      const next0 = prev0 === id ? null : id;
+      ghostOut(dirOverride != null ? dirOverride : computeDirection(prev0, next0));
+    }
     setCurrent(prev => {
       const next = prev === id ? null : id;
       // dirOverride: usato dallo swipe per far animare il wrap del carosello
@@ -7966,10 +8060,11 @@ function App() {
       else { sound(mobile ? 'tapBack' : 'releaseBack'); }
       return next;
     });
-  }, [sound, mobile]);
+  }, [sound, mobile, ghostOut]);
 
   const goHome = useCallback((dirOverride) => {
     if (navigator.vibrate) navigator.vibrate(8);   // micro feedback aptico
+    if (currentRef.current) ghostOut(typeof dirOverride === 'number' ? dirOverride : computeDirection(currentRef.current, null));
     setCurrent(prev => {
       if (!prev) return prev;
       setDirection(typeof dirOverride === 'number' ? dirOverride : computeDirection(prev, null));
@@ -8318,6 +8413,15 @@ function App() {
                   }
                 </div>
               </PageMeta.Provider>
+              {mobile && current && (
+                <MobilePageRail
+                  index={pageMeta.total > 1 ? pageMeta.index : 0}
+                  total={Math.max(1, pageMeta.total || 1)}
+                  goto={pageMeta.goto}
+                  lang={lang}
+                  sound={sound}
+                />
+              )}
               <SwipeHint lang={lang} show={swipeHint}/>
               <FadePill show={padToast}>
                 <i style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
