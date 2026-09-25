@@ -4,61 +4,50 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFFFFF">
 <title>404 · SGNOOGLE</title>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap">
 <style>
-  :root { --paper:#F0F1F2; --ink:#28282C; --yellow:#FFC200; --grey:#787A7C;
-          --border:rgba(120,122,124,.3); --border-soft:rgba(120,122,124,.2); }
+  /* v4 · fondo bianco, cinque colori pieni, due font. La pagina è impaginata
+     come un divisore del deck: superficie gialla, numero in Neue Machina
+     bianco, marchio bianco nell'angolo. */
+  @font-face { font-family:'Neue Machina'; src:url('/assets/fonts/neue-machina.woff2') format('woff2'); font-weight:700; font-display:swap; }
+  :root { --white:#FFFFFF; --paper:#F0F1F2; --yellow:#FFC200; --grey:#6B6D70; --ink:#28282C; }
   * { box-sizing:border-box; margin:0; }
   html,body { height:100%; }
-  body { background:var(--paper); font-family:'IBM Plex Mono',ui-monospace,monospace;
-         color:var(--ink); display:flex; align-items:center; justify-content:center;
-         padding:24px; -webkit-font-smoothing:antialiased; }
-  .card { background:#fff; border:.5px solid var(--border); max-width:560px; width:100%;
-          padding:clamp(28px,6vw,52px); position:relative; }
-  .tick { position:absolute; width:12px; height:12px; pointer-events:none; }
-  .tl { top:7px; left:7px; border-top:1.5px solid var(--yellow); border-left:1.5px solid var(--yellow); }
-  .tr { top:7px; right:7px; border-top:1.5px solid var(--yellow); border-right:1.5px solid var(--yellow); }
-  .bl { bottom:7px; left:7px; border-bottom:1.5px solid var(--yellow); border-left:1.5px solid var(--yellow); }
-  .br { bottom:7px; right:7px; border-bottom:1.5px solid var(--yellow); border-right:1.5px solid var(--yellow); }
-  .tag { display:inline-flex; align-items:center; gap:8px; font-size:9px; font-weight:700;
-         letter-spacing:.28em; color:var(--grey); text-transform:uppercase; margin-bottom:18px; }
-  .dot { width:6px; height:6px; background:var(--yellow); display:inline-block;
-         animation:pulse 1.6s linear infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
-  h1 { font-size:clamp(64px,18vw,120px); line-height:.9; letter-spacing:-.04em; font-weight:700; }
-  .sub { margin-top:14px; font-size:13px; font-weight:700; letter-spacing:.18em;
-         text-transform:uppercase; }
-  .desc { margin-top:8px; font-size:12px; line-height:1.6; color:var(--grey); }
-  .desc em { font-style:normal; color:var(--ink); }
-  hr { border:0; border-top:.5px solid var(--border-soft); margin:24px 0; }
-  a.cta { display:inline-flex; align-items:stretch; text-decoration:none; color:var(--ink);
-          border:.5px solid var(--ink); background:#fff; font-size:10px; font-weight:700;
-          letter-spacing:.2em; text-transform:uppercase;
-          transition:background 120ms linear,color 120ms linear; }
-  a.cta .ico { display:flex; align-items:center; justify-content:center; width:38px;
-               border-right:.5px solid var(--border); }
-  a.cta .ico span { width:10px; height:10px; background:var(--yellow);
-                    clip-path:polygon(100% 0,100% 65%,78% 43%,30% 91%,9% 70%,57% 22%,35% 0); }
-  a.cta .lbl { padding:12px 16px; }
-  a.cta:hover { background:var(--ink); color:var(--paper); }
-  @media (prefers-reduced-motion:reduce){ .dot{animation:none} }
+  body { background:var(--white); font-family:'IBM Plex Mono',ui-monospace,monospace;
+         color:var(--grey); -webkit-font-smoothing:antialiased;
+         display:flex; flex-direction:column; gap:clamp(24px,4vh,40px);
+         padding:max(24px,env(safe-area-inset-top)) clamp(16px,4vw,56px) max(24px,env(safe-area-inset-bottom)); }
+  .div { position:relative; flex:1; min-height:320px; background:var(--yellow);
+         display:flex; flex-direction:column; justify-content:flex-end; gap:16px;
+         padding:clamp(24px,5vw,72px); }
+  .mark { position:absolute; top:clamp(24px,5vw,72px); right:clamp(24px,5vw,72px); width:clamp(36px,4vw,56px); }
+  h1 { font:700 clamp(120px,26vw,320px)/.85 'Neue Machina','IBM Plex Mono',monospace; color:var(--white); letter-spacing:-.01em; }
+  .sub { font-size:clamp(18px,2.4vw,32px); color:var(--white); }
+  .foot { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; }
+  .note { display:inline-flex; align-items:center; gap:12px; font-size:13px; line-height:1.5; }
+  .note i { width:10px; height:10px; background:var(--yellow); flex:0 0 auto; }
+  a.cta { display:inline-flex; align-items:center; gap:12px; height:46px; padding:0 20px 0 16px;
+          background:var(--yellow); color:var(--white); text-decoration:none;
+          font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+  a.cta svg { width:16px; height:16px; transition:translate 140ms cubic-bezier(.2,0,0,1); }
+  a.cta:hover svg { translate:2px -2px; }
+  a.cta:focus-visible { outline:2px solid var(--grey); outline-offset:2px; }
 </style>
 </head>
 <body>
-  <main class="card">
-    <span class="tick tl"></span><span class="tick tr"></span>
-    <span class="tick bl"></span><span class="tick br"></span>
-    <div class="tag"><span class="dot"></span>SGN-OS · ERRORE DI SISTEMA</div>
+  <main class="div">
+    <svg class="mark" viewBox="0 0 206.1 201.44" aria-hidden="true"><g fill="#FFFFFF"><polygon points="51.44 100.64 154.75 100.64 0 201.44"/><polygon points="102.79 0 206.1 0 51.35 100.8"/><polygon points="84.44 0 33 100.8 8.4 100.8 59.83 0"/></g></svg>
     <h1>404</h1>
-    <div class="sub">Modulo non trovato</div>
-    <p class="desc">L'indirizzo richiesto non esiste in questo sistema.
-       <em>The requested path does not exist on this system.</em></p>
-    <hr>
-    <a class="cta" href="/"><span class="ico"><span></span></span><span class="lbl">Torna alla console</span></a>
+    <p class="sub">Modulo non trovato</p>
   </main>
+  <div class="foot">
+    <p class="note"><i></i>L'indirizzo richiesto non esiste. The requested path does not exist.</p>
+    <a class="cta" href="/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12 L12 4 M6 4 H12 V10" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="square"/></svg>Torna alla home</a>
+  </div>
 </body>
 </html>

@@ -85,6 +85,14 @@ JS `C` negli inline styles:
   class exists on the wrapper's page div as a future hook). Do NOT re-enable
   the cap. The desktop featured video box must stay 18:9 and fully visible
   (contain, centered) · never fill-crop the column.
+- Mobile nav (`GameBoyKey`): the ACTIVE key is a yellow surface that rises
+  into the frame gap to touch the display (transparent border-top painted by
+  its own background + negative margin-top) · keep this "bridge" animation.
+  Multi-page modules show their page BARRA in the mobile topbar center
+  (`MobilePageRail`), never as an overlay on the content.
+- Replaced assets keep their file name: bump the `?v=` query in index.html
+  (e.g. `avatar-real.webp?v=4`, `og-image.jpg?v=4`) · `/assets/*` is cached
+  with a long stale-while-revalidate.
 - Mobile breakpoint: `@media (max-width: 760px)`. Respect safe areas with
   `env(safe-area-inset-*)`. Use `100dvh` (not `100vh`) so Safari's dynamic
   toolbar is followed.

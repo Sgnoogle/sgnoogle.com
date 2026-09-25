@@ -6,7 +6,7 @@
 <title>SGNOOGLE · SGN-OS</title>
 <meta name="description" content="Il sito-OS di Francesco Sgnaolin (@sgnoogle): video e recensioni tech, oggetti 3D stampabili, app e collaborazioni.">
 <link rel="canonical" href="https://sgnoogle.com/">
-<meta name="theme-color" content="#F0F1F2">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon.png" sizes="64x64" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -18,14 +18,14 @@
 <meta property="og:title" content="SGNOOGLE · SGN-OS">
 <meta property="og:description" content="Video e recensioni tech, oggetti 3D stampabili, app e collaborazioni di Francesco Sgnaolin.">
 <meta property="og:url" content="https://sgnoogle.com/">
-<meta property="og:image" content="https://sgnoogle.com/assets/og-image.jpg">
+<meta property="og:image" content="https://sgnoogle.com/assets/og-image.jpg?v=4">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="it_IT">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SGNOOGLE · SGN-OS">
 <meta name="twitter:description" content="Video e recensioni tech, oggetti 3D stampabili, app e collaborazioni di Francesco Sgnaolin.">
-<meta name="twitter:image" content="https://sgnoogle.com/assets/og-image.jpg">
+<meta name="twitter:image" content="https://sgnoogle.com/assets/og-image.jpg?v=4">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -81,84 +81,55 @@
 }
 
 :root {
+  /* v4 · cinque colori pieni, nessuna trasparenza. Il bianco è il fondo. */
   --yellow:   #FFC200;
-  --paper:    #F0F1F2;
-  --bg-outer: #E8E9EA;
-  --grey:     #787A7C;
+  --paper:    #F0F1F2;   /* acciaio: superfici media, binari, frasi brevi */
+  --bg-outer: #FFFFFF;
+  --grey:     #6B6D70;
   --ink:      #28282C;
   --white:    #FFFFFF;
 
-  --bg:           var(--paper);
+  --bg:           var(--white);
   --bg-elevated:  var(--white);
-  --bg-inverse:   var(--ink);
   --fg:           var(--ink);
   --fg-muted:     var(--grey);
-  --fg-on-yellow: var(--white); /* v3.2: su giallo si scrive in bianco */
-  --fg-on-ink:    var(--paper);
-  --fg-accent:    var(--yellow);
+  --fg-on-yellow: var(--white); /* v4: sul giallo solo bianco */
 
-  --border:       rgba(120, 122, 124, 0.3);
-  --border-soft:  rgba(120, 122, 124, 0.2);
-  --border-hair:  rgba(120, 122, 124, 0.15);
-  --border-dash:  rgba(120, 122, 124, 0.25);
+  --border:       var(--paper);
+  --border-soft:  var(--paper);
+  --border-hair:  var(--paper);
+  --border-dash:  var(--paper);
 
   --accent:       var(--yellow);
-  --accent-line:  var(--yellow);
 
-  /* v3.2: Neue Machina vive SOLO nel wordmark di home; ogni altro display
-     text usa IBM Plex Mono Bold. */
+  /* v4 · due voci: Neue Machina (marchio, copertina, numeri di sezione)
+     e IBM Plex Mono per tutto il resto. */
   --font-display: 'Neue Machina', 'IBM Plex Mono', monospace;
   --font-mono:    'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
   --font-body:    var(--font-mono);
 
-  --fw-light:     300;
+  /* v4 · due pesi */
   --fw-regular:   400;
-  --fw-medium:    500;
-  --fw-semibold:  600;
   --fw-bold:      700;
-  --fw-display:   900;
 
-  --fs-hero:      clamp(56px, 8vw, 160px);
-  --fs-cover:     clamp(40px, 5vw, 100px);
-  --fs-display:   clamp(32px, 3.5vw, 60px);
-  --fs-h1:        clamp(28px, 2.6vw, 48px);
-  --fs-h2:        clamp(22px, 2vw, 34px);
-  --fs-h3:        clamp(17px, 1.4vw, 22px);
-  --fs-body:      14px;
-  --fs-small:     11px;
-  --fs-label:     10px;
-  --fs-micro:     9px;
-  --fs-nano:      8px;
+  /* v4 · sei taglie (deck a 1920: 320 · 160 · 96 · 64 · 32 · 24),
+     tradotte per il web mantenendo le proporzioni. Minimo 12px. */
+  --fs-section:   clamp(56px, 9vh, 112px);   /* numeri di sezione */
+  --fs-cover:     clamp(44px, 9vw, 150px);   /* wordmark / copertina */
+  --fs-title:     clamp(28px, 3.2vw, 52px);  /* titolo */
+  --fs-phrase:    clamp(17px, 1.5vw, 22px);  /* frase */
+  --fs-text:      clamp(14px, 1.05vw, 16px); /* testo */
+  --fs-note:      12px;                      /* nota · minimo */
 
-  --tracking-tight:  -0.03em;
-  --tracking-snug:   -0.01em;
-  --tracking-normal: 0;
-  --tracking-wide:   0.06em;
-  --tracking-wider:  0.12em;
-  --tracking-widest: 0.2em;
-
-  --lh-tight:    0.95;
-  --lh-snug:     1.15;
-  --lh-normal:   1.6;
-  --lh-loose:    1.85;
+  --tracking-marker: 0.12em;
 
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
   --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
   --space-12: 48px; --space-16: 64px; --space-20: 80px;
 
-  --stroke-hair:  0.5px;
-  --stroke-thin:  1px;
-  --stroke-mark:  1.5px;
-  --stroke-rail:  2px;
-  --stroke-accent: 3px;
   --radius: 0;
   --shadow: none;
-  --motion-fast:   120ms;
-  --motion-base:   180ms;
-  --motion-slow:   240ms;
-  --easing:        linear;
   --easing-sharp:  cubic-bezier(0.2, 0, 0, 1);
-  --grain-opacity: 0;
 }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -170,8 +141,8 @@ body {
   background: var(--bg-outer);
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: var(--fs-body);
-  line-height: var(--lh-normal);
+  font-size: var(--fs-text);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -248,18 +219,8 @@ button { border: none; }
   /* ── Fade ai bordi della gallery screenshot (App): compare solo sul lato
         con contenuto tagliato · classi fade-l/fade-r gestite da AppGallery.
         Con --fade* a 0 il gradiente degenera in nessun fade. ── */
-  .sgn-app-gallery { --fade-l: 0px; --fade-r: 0px; }
-  .sgn-app-gallery.fade-l { --fade-l: 38px; }
-  .sgn-app-gallery.fade-r { --fade-r: 38px; }
-  .sgn-app-gallery.fade-l, .sgn-app-gallery.fade-r {
-    -webkit-mask-image: linear-gradient(to right,
-      transparent 0, #000 var(--fade-l),
-      #000 calc(100% - var(--fade-r)), transparent 100%);
-    mask-image: linear-gradient(to right,
-      transparent 0, #000 var(--fade-l),
-      #000 calc(100% - var(--fade-r)), transparent 100%);
-  }
-
+  /* v4: niente sfumature trasparenti ai bordi degli scroller: l'affordance
+     la danno lo screenshot tagliato a filo e le frecce. */
   .sgn-stl-scroll,
   .sgn-video-grid,
   .sgn-cp-list,
@@ -277,14 +238,7 @@ button { border: none; }
      che eccede il bordo, sfuma l'ultimo tratto così lo scroll si legge come
      intenzionale. Verticale per la griglia video, orizzontale per la strip
      sponsor (ribaltata a verticale sul mobile, vedi @media). */
-  .sgn-video-grid {
-    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
-    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
-  }
-  .sgn-link-scroller {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent);
-  }
+
 
   /* ── Terminal cursor blink (empty-states) */
   @keyframes sgnBlink {
@@ -345,7 +299,7 @@ button { border: none; }
     width: 18px; height: 18px;
     transform: translate(-50%, -50%);
     border: 1.5px solid var(--yellow);
-    border-radius: 50%;
+    border-radius: 0;
     opacity: 0.9;
     animation: sgnRipple 620ms cubic-bezier(0.2, 0, 0, 1) forwards;
     will-change: transform, opacity, width, height;
@@ -381,7 +335,7 @@ button { border: none; }
      del sito è orizzontale, a tutta larghezza (il selettore sotto non matcha:
      il wrapper sotto #root non è .sgn-page). Hook .sgn-shell disponibile. */
   #root > .sgn-page {
-    background: var(--paper);
+    background: var(--white);
     max-width: 1100px;
     margin: 0 auto;
   }
@@ -412,19 +366,16 @@ button { border: none; }
   .sgn-topbar--home {
     margin-bottom: 0;
     border-color: transparent !important;
-    /* v3.2: in home la barra si fonde col fondo (acciaio) in un'unica
-       superficie, come il vecchio merge bianco-su-bianco. Paper (non
-       transparent): stesso tono del display e dissolvenza pulita del
-       bianco, animata da background-color nella transition qui sopra. */
-    background: var(--paper) !important;
+    /* v4: il bianco è il fondo di tutto, anche in home. */
+    background: var(--white) !important;
     height: clamp(54px, 8vh, 66px) !important;
   }
   .sgn-display {
     position: relative;
     overflow: hidden;
-    /* v3.2: acciaio come sfondo principale; i contenuti vivono su pannelli
-       bianchi flat, separati dal tono e dai gap, mai da cornici. */
-    background: var(--paper);
+    /* v4: il display è bianco come il resto della pagina. Niente pannello:
+       lo spazio separa, mai box dentro box. */
+    background: var(--white);
     outline: none;
   }
   /* ── Display area = display + (optional) side pager card ── */
@@ -432,7 +383,7 @@ button { border: none; }
     display: grid;
     flex: 1 1 auto;
     grid-template-columns: 1fr;
-    gap: clamp(8px, 1vw, 14px);
+    gap: clamp(12px, 1vw, 14px);
     min-height: 0; min-width: 0;
   }
   .sgn-display-area.has-pager {
@@ -440,17 +391,17 @@ button { border: none; }
   }
   /* Pager card · barre verticali stackate, una pagina sopra l'altra. */
   .sgn-pager-card {
-    background: var(--white);
+    background: transparent;
     box-sizing: border-box;
     display: flex; flex-direction: column;
     align-items: center; justify-content: space-between;
-    padding: clamp(10px, 1.6vh, 16px) 0;
+    padding: clamp(12px, 1.6vh, 16px) 0;
     overflow: hidden;
   }
   .sgn-pager-head, .sgn-pager-foot {
     font-family: var(--font-mono);
-    font-size: 9px; font-weight: 700; letter-spacing: 0.22em;
-    color: rgba(120,122,124,0.7);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+    color: #6B6D70;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     line-height: 1;
@@ -460,21 +411,21 @@ button { border: none; }
     font-variant-numeric: tabular-nums;
     color: var(--ink);
   }
-  .sgn-pager-foot .sep { color: rgba(120,122,124,0.4); margin: 0 2px; }
-  .sgn-pager-foot .tot { color: rgba(120,122,124,0.7); }
+  .sgn-pager-foot .sep { color: #6B6D70; margin: 0 2px; }
+  .sgn-pager-foot .tot { color: #6B6D70; }
   .sgn-pager-bars {
     flex: 1; min-height: 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    gap: clamp(6px, 1vh, 10px);
-    padding: clamp(8px, 1.4vh, 14px) 0;
+    gap: clamp(12px, 1vh, 10px);
+    padding: clamp(12px, 1.4vh, 14px) 0;
     width: 100%;
   }
   .sgn-pager-bar {
     appearance: none; padding: 0; margin: 0; cursor: pointer;
-    background: rgba(120,122,124,0.3);
+    background: var(--paper);
     border: none;
-    width: 6px;
+    width: 8px;
     height: clamp(28px, 6vh, 56px);
     transition:
       width 200ms cubic-bezier(0.2,0,0,1),
@@ -484,11 +435,10 @@ button { border: none; }
   }
   .sgn-pager-bar:hover { background: var(--grey); }
   .sgn-pager-bar.active {
-    width: 10px;
     background: var(--yellow);
   }
   .sgn-pager-bar:focus-visible {
-    outline: 0.5px solid var(--yellow);
+    outline: 2px solid var(--grey);
     outline-offset: 2px;
   }
   @media (max-width: 760px) {
@@ -521,76 +471,40 @@ button { border: none; }
   }
 
   /* ── Tab hover (background only · il resto è gestito JSX) */
-  .sgn-tab:hover { background: var(--white) !important; }
+  /* v4: la tab a riposo è acciaio pieno; al passaggio compare solo la
+     freccia (gestita in JSX), il fondo non cambia. */
 
   /* ══════════════════════════════════════════════════════════════
-     CTA · pulsante canonico del sito (INSTALLA · SCRIVIMI · MW …).
-     Struttura unica: [cella freccia | hairline | label]. La taglia
-     cambia (md/sm/xs), la struttura no. Reso da <CTA> in modules.jsx.
-     HOVER "arma" il pulsante: resta bianco, si accende di INK solo la
-     cella della freccia, la freccia passa giallo→paper (mai gialla
-     sull'ink) e il bordo si fa ink. Taglio netto a 120ms, niente ombra,
-     niente lift · giallo e ink non si toccano MAI.
+     CTA · pulsante canonico del sito (INSTALLA · SCRIVIMI · YOUTUBE …).
+     v4: è un'ETICHETTA che si preme. Superficie gialla piena, testo e
+     freccia bianchi (sul giallo solo bianco), nessun bordo. Hover: la
+     freccia scatta verso la sua direzione. Press: nudge di 1px.
      ══════════════════════════════════════════════════════════════ */
   .sgn-cta {
     position: relative;
     display: inline-flex; align-items: stretch;
-    background: var(--white);
-    border: 0.5px solid var(--ink);
-    color: var(--ink);
+    background: var(--yellow);
+    border: none;
+    color: var(--white);
     text-decoration: none;
     font-family: var(--font-mono);
     cursor: pointer;
     box-sizing: border-box;
-    /* Hard, mechanical cut · no shadow, no lift (brand: shadow:none, moto non-organico). */
-    transition: background 120ms linear, color 120ms linear, border-color 120ms linear, transform 90ms ease-out;
+    transition: transform 90ms ease-out;
   }
   .sgn-cta__icon {
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    transition: background 140ms linear, border-color 140ms linear;
   }
-  .sgn-cta__icon > span { transition: background-color 140ms linear; }
+  .sgn-cta__icon > span { transition: translate 140ms cubic-bezier(0.2,0,0,1); }
   .sgn-cta__label {
     display: flex; align-items: center;
     font-weight: 700; text-transform: uppercase; white-space: nowrap;
-  }
-  /* ignite · al hover il GIALLO SPARISCE del tutto: il pulsante si riempie
-     di ink e freccia + label diventano paper (chiaro-su-scuro, pulito).
-     Così giallo e ink non si toccano MAI: il giallo vive solo a riposo
-     (freccia gialla su bianco). Niente accostamento giallo-nero. */
-  .sgn-cta:hover,
-  .sgn-card-hover:hover .sgn-cta {
-    background: var(--white);
-    border-color: var(--ink);
-  }
-  .sgn-cta:hover .sgn-cta__icon,
-  .sgn-card-hover:hover .sgn-cta .sgn-cta__icon {
-    background: var(--ink);
+    color: var(--white);
   }
   .sgn-cta:hover .sgn-cta__icon > span,
-  .sgn-card-hover:hover .sgn-cta .sgn-cta__icon > span {
-    background-color: var(--paper) !important;
-  }
-  .sgn-cta:hover .sgn-cta__label,
-  .sgn-card-hover:hover .sgn-cta .sgn-cta__label {
-    color: var(--ink) !important;
-  }
-  /* press · feedback meccanico al clic: il pulsante "scatta" giù di 1px e si
-     riempie di ink (freccia + label → paper), come l'hover ma deciso. Niente
-     ombra/lift: solo il nudge verticale. Vale anche dove l'hover non esiste
-     (touch), così su telefono il tap dà comunque una risposta netta prima che
-     si apra il Play Store. Scoped a .sgn-hot = solo le CTA interattive. */
-  .sgn-cta.sgn-hot:active {
-    background: var(--ink);
-    border-color: var(--ink);
-    transform: translateY(1px);
-  }
-  .sgn-cta.sgn-hot:active .sgn-cta__icon {
-    background: var(--ink); border-right-color: rgba(255,255,255,0.22);
-  }
-  .sgn-cta.sgn-hot:active .sgn-cta__icon > span { background-color: var(--paper) !important; }
-  .sgn-cta.sgn-hot:active .sgn-cta__label { color: var(--paper) !important; }
+  .sgn-card-hover:hover .sgn-cta .sgn-cta__icon > span { translate: 2px -2px; }
+  .sgn-cta.sgn-hot:active { transform: translateY(1px); }
 
   /* Pulsante video nelle SponsorCard · stesso linguaggio del box-icona CTA:
      a riposo hairline + glifo ink; al hover/press della card si riempie di
@@ -598,9 +512,8 @@ button { border: none; }
   .sgn-ytbtn { transition: background 140ms linear, border-color 140ms linear, color 140ms linear; }
   .sgn-card-hover:hover .sgn-ytbtn,
   .sgn-card-hover:active .sgn-ytbtn {
-    background: var(--ink) !important;
-    border-color: var(--ink) !important;
-    color: var(--paper) !important;
+    background: var(--yellow) !important;
+    color: var(--white) !important;
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -616,6 +529,17 @@ button { border: none; }
   .sgn-card-hover:hover {
     background: var(--paper) !important;
   }
+  /* v4 · card già acciaio: il fondo resta pieno, al passaggio scatta solo la
+     freccia (stesso gesto della CTA). */
+  .sgn-card-hover--paper:hover { background: var(--paper) !important; }
+  .sgn-card-hover--yellow:hover,
+  .sgn-card-hover--yellow:active,
+  .sgn-card-hover--yellow[data-tapped],
+  .sgn-card-hover--yellow:focus-visible { background: var(--yellow) !important; }
+  .sgn-nudge { transition: translate 140ms cubic-bezier(0.2,0,0,1); }
+  .sgn-card-hover:hover .sgn-nudge,
+  .sgn-card-hover:focus-visible .sgn-nudge,
+  .sgn-card-hover[data-tapped] .sgn-nudge { translate: 2px -2px; }
 
   /* Variante MEDIA (card video: featured + griglia) · il corpo è già scuro
      (player) o paper (art): NON ribaltare il fondo a paper, altrimenti l'art
@@ -630,8 +554,7 @@ button { border: none; }
      ══════════════════════════════════════════════════════════════ */
   .sgn-stl-item { transition: background 140ms linear; }
   .sgn-stl-item:hover:not(.is-active) { background: var(--paper) !important; }
-  .sgn-stl-item:hover:not(.is-active) .sgn-stl-rail { background: rgba(255,194,0,0.45) !important; }
-  .sgn-stl-item:hover:not(.is-active) .sgn-stl-id { color: var(--ink) !important; }
+
 
   /* ══════════════════════════════════════════════════════════════
      Controlli topbar (audio + lingua) · hover "sta per selezionare":
@@ -644,21 +567,12 @@ button { border: none; }
   .sgn-topctl { transition: border-color 120ms linear, background 120ms linear, transform 90ms ease-out; }
   .sgn-topctl:active { transform: translateY(1px); }
   /* l'icona audio si "arma": la freccia gialla resta, ma il bordo si fa ink */
-  .sgn-topctl:active { background: #ECEBE7 !important; }
+  .sgn-topctl:active { background: var(--paper) !important; }
   .sgn-mobilemark, .sgn-ghostctl { background: transparent !important; }
   .sgn-mobilemark { transition: opacity 180ms linear, transform 180ms cubic-bezier(0.2,0,0,1); }
   .sgn-mobilemark:active { opacity: 0.72; transform: translateY(1px) scale(0.96); }
   .sgn-ghostctl:active { background: transparent !important; }
-  .sgn-featured:hover .sgn-feat-cta:not(:hover) .sgn-cta__icon {
-    background: transparent !important; border-right-color: var(--border) !important;
-  }
-  .sgn-featured:hover .sgn-feat-cta:not(:hover) .sgn-cta__icon > span { background-color: var(--yellow) !important; }
   .sgn-homebrand { position: relative; }
-  .sgn-homebrand::after {
-    content: ''; position: absolute; left: 32px; right: 0; bottom: -7px; height: 2px;
-    background: var(--yellow); transform: scaleX(0); transform-origin: left;
-    transition: transform 180ms cubic-bezier(0.2,0,0,1);
-  }
 
   /* ══════════════════════════════════════════════════════════════
      LANG button (topbar) + popover trigger states.
@@ -668,14 +582,10 @@ button { border: none; }
      ══════════════════════════════════════════════════════════════ */
   .sgn-langbtn { position: relative; overflow: hidden; transition: border-color 120ms linear; }
   .sgn-langbtn__val { transition: background 120ms linear, color 120ms linear; }
-  .sgn-langbtn.is-open .sgn-langbtn__val { background: var(--white) !important; color: var(--ink) !important; }
+  .sgn-langbtn.is-open { background: var(--paper) !important; }
+  .sgn-langbtn.is-open .sgn-langbtn__val { color: var(--ink) !important; }
   .sgn-caret { transition: transform 160ms cubic-bezier(0.2,0,0,1); }
   .sgn-langbtn.is-open .sgn-caret { transform: rotate(180deg); }
-  .sgn-langbtn.is-open::after {
-    content: ''; position: absolute; left: -0.5px; right: -0.5px; top: -0.5px; height: 2px;
-    background: var(--grey); transform-origin: left; animation: sgnTopRailIn 160ms cubic-bezier(0.2,0,0,1) both;
-  }
-  @keyframes sgnTopRailIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .sgn-lang-popover {
     transform-origin: top right;
     animation: sgnLangPanelIn 150ms cubic-bezier(0.2,0,0,1) both;
@@ -697,21 +607,16 @@ button { border: none; }
      menu lingua la cella valore restava ink. Lo stato is-open (sopra) NON è
      hover, quindi il feedback "aperto" continua a valere anche sul dito. */
   @media (hover: hover) and (pointer: fine) {
-    .sgn-topctl:hover {
-      border-color: var(--ink) !important;
-      background: #FFFFFF !important;
-    }
-    .sgn-langbtn:hover { border-color: var(--ink) !important; }
-    /* la cella valore (IT/EN) si accende a ink+paper anche al solo hover,
-       non solo da aperta · feedback "sta per selezionare". */
-    .sgn-langbtn:hover .sgn-langbtn__val { background: var(--ink) !important; color: var(--paper) !important; }
-    .sgn-homebrand:hover::after { transform: scaleX(1); }
+    /* v4: controlli come testo sul bianco; al passaggio compare la
+       superficie acciaio. Mai fondi antracite. */
+    .sgn-topctl:hover { background: var(--paper) !important; }
   }
 
   /* ── Command palette overlay ── */
   .sgn-cp-overlay {
     position: fixed; inset: 0; z-index: 99000;
-    background: rgba(40,40,44,0.32);
+    /* v4: niente velature trasparenti. La palette apre su acciaio pieno. */
+    background: var(--paper);
     display: flex; align-items: flex-start; justify-content: center;
     padding-top: clamp(64px, 14vh, 140px);
     animation: sgnCpFade 120ms linear;
@@ -733,18 +638,18 @@ button { border: none; }
     padding: 12px 16px;
   }
   .sgn-cp-prompt {
-    color: var(--yellow); font-weight: 700; font-size: 12px;
-    letter-spacing: 0.18em;
+    color: var(--grey); font-weight: 700; font-size: 12px;
+    letter-spacing: 0.12em;
   }
   .sgn-cp-input {
     flex: 1;
     appearance: none; border: 0; outline: none;
     background: transparent;
-    font: inherit; font-size: 14px; font-weight: 500;
+    font: inherit; font-size: 14px; font-weight: 400;
     color: var(--ink);
     letter-spacing: 0.02em;
   }
-  .sgn-cp-input::placeholder { color: rgba(120,122,124,0.5); }
+  .sgn-cp-input::placeholder { color: #6B6D70; }
   .sgn-cp-list {
     max-height: 56vh;
     overflow-y: auto;
@@ -760,38 +665,38 @@ button { border: none; }
     transition: background 80ms linear;
   }
   .sgn-cp-item:last-child { border-bottom: none; }
-  .sgn-cp-item.active { background: rgba(255,194,0,0.10); }
+  .sgn-cp-item.active { background: #F0F1F2; }
   .sgn-cp-item .glyph {
-    color: var(--faint, rgba(120,122,124,0.7));
-    font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+    color: var(--faint, #F0F1F2);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
     text-align: center;
   }
-  .sgn-cp-item.active .glyph { color: var(--yellow); }
+  .sgn-cp-item.active .glyph { color: var(--ink); }
   .sgn-cp-item .num {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 700; font-size: 14px; color: var(--ink);
     letter-spacing: -0.02em;
   }
   .sgn-cp-item .label {
-    font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: 0.04em;
+    font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.04em;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .sgn-cp-item .kbd {
-    font-size: 9px; letter-spacing: 0.18em; color: rgba(120,122,124,0.7);
-    font-weight: 600; text-transform: uppercase;
+    font-size: 12px; letter-spacing: 0.12em; color: #6B6D70;
+    font-weight: 700; text-transform: uppercase;
     padding: 2px 6px;
   }
   .sgn-cp-foot {
     padding: 8px 16px;
     display: flex; gap: 16px; align-items: center;
-    font-size: 9px; letter-spacing: 0.18em; color: rgba(120,122,124,0.7);
-    font-weight: 600; text-transform: uppercase;
+    font-size: 12px; letter-spacing: 0.12em; color: #6B6D70;
+    font-weight: 700; text-transform: uppercase;
   }
   .sgn-cp-foot kbd {
     background: var(--paper);
     padding: 1px 6px;
-    font-family: inherit; font-size: 9px; font-weight: 700;
-    letter-spacing: 0.18em; color: var(--ink);
+    font-family: inherit; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--ink);
   }
 
   /* ── Slide-in container per il display content ── */
@@ -802,12 +707,10 @@ button { border: none; }
   .sgn-feat-label-row { grid-area: tag; }
   .sgn-feat-vid-col   { grid-area: vid; }
   .sgn-feat-info      { grid-area: info; }
-  .sgn-feat-mobile-metrics { display: none; }
-  .sgn-feat-mobile-meta { display: none; }
 
   /* ── Mobile (<=760) ── */
   @media (max-width: 760px) {
-    .sgn-page { padding: clamp(8px, 2vh, 16px) clamp(10px, 3vw, 20px) max(20px, env(safe-area-inset-bottom, 0px)); }
+    .sgn-page { padding: clamp(12px, 2vh, 16px) clamp(12px, 3vw, 20px) max(20px, env(safe-area-inset-bottom, 0px)); }
     .sgn-frame {
       --frame-gap: clamp(12px, 2.5vh, 20px);
       grid-template-rows: 1fr auto;
@@ -815,15 +718,12 @@ button { border: none; }
     }
     .sgn-self-grid { grid-template-columns: 1fr !important; justify-items: center; text-align: center; gap: clamp(12px, 2vh, 18px) !important; }
     .sgn-self-grid > div:first-child { width: clamp(150px, 46vw, 220px) !important; }
-    .sgn-self-grid > div:last-child { width: 100%; text-align: left; gap: clamp(10px, 1.4vh, 14px) !important; }
-    .sgn-profile-statband { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-    .sgn-profile-bio {
-      display: -webkit-box !important;
-      -webkit-line-clamp: 3 !important;
-      -webkit-box-orient: vertical !important;
-      overflow: hidden !important;
-    }
+    .sgn-self-grid > div:last-child { width: 100%; text-align: left; gap: clamp(12px, 1.4vh, 14px) !important; }
+    /* v4: la bio non si tronca mai (prima 3 righe + "…" con mezzo schermo
+       vuoto sotto). */
     .sgn-stl-grid  { grid-template-columns: 1fr !important; }
+    /* su telefono il link MakerWorld resta solo freccia (aria-label completo) */
+    .sgn-stl-mw .sgn-cta__label { display: none !important; }
     .sgn-skill-grid { grid-template-columns: 1fr !important; }
     /* App hero: l'icona e il blocco testo restano in riga, il bottone
        INSTALLA va a capo a tutta larghezza (flex-wrap nel componente). */
@@ -880,7 +780,7 @@ button { border: none; }
       width: 100% !important;
       height: auto !important;
       aspect-ratio: 1 / 1 !important;
-      padding: clamp(9px, 2.4vw, 12px) !important;
+      padding: 0 !important;
     }
     .sgn-app-head {
       grid-area: title !important;
@@ -897,25 +797,17 @@ button { border: none; }
       grid-area: cta !important;
       align-self: stretch !important;
       width: 100% !important;
-      height: 42px !important;
-      min-height: 42px !important;
       margin-top: 0 !important;
     }
-    .sgn-app-cta .sgn-cta__icon { width: 42px !important; }
     .sgn-app-cta .sgn-cta__label {
       flex: 1 1 auto !important;
       justify-content: center !important;
-      font-size: 10.5px !important;
-      letter-spacing: 0.18em !important;
+      padding-right: 40px !important;
     }
     .sgn-app-tagline {
-      font-size: clamp(13px, 3.8vw, 16px) !important;
+      font-size: clamp(15px, 4.2vw, 18px) !important;
       line-height: 1.45 !important;
       margin-top: 0 !important;
-    }
-    .sgn-app-metaband > div > div {
-      padding-top: 10px !important;
-      padding-bottom: 10px !important;
     }
 
     /* ── Mobile reflow v3.9 · snap come desktop, elementi responsive ──
@@ -956,8 +848,8 @@ button { border: none; }
          il fondo card → CTA tagliata (con space-between il contenuto arriva
          davvero in fondo, lo sforo non è più mascherato dallo slack). */
       box-sizing: border-box !important;
-      padding: clamp(16px, 3cqh, 30px) clamp(12px, 3.4vw, 16px) clamp(16px, 3.4cqh, 34px) !important;
-      gap: clamp(10px, 1.45cqh, 16px) !important;
+      padding: 0 !important;
+      gap: clamp(12px, 1.45cqh, 16px) !important;
       border-left: none !important;
       overflow: hidden !important;
     }
@@ -967,13 +859,14 @@ button { border: none; }
     }
     .sgn-feat-title {
       font-family: IBM Plex Mono, monospace !important;
-      font-size: clamp(30px, 8.9vw, 46px) !important;
-      line-height: 0.94 !important;
-      letter-spacing: -0.06em !important;
+      font-size: clamp(24px, 7vw, 34px) !important;
+      line-height: 1.08 !important;
+      letter-spacing: -0.02em !important;
       -webkit-line-clamp: 3 !important;
       margin-top: clamp(8px, 1.15cqh, 12px) !important;
     }
-    .sgn-feat-desktop-meta { display: none !important; }
+    .sgn-feat-data { order: 3 !important; }
+    .sgn-feat-foot { margin-top: auto !important; }
     /* COVER-TOP: il video sta IN CIMA alla pagina, a tutta larghezza della
        card (full-bleed dentro la cornice · come le copertine delle VideoCard
        in pagina 2), e il titolo sotto fa da didascalia. I margini negativi
@@ -984,7 +877,7 @@ button { border: none; }
       min-height: 0 !important;
       box-sizing: border-box !important;
       padding: 0 !important;
-      margin: calc(-1 * clamp(16px, 3cqh, 30px)) calc(-1 * clamp(12px, 3.4vw, 16px)) 0 !important;
+      margin: 0 !important;
       align-items: center !important;
       justify-content: center !important;
       overflow: hidden !important;
@@ -999,77 +892,7 @@ button { border: none; }
       margin: 0 !important;
       border: none !important;
       box-sizing: border-box !important;
-      background: var(--ink) !important;
-    }
-    .sgn-feat-mobile-meta {
-      order: 3 !important;
-      /* lo slack della pagina si accumula QUI (tra titolo e meta):
-         cover+tag+titolo restano compatti in alto, meta+CTA in basso. */
-      margin-top: auto !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: clamp(8px, 1cqh, 12px) !important;
-      min-width: 0 !important;
-    }
-    .sgn-feat-mobile-meta .sgn-label {
-      font-size: 10px !important;
-      letter-spacing: 0.22em !important;
-      line-height: 1.2 !important;
-    }
-    .sgn-feat-stats {
-      display: none !important;
-    }
-    .sgn-feat-mobile-metrics {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 0 !important;
-      margin-top: 0 !important;
-    }
-    .sgn-feat-mobile-metric {
-      display: grid !important;
-      grid-template-columns: auto minmax(0, 1fr) !important;
-      align-items: center !important;
-      gap: 6px !important;
-      padding: 11px 12px !important;
-      min-width: 0 !important;
-    }
-    .sgn-feat-mobile-metric + .sgn-feat-mobile-metric {
-    }
-    /* Stesso corpo (9px) della byline qui sopra → footer omogeneo. */
-    .sgn-feat-mobile-metric__label {
-      font: 700 9px/1 IBM Plex Mono, monospace !important;
-      letter-spacing: 0.18em !important;
-      color: var(--faint) !important;
-      white-space: nowrap !important;
-    }
-    .sgn-feat-mobile-metric__value {
-      justify-self: end !important;
-      font: 700 clamp(14px, 4vw, 17px)/1 IBM Plex Mono, monospace !important;
-      letter-spacing: -0.015em !important;
-      color: var(--ink) !important;
-      white-space: nowrap !important;
-    }
-    .sgn-feat-stat-cell {
-      display: grid !important;
-      grid-template-columns: auto minmax(0, 1fr) !important;
-      align-items: center !important;
-      justify-content: stretch !important;
-      gap: 8px !important;
-      padding: 9px 10px !important;
-      text-align: left !important;
-    }
-    .sgn-feat-stat-value {
-      justify-self: end !important;
-      font-size: clamp(13px, 3.7vw, 16px) !important;
-      line-height: 1 !important;
-      letter-spacing: -0.015em !important;
-    }
-    .sgn-feat-stat-label {
-      order: 0 !important;
-      font-size: 8px !important;
-      line-height: 1 !important;
-      letter-spacing: 0.14em !important;
-      white-space: nowrap;
+      background: var(--paper) !important;
     }
     .sgn-feat-foot {
       order: 4 !important;
@@ -1082,15 +905,11 @@ button { border: none; }
     .sgn-feat-cta {
       align-self: stretch !important;
       width: 100% !important;
-      height: 36px !important;
-      min-height: 36px !important;
     }
-    .sgn-feat-cta .sgn-cta__icon { width: 36px !important; }
     .sgn-feat-cta .sgn-cta__label {
       flex: 1 1 auto !important;
       justify-content: center !important;
-      font-size: 10px !important;
-      letter-spacing: 0.17em !important;
+      padding-right: 46px !important;
     }
     /* 01b · ULTIMI VIDEO → su mobile la griglia collassa a 1 colonna: aggancio
        dolce (proximity) della cima di ogni card così si vede sempre intera,
@@ -1122,8 +941,6 @@ button { border: none; }
       overflow-y: auto !important;
       scroll-snap-type: y proximity !important;
       gap: clamp(12px, 1.6vh, 18px) !important;
-      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent) !important;
-      mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent) !important;
     }
     .sgn-link-scroller > [data-link-card] {
       height: auto !important;
@@ -1134,38 +951,20 @@ button { border: none; }
     }
     /* La prima card è la hero/azione primaria: stesso contenuto, più respiro. */
     .sgn-link-hero-card {
-      min-height: clamp(320px, 48vh, 420px) !important;
+      min-height: clamp(300px, 44vh, 400px) !important;
       aspect-ratio: auto !important;
-      justify-content: space-between !important;
-      padding: clamp(28px, 7vw, 40px) clamp(28px, 7vw, 40px) clamp(22px, 6vw, 34px) !important;
-      padding-left: clamp(32px, 8vw, 46px) !important;
-      gap: clamp(24px, 4vh, 42px) !important;
+      padding: clamp(24px, 6vw, 32px) !important;
     }
     .sgn-link-hero-title {
-      font-size: clamp(38px, 11vw, 54px) !important;
-      line-height: 0.92 !important;
+      font-size: clamp(36px, 10.5vw, 50px) !important;
       max-width: 9ch !important;
-      margin-top: clamp(18px, 4vh, 42px) !important;
-    }
-    .sgn-link-hero-cta {
-      width: 100% !important;
-      align-self: stretch !important;
-      margin-top: auto !important;
-    }
-    .sgn-link-hero-cta .sgn-cta__label {
-      flex: 1 1 auto !important;
-      justify-content: center !important;
     }
 
     /* 05 · Contatti → lista command a una colonna, tap target generoso */
     .sgn-contact-grid {
       grid-template-columns: 1fr !important;
-      grid-template-rows: none !important;
-      grid-auto-rows: minmax(58px, auto) !important;
     }
     .sgn-contact-grid > a { grid-column: 1 / -1 !important; }
-    .sgn-contact-grid > a > span:nth-of-type(2) { flex: 0 0 76px !important; }
-    .sgn-contact-grid > a > span:nth-of-type(3) { font-size: clamp(12px, 3.3vw, 15px) !important; }
   }
 
   @media (max-width: 760px) and (max-height: 740px) {
@@ -1174,13 +973,10 @@ button { border: none; }
       padding-top: 10px !important;
       padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
     }
-    .sgn-feat-title { font-size: clamp(24px, 7.2vw, 34px) !important; line-height: 0.94 !important; -webkit-line-clamp: 2 !important; }
+    .sgn-feat-title { font-size: clamp(22px, 6.6vw, 30px) !important; -webkit-line-clamp: 3 !important; }
     .sgn-feat-vid { max-height: 42cqh !important; }
-    .sgn-feat-mobile-metrics { margin-top: 0 !important; }
-    .sgn-feat-mobile-metric { padding: 6px 7px !important; }
     .sgn-feat-foot { margin-top: 2px !important; }
-    .sgn-feat-cta { height: 34px !important; min-height: 34px !important; }
-    .sgn-feat-cta .sgn-cta__icon { width: 34px !important; }
+    .sgn-feat-cta { height: 40px !important; }
   }
 
 
@@ -1200,11 +996,11 @@ button { border: none; }
         Il video resta 18:9 (gestito da container-query, nessuna banda nera). */
   @media (max-height: 560px) {
     .sgn-page {
-      padding-top: clamp(6px, 1.5vh, 12px);
-      padding-bottom: max(clamp(8px, 1.5vh, 14px), env(safe-area-inset-bottom));
+      padding-top: clamp(12px, 1.5vh, 12px);
+      padding-bottom: max(clamp(12px, 1.5vh, 14px), env(safe-area-inset-bottom));
     }
     .sgn-frame {
-      --frame-gap: clamp(8px, 1.4vh, 14px);
+      --frame-gap: clamp(12px, 1.4vh, 14px);
       grid-template-rows: 1fr clamp(92px, 22vh, 150px);
       gap: var(--frame-gap);
     }
@@ -1228,26 +1024,19 @@ button { border: none; }
         tastiera, quindi mouse e look "a riposo" non cambiano. ── */
   .sgn-card-hover:focus-visible {
     background: var(--paper);
-    outline: 0.5px solid var(--yellow);
+    outline: 2px solid var(--grey);
     outline-offset: -1px;
   }
   .sgn-card-hover--media:focus-visible { background: var(--white); }
-  .sgn-cta:focus-visible {
-    background: var(--ink); border-color: var(--ink);
-    outline: 0.5px solid var(--yellow); outline-offset: 2px;
-  }
-  .sgn-cta:focus-visible .sgn-cta__icon { background: var(--ink); border-right-color: var(--ink); }
-  .sgn-cta:focus-visible .sgn-cta__icon > span { background-color: var(--paper) !important; }
-  .sgn-cta:focus-visible .sgn-cta__label { color: var(--ink) !important; }
+  .sgn-cta:focus-visible { outline: 2px solid var(--grey); outline-offset: 2px; }
   .sgn-stl-item:focus-visible:not(.is-active) { background: var(--paper); }
-  .sgn-stl-item:focus-visible:not(.is-active) .sgn-stl-rail { background: rgba(255,194,0,0.45); }
   /* baseline per ogni altro controllo interattivo (tab, toggle .sgn-hot,
      StripArrow, bottoni topbar, link): outline giallo sottile su bianco. */
   a:focus-visible,
   button:focus-visible,
   .sgn-hot:focus-visible,
   .sgn-tab:focus-visible {
-    outline: 0.5px solid var(--yellow);
+    outline: 2px solid var(--grey);
     outline-offset: 2px;
   }
 
@@ -1257,12 +1046,8 @@ button { border: none; }
         (-webkit-touch-callout), li portiamo a 1px con alpha dimezzata:
         stesso peso ottico, ma 1px non può sparire. Chrome/Android/desktop
         non sono toccati. ── */
-  @supports (-webkit-touch-callout: none) {
-    .sgn-cta {
-      border-width: 1px;
-      border-color: rgba(40, 40, 44, 0.62);
-    }
-  }
+  /* (v4: la CTA non ha più bordo, il vecchio fix iOS per le hairline
+     da 0.5px non serve più.) */
 
   /* ── Touch (nessun hover): il linguaggio di selezione del sito è tutto a
         hover (corner-mark gialli, ignite del CTA, rail STL). Sul dito non
@@ -1277,16 +1062,8 @@ button { border: none; }
     }
     .sgn-card-hover--media:active,
     .sgn-card-hover--media:focus-visible { background: var(--white) !important; }
-    .sgn-cta:active {
-      background: var(--ink) !important; border-color: var(--ink) !important;
-    }
-    .sgn-cta:active .sgn-cta__icon {
-      background: var(--ink) !important;
-    }
-    .sgn-cta:active .sgn-cta__icon > span { background-color: var(--paper) !important; }
-    .sgn-cta:active .sgn-cta__label { color: var(--ink) !important; }
+    .sgn-cta:active { transform: translateY(1px); }
     .sgn-stl-item:active:not(.is-active) { background: var(--paper) !important; }
-    .sgn-stl-item:active:not(.is-active) .sgn-stl-rail { background: rgba(255,194,0,0.45) !important; }
     /* hit-target comodi sui controlli piccoli della topbar */
     .sgn-topctl, .sgn-langbtn { min-height: 38px; }
 
@@ -1320,8 +1097,8 @@ button { border: none; }
     position: fixed; top: 8px; left: 8px; z-index: 99999;
     transform: translateY(-160%);
     background: var(--yellow); color: var(--white);
-    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
     padding: 9px 14px; text-decoration: none;
     transition: transform 140ms cubic-bezier(0.2,0,0,1);
   }
@@ -1334,7 +1111,7 @@ button { border: none; }
   /* il display riceve focus programmatico al cambio modulo: nessun anello
      se non è una navigazione da tastiera */
   .sgn-display-inner:focus { outline: none; }
-  .sgn-display-inner:focus-visible { outline: 0.5px solid var(--yellow); outline-offset: -2px; }
+  .sgn-display-inner:focus-visible { outline: 2px solid var(--grey); outline-offset: -2px; }
 
   /* ══════════════════════════════════════════════════════════════
      MOBILE PAGE RAIL · eco verticale della pager-card desktop, ma
@@ -1343,46 +1120,25 @@ button { border: none; }
      Solo mobile + moduli multi-pagina.
      ══════════════════════════════════════════════════════════════ */
   .sgn-mrail {
-    position: absolute; z-index: 20;
-    top: 50%; right: 8px; transform: translateY(-50%);
-    display: none;
-    flex-direction: column; align-items: center; gap: 8px;
-    padding: 8px 5px;
-    background: rgba(240,241,242,0.82);
-    backdrop-filter: none;
-    /* A riposo: discreto e poco invadente. Torna pieno appena si cambia
-       pagina (classe .awake, gestita da JS) o al tocco/hover sul rail. */
-    opacity: 0.28;
-    transition: opacity 360ms cubic-bezier(0.2,0,0,1);
-  }
-  .sgn-mrail.awake,
-  .sgn-mrail:hover,
-  .sgn-mrail:focus-within {
-    opacity: 1;
+    /* v4 · BARRA: segmenti pieni in orizzontale, al centro della topbar
+       mobile (prima era un overlay semi-trasparente che copriva le card). */
+    display: flex; align-items: center; gap: 6px;
   }
   .sgn-mrail-bar {
     appearance: none; margin: 0; padding: 0; cursor: pointer;
     position: relative;
-    background: rgba(120,122,124,0.35);
+    background: var(--paper);
     border: none;
-    width: 5px; height: 22px;
-    transition: height 200ms cubic-bezier(0.2,0,0,1),
-                background 160ms linear, border-color 160ms linear;
+    width: 22px; height: 6px;
+    transition: width 200ms cubic-bezier(0.2,0,0,1), background 160ms linear;
   }
-  /* La barra visibile resta sottile (5px) ma l'area toccabile è molto più
-     ampia: un overlay trasparente che si estende oltre la barra e copre anche
-     il gap verticale, così non ci sono zone morte tra una barra e l'altra. */
+  /* area tap ampia, senza zone morte tra i segmenti */
   .sgn-mrail-bar::after {
     content: ''; position: absolute;
-    top: -5px; bottom: -5px; left: -14px; right: -14px;
+    top: -16px; bottom: -16px; left: -3px; right: -3px;
   }
-  .sgn-mrail-bar.active {
-    height: 34px; background: var(--yellow);
-  }
-  .sgn-mrail-bar:focus-visible { outline: 0.5px solid var(--yellow); outline-offset: 2px; }
-  @media (max-width: 760px) {
-    .sgn-mrail { display: flex; }
-  }
+  .sgn-mrail-bar.active { width: 34px; background: var(--yellow); }
+  .sgn-mrail-bar:focus-visible { outline: 2px solid var(--grey); outline-offset: 2px; }
 
   /* ── Swipe hint (mobile, una-tantum a sessione) · chip in basso al
         centro del display. Compare all'apertura di un modulo multi-pagina e
@@ -1397,11 +1153,10 @@ button { border: none; }
     position: absolute; z-index: 21;
     left: 50%; bottom: 14px;
     display: inline-flex; align-items: center; gap: 8px;
-    background: var(--paper); color: var(--ink);
-    border-left: 2px solid var(--yellow);
-    padding: 6px 11px 6px 9px;
-    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
-    letter-spacing: 0.2em; text-transform: uppercase;
+    background: var(--paper); color: var(--grey);
+    padding: 8px 12px;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
     pointer-events: none;
     opacity: 0; transform: translate(-50%, 8px);
     transition: opacity 280ms linear, transform 280ms cubic-bezier(0.2,0,0,1);
@@ -1423,7 +1178,7 @@ button { border: none; }
     width: 20ch;
     height: 1em;
     font-family: var(--font-mono);
-    font-size: clamp(7px, 2vw, 10px);
+    font-size: clamp(12px, 2vw, 10px);
     font-weight: 700;
     letter-spacing: clamp(0.12em, 0.55vw, 0.24em);
     line-height: 1;
@@ -1460,8 +1215,7 @@ button { border: none; }
   .sgn-onboard {
     position: fixed; z-index: 80;
     top: clamp(60px, 8vh, 78px); left: 50%; transform: translateX(-50%);
-    background: var(--white); color: var(--ink);
-    border: 0.5px solid var(--ink);
+    background: var(--paper); color: var(--grey);
     padding: 12px 14px;
     display: flex; align-items: center; gap: 14px;
     font-family: var(--font-mono);
@@ -1472,23 +1226,22 @@ button { border: none; }
   @keyframes sgnHintIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
   .sgn-onboard::before {
     content: ''; position: absolute; top: -5px; left: 50%;
-    width: 9px; height: 9px; background: var(--white);
-    border-left: 0.5px solid var(--ink); border-top: 0.5px solid var(--ink);
+    width: 9px; height: 9px; background: var(--paper);
     transform: translateX(-50%) rotate(45deg);
   }
-  .sgn-onboard .ob-txt { font-size: 11px; line-height: 1.5; letter-spacing: 0.01em; color: var(--ink); }
-  .sgn-onboard .ob-txt b { font-weight: 700; }
+  .sgn-onboard .ob-txt { font-size: 12px; line-height: 1.5; letter-spacing: 0.01em; color: var(--grey); }
+  .sgn-onboard .ob-txt b { font-weight: 700; color: var(--ink); }
   .sgn-onboard kbd {
-    display: inline-block; background: var(--paper);
+    display: inline-block; background: var(--white);
     padding: 1px 6px; margin: 0 1px;
-    font-family: inherit; font-size: 10px; font-weight: 700;
+    font-family: inherit; font-size: 12px; font-weight: 700;
     letter-spacing: 0.12em; color: var(--ink);
   }
   .sgn-onboard .ob-x {
     appearance: none; cursor: pointer; flex-shrink: 0;
-    background: var(--paper); border: none;
-    color: var(--ink); font-family: inherit; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.14em; padding: 5px 9px;
+    background: var(--white); border: none;
+    color: var(--ink); font-family: inherit; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; padding: 5px 9px;
     transition: background 140ms linear, border-color 140ms linear;
   }
   .sgn-onboard .ob-x:hover { background: var(--yellow); color: var(--white); }
@@ -1677,8 +1430,8 @@ const BRAND = {
   domain: 'SGNOOGLE.COM',
   product: 'SGNOOGLE',
   handle: '@sgnoogle',
-  version: 'v3.0',
-  release: 'STEEL',
+  version: 'v4',
+  release: 'WHITE',
 };
 
 /* CONTACTS · singola fonte di verità per email + social.
@@ -2159,30 +1912,38 @@ Object.assign(window, { BRAND, CONTACTS, MAILTO, CHANNEL, I18N, VIDEOS, OBJECTS,
 const C = {
   yellow: '#FFC200',
   paper:  '#F0F1F2',
-  grey:   '#787A7C',
+  grey:   '#6B6D70',
   ink:    '#28282C',
   white:  '#FFFFFF',
-  borderSoft: 'rgba(120,122,124,0.2)',
-  border: 'rgba(120,122,124,0.3)',
-  borderHair: 'rgba(120,122,124,0.15)',
-  faint: '#787A7C',
-  yellowSoft: 'rgba(255,194,0,0.12)',
+  /* v4: nessuna trasparenza. Gli alias storici puntano ai colori pieni:
+     i separatori spariscono (lo spazio separa), i fondi tenui diventano
+     acciaio. */
+  borderSoft: '#F0F1F2',
+  border: '#F0F1F2',
+  borderHair: '#F0F1F2',
+  faint: '#6B6D70',
+  yellowSoft: '#F0F1F2',
 };
 
 /* Padding unico per le FASCE DI TESTO dei box che contengono media
    (featured / griglia video / sponsor). Principio: il media va a filo
    della cornice (niente mat bianco intorno), il padding vive solo qui. */
-const CARD_PAD = 'clamp(10px, 1vw, 14px)';
+const CARD_PAD = 'clamp(12px, 1vw, 14px)';
 
 /* ───────── Tag / Label / Caption / Pill ───────── */
 
-function Tag({ children, color = C.yellow, size = 10, style }) {
+/* Tag · v4 kit "Etichetta": bianco su giallo, Plex Mono 700 maiuscolo.
+   Il giallo è superficie, mai colore del testo. (`color` ignorato.) */
+function Tag({ children, size = 12, style }) {
   return (
     <span style={{
+      display: 'inline-block',
+      background: C.yellow, color: C.white,
       fontFamily: 'IBM Plex Mono, monospace',
-      fontSize: size, fontWeight: 700,
-      letterSpacing: '0.2em', textTransform: 'uppercase',
-      color, ...style,
+      fontSize: size, fontWeight: 700, lineHeight: 1,
+      letterSpacing: '0.12em', textTransform: 'uppercase',
+      padding: '8px 10px',
+      ...style,
     }}>{children}</span>
   );
 }
@@ -2191,8 +1952,8 @@ function Label({ children, color = C.grey, size = 10, style, className = '' }) {
   return (
     <span className={`sgn-label${className ? ' ' + className : ''}`} style={{
       fontFamily: 'IBM Plex Mono, monospace',
-      fontSize: size, fontWeight: 600,
-      letterSpacing: '0.14em', textTransform: 'uppercase',
+      fontSize: size, fontWeight: 700,
+      letterSpacing: '0.12em', textTransform: 'uppercase',
       color, ...style,
     }}>{children}</span>
   );
@@ -2202,7 +1963,7 @@ function Caption({ children, style }) {
   return (
     <span style={{
       fontFamily: 'IBM Plex Mono, monospace',
-      fontSize: 9, fontWeight: 300,
+      fontSize: 12, fontWeight: 400,
       letterSpacing: '0.06em', color: C.faint, ...style,
     }}>{children}</span>
   );
@@ -2216,7 +1977,7 @@ function Pill({ k, v, gold, style }) {
       display: 'inline-flex', alignItems: 'stretch',
       background: gold ? C.yellowSoft : C.paper,
       fontFamily: 'IBM Plex Mono, monospace',
-      fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase',
+      fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase',
       ...style,
     }}>
       <span style={{
@@ -2226,6 +1987,27 @@ function Pill({ k, v, gold, style }) {
         fontWeight: 700,
       }}>{k}</span>
       <span style={{ padding: '4px 10px', color: C.ink, fontWeight: 700 }}>{v}</span>
+    </span>
+  );
+}
+
+/* ───────── Datum · v4 kit "Dato": chiave bianca su giallo + valore grigio
+   su acciaio, affiancati senza spazio. `onWhite=false` quando il fondo è
+   già acciaio (allora il valore va su bianco). */
+function Datum({ k, v, onPaper = false, size = 'md', style }) {
+  const S = size === 'sm'
+    ? { fs: 12, p: '8px 10px' }
+    : { fs: 'clamp(12px, 0.95vw, 14px)', p: 'clamp(9px, 0.8vw, 12px) clamp(10px, 0.95vw, 14px)' };
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'stretch',
+      fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
+      fontSize: S.fs, lineHeight: 1, letterSpacing: '0.08em',
+      fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+      ...style,
+    }}>
+      <span style={{ background: C.yellow, color: C.white, padding: S.p, textTransform: 'uppercase' }}>{k}</span>
+      <span style={{ background: onPaper ? C.white : C.paper, color: C.grey, padding: S.p }}>{v}</span>
     </span>
   );
 }
@@ -2242,7 +2024,7 @@ function BarHeader({ children, tick, color = C.ink, size = 9, style }) {
     }}>
       <span style={{
         fontFamily: 'IBM Plex Mono, monospace',
-        fontSize: size, fontWeight: 700, letterSpacing: '0.28em',
+        fontSize: size, fontWeight: 700, letterSpacing: '0.12em',
         color, whiteSpace: 'nowrap',
       }}>{children}</span>
       <span style={{ flex: 1, height: 0, minWidth: 0 }}/>
@@ -2281,17 +2063,15 @@ function Bar({ value, max = 10, gold, active = true, height = 6, gap = 3, delay 
     return () => cancelAnimationFrame(raf);
   }, [value, active, delay]);
 
+  /* v4 · BARRA continua: binario acciaio, riempimento giallo. È l'unico
+     elemento che si anima. (gold/gap restano in firma per compatibilità.) */
   return (
-    <div style={{ display: 'flex', gap }}>
-      {Array.from({ length: max }, (_, i) => (
-        <div key={i} style={{
-          flex: 1, height,
-          background: i < filled
-            ? (gold ? C.yellow : C.ink)
-            : 'rgba(120,122,124,0.2)',
-          transition: 'background 80ms linear',
-        }}/>
-      ))}
+    <div style={{ height, background: C.paper, position: 'relative' }}>
+      <div style={{
+        position: 'absolute', left: 0, top: 0, bottom: 0,
+        width: `${(Math.max(0, Math.min(max, filled)) / max) * 100}%`,
+        background: C.yellow,
+      }}/>
     </div>
   );
 }
@@ -2305,10 +2085,10 @@ function Progress({ value = 0, gold, active = true, height = 2, delay = 0 }) {
     return () => clearTimeout(t);
   }, [value, active, delay]);
   return (
-    <div style={{ height, background: 'rgba(120,122,124,0.2)' }}>
+    <div style={{ height, background: C.paper }}>
       <div style={{
         height: '100%', width: `${w}%`,
-        background: gold ? C.yellow : C.ink,
+        background: C.yellow,
         transition: 'width 600ms cubic-bezier(0.2,0,0,1)',
       }}/>
     </div>
@@ -2344,7 +2124,7 @@ function GhostNumber({ n, top = 0, right = 0, size = '20vw', opacity = 0.06 }) {
   );
 }
 
-Object.assign(window, { C, Tag, Label, Caption, Pill, Bar, BarHeader, Progress, TierBadge, GhostNumber });
+Object.assign(window, { C, Tag, Label, Caption, Pill, Datum, Bar, BarHeader, Progress, TierBadge, GhostNumber });
 
 </script>
 
@@ -2488,7 +2268,7 @@ Object.assign(window, { ModuleIcon, ChannelGlyph });
    diff 0.00% a 280px. */
 const ARROW_MASK = 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Cpath%20d%3D%27M25%200V100H0V25ZM0%2072.5H100L72.5%20100H0ZM78.75%200L100%2021.25L27.5%2093.75L6.25%2072.5Z%27%2F%3E%3C%2Fsvg%3E';
 
-function MarathonArrow({ size = 22, dir = 'down-left', color = C.yellow }) {
+function MarathonArrow({ size = 22, dir = 'down-left', color = C.ink, className }) {
   // Rotazione CW partendo da SW = 0°
   const rot = {
     'down-left':  0,
@@ -2503,6 +2283,7 @@ function MarathonArrow({ size = 22, dir = 'down-left', color = C.yellow }) {
   return (
     <span
       aria-hidden
+      className={className}
       style={{
         display: 'inline-block',
         width: size, height: size,
@@ -2666,13 +2447,13 @@ function PageTitle({ label, sub }) {
     }}>
       <span style={{
         fontFamily: 'IBM Plex Mono, monospace',
-        fontSize: 10, fontWeight: 700, letterSpacing: '0.22em',
+        fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
         color: C.faint,
       }}>{label}</span>
       {sub && (
         <span style={{
           fontFamily: 'IBM Plex Mono, monospace',
-          fontSize: 11, color: C.grey, letterSpacing: '0.04em',
+          fontSize: 12, color: C.grey, letterSpacing: '0.04em',
         }}>{sub}</span>
       )}
     </div>
@@ -3018,7 +2799,7 @@ function STLLab({ lang }) {
     const h = el.clientHeight || 400;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xFFFFFF);
+    scene.background = new THREE.Color(0xF0F1F2);   // v4: media su acciaio pieno
 
     const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 2000);
     camera.position.set(0, 0, 360);
@@ -3028,15 +2809,16 @@ function STLLab({ lang }) {
     renderer.setSize(w, h);
     el.appendChild(renderer.domElement);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const dir = new THREE.DirectionalLight(0xffffff, 0.85);
+    // Somma luci = 1: la faccia in luce piena rende esattamente #FFC200
+    // (con 1.45 il giallo saturava verso il limone).
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.45);
     dir.position.set(80, 120, 200);
     scene.add(dir);
 
     // Subtle grid floor
-    const grid = new THREE.GridHelper(400, 20, 0x787A7C, 0xC7C8C9);
-    grid.material.opacity = 0.10;
-    grid.material.transparent = true;
+    // v4: griglia bianca piena sull'acciaio, nessuna trasparenza.
+    const grid = new THREE.GridHelper(400, 20, 0xFFFFFF, 0xFFFFFF);
     grid.position.y = -110;
     scene.add(grid);
 
@@ -3290,8 +3072,10 @@ function STLLab({ lang }) {
       requestAnimationFrame(tick);
     };
     const buildSTLGroup = (geometry) => {
-      const fillMat = new THREE.MeshLambertMaterial({ color: 0xEDB200, transparent: true, opacity: 0 }); // ambra brand leggermente smorzato per il 3D (meno flashy del giallo #FFC200)
-      const edgeMat = new THREE.LineBasicMaterial({ color: 0x28282C, linewidth: 1, transparent: true, opacity: 0 });
+      // v4: giallo brand pieno; gli spigoli sono BIANCHI (sul giallo solo
+      // bianco, mai antracite).
+      const fillMat = new THREE.MeshLambertMaterial({ color: 0xFFC200, transparent: true, opacity: 0 });
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 1, transparent: true, opacity: 0 });
       const mesh  = new THREE.Mesh(geometry, fillMat);
       const edges = new THREE.EdgesGeometry(geometry, 15);
       const lines = new THREE.LineSegments(edges, edgeMat);
@@ -3356,7 +3140,7 @@ function STLLab({ lang }) {
       {/* Viewer */}
       <div className="sgn-stl-viewer" style={{
         position: 'relative',
-        background: C.white,
+        background: C.paper,
         minHeight: 0,
       }}>
         <div ref={mountRef}
@@ -3371,7 +3155,7 @@ function STLLab({ lang }) {
           <div style={{
             position: 'absolute', inset: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 10, letterSpacing: '0.22em', color: C.faint,
+            fontSize: 12, letterSpacing: '0.12em', color: C.faint,
           }}>LOADING · THREE.JS</div>
         )}
         {/* LOADING durante l'init differito del viewer + il fetch dell'STL.
@@ -3379,16 +3163,16 @@ function STLLab({ lang }) {
             lampeggiante), ma su fondo bianco come il visualizzatore. */}
         {ready && !loadError && !modelReady && (
           <div aria-hidden="true" style={{
-            position: 'absolute', inset: 0, background: C.white,
+            position: 'absolute', inset: 0, background: C.paper,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             pointerEvents: 'none',
           }}>
             <span style={{
-              fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, fontWeight: 700,
-              letterSpacing: '0.22em', color: C.grey,
+              fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.12em', color: C.grey,
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}>
-              <span style={{ color: C.yellow }}>▸</span>LOADING
+              <span style={{ color: C.grey }}>▸</span>LOADING
               <span style={{ animation: 'sgnBlink 1s steps(1) infinite' }}>_</span>
             </span>
           </div>
@@ -3400,34 +3184,34 @@ function STLLab({ lang }) {
             alignItems: 'center', justifyContent: 'center', padding: 24,
             textAlign: 'center', fontFamily: 'IBM Plex Mono, monospace',
           }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.2em', color: C.ink, fontWeight: 700 }}>
+            <span style={{ fontSize: 12, letterSpacing: '0.12em', color: C.ink, fontWeight: 700 }}>
               {lang === 'it' ? 'VISUALIZZATORE 3D NON DISPONIBILE' : '3D VIEWER UNAVAILABLE'}
             </span>
-            <span style={{ fontSize: 10, letterSpacing: '0.04em', color: C.grey, lineHeight: 1.6, maxWidth: 280 }}>
+            <span style={{ fontSize: 12, letterSpacing: '0.04em', color: C.grey, lineHeight: 1.6, maxWidth: 280 }}>
               {lang === 'it'
                 ? 'Impossibile caricare il motore 3D. Controlla la connessione e riprova.'
                 : 'Could not load the 3D engine. Check your connection and retry.'}
             </span>
             <button onClick={() => { setLoadError(false); setReady(!!window.THREE?.STLLoader); setViewerRequested(true); }}
               style={{
-                border: `0.5px solid ${C.ink}`, background: 'transparent', color: C.ink,
-                fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, letterSpacing: '0.2em',
-                fontWeight: 700, padding: '8px 18px', cursor: 'pointer',
+                border: 'none', background: C.yellow, color: C.white,
+                fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, letterSpacing: '0.12em',
+                fontWeight: 700, padding: '12px 18px', cursor: 'pointer',
               }}>
               {lang === 'it' ? 'RIPROVA' : 'RETRY'}
             </button>
           </div>
         )}
         <div style={{
-          position: 'absolute', bottom: 10, right: 10,
-          fontSize: 9, letterSpacing: '0.2em', color: C.faint,
-          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 600,
-          textAlign: 'right', lineHeight: 1.5, pointerEvents: 'none',
+          position: 'absolute', bottom: 14, right: 16,
+          fontSize: 12, color: C.grey,
+          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 400,
+          textAlign: 'right', lineHeight: 1.6, pointerEvents: 'none',
         }}>
-          <div>{lang === 'it' ? 'TRASCINA PER RUOTARE' : 'DRAG TO ROTATE'}</div>
+          <div>{lang === 'it' ? 'Trascina per ruotare' : 'Drag to rotate'}</div>
           <div>{coarse
-            ? (lang === 'it' ? 'PIZZICA PER ZOOM' : 'PINCH TO ZOOM')
-            : (lang === 'it' ? 'ROTELLA PER ZOOM' : 'SCROLL TO ZOOM')}</div>
+            ? (lang === 'it' ? 'Pizzica per lo zoom' : 'Pinch to zoom')
+            : (lang === 'it' ? 'Rotella per lo zoom' : 'Scroll to zoom')}</div>
         </div>
       </div>
 
@@ -3451,20 +3235,19 @@ function STLLab({ lang }) {
             padding: 'clamp(12px,1.3vw,16px) clamp(14px,1.4vw,18px) 10px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <Label size={9} color={C.faint}>CATALOG</Label>
+            <Label size={12} color={C.grey}>{lang === 'it' ? 'CATALOGO' : 'CATALOG'}</Label>
             <span style={{
-              fontFamily: 'IBM Plex Mono, monospace', fontSize: 9, fontWeight: 700,
-              letterSpacing: '0.18em', color: C.ink,
+              fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.12em', color: C.ink,
               background: C.paper,
-              padding: '2px 7px',
+              padding: '6px 8px',
             }}>{String(OBJECTS.length).padStart(2, '0')}</span>
           </div>
 
           {/* lista modelli + dettaglio INLINE sotto la voce attiva */}
           <div style={{
-            display: 'flex', flexDirection: 'column', gap: 1,
-            background: C.borderSoft,
-            paddingBottom: 1,
+            /* v4: righe separate dallo spazio, nessun filo tra una e l'altra */
+            display: 'flex', flexDirection: 'column', gap: 6,
           }}>
             {OBJECTS.map(o => (
               <STLListItem
@@ -3493,35 +3276,33 @@ function STLListItem({ o, active, onSelect }) {
         position: 'relative',
         background: active ? C.paper : C.white,
         border: 'none',
-        padding: '10px 10px 10px 16px',
+        padding: '12px 12px 12px 16px',
         cursor: 'pointer',
         display: 'grid',
-        gridTemplateColumns: '28px 1fr auto',
+        gridTemplateColumns: '34px 1fr auto',
         gap: 10, alignItems: 'center',
         fontFamily: 'IBM Plex Mono, monospace',
         textAlign: 'left',
         transition: 'background 160ms linear',
       }}>
-      {/* Yellow rail on active */}
-      <span className="sgn-stl-rail" style={{
-        position: 'absolute', top: 0, left: 0, bottom: 0,
-        width: 3, background: active ? C.yellow : 'transparent',
-        transition: 'background 160ms linear',
-      }}/>
       <span className="sgn-stl-id" style={{
-        fontSize: 10, letterSpacing: '0.18em', color: active ? C.ink : C.faint,
-        fontWeight: 700,
+        fontSize: 13, fontWeight: 700, lineHeight: 1,
+        justifySelf: 'start', padding: '6px 6px',
+        /* v4: la voce attiva si segna con un'ETICHETTA (bianco su giallo) */
+        color: active ? C.white : C.grey,
+        background: active ? C.yellow : 'transparent',
+        transition: 'background 160ms linear, color 160ms linear',
       }}>{o.id}</span>
       <span style={{
         display: 'flex', flexDirection: 'column', minWidth: 0,
       }}>
         <span style={{
-          fontSize: 12, fontWeight: 700, color: C.ink,
+          fontSize: 'clamp(14px, 1.05vw, 16px)', fontWeight: 700, color: C.ink,
           letterSpacing: '-0.005em',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{o.name}</span>
         <span style={{
-          fontSize: 9, color: C.grey, letterSpacing: '0.04em', marginTop: 2,
+          fontSize: 12, color: C.grey, letterSpacing: '0.04em', marginTop: 2,
         }}>{o.file}</span>
       </span>
       {o.link && (
@@ -3530,7 +3311,8 @@ function STLListItem({ o, active, onSelect }) {
           href={o.link}
           target="_blank"
           size="xs"
-          label="MW"
+          label="MAKERWORLD"
+          className="sgn-stl-mw"
           onClick={(e) => { e.stopPropagation(); if (window.sgnTick) window.sgnTick('confirm'); }}
           title="MakerWorld · Bambu Lab"
           aria-label={`${o.name} · MakerWorld`}
@@ -3611,13 +3393,13 @@ function ModuleHeader({ id, title, sub }) {
         fontSize: 'clamp(38px, 5vw, 62px)', letterSpacing: '-0.05em',
         color: C.ink, lineHeight: 0.85,
       }}>
-        <span style={{ color: C.yellow }}>{id}</span>
+        <span>{id}</span>
       </span>
 
       <h2 style={{
         fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
         fontSize: 'clamp(16px, 1.5vw, 20px)', lineHeight: 1.1,
-        letterSpacing: '0.18em', color: C.ink,
+        letterSpacing: '0.12em', color: C.ink,
         textTransform: 'uppercase', margin: 0,
       }}>{title}</h2>
 
@@ -3626,9 +3408,9 @@ function ModuleHeader({ id, title, sub }) {
         <span className="sgn-vsub" style={{
           writingMode: 'vertical-rl',
           fontFamily: 'IBM Plex Mono, monospace',
-          fontSize: 'clamp(9px, 0.8vw, 10px)',
-          fontWeight: 600,
-          letterSpacing: '0.22em',
+          fontSize: 'clamp(12px, 0.8vw, 10px)',
+          fontWeight: 700,
+          letterSpacing: '0.12em',
           color: C.grey, textTransform: 'uppercase',
           lineHeight: 1.4,
           maxHeight: 'clamp(40px, 6vh, 70px)',
@@ -3650,10 +3432,10 @@ function ModuleHeader({ id, title, sub }) {
    interattivo di suo e si accende all'hover della card che lo contiene. */
 function CTA({ label, href, onClick, target, as, size = 'md', dir = 'up-right', className = '', style, ...rest }) {
   const S = ({
-    md: { h: 44, icon: 44, arrow: 22, fs: 11, ls: '0.2em',  px: 18 },
-    sm: { h: 38, icon: 38, arrow: 14, fs: 11, ls: '0.18em', px: 16 },
-    xs: { h: 26, icon: 26, arrow: 11, fs: 9,  ls: '0.18em', px: 11 },
-  })[size] || { h: 44, icon: 44, arrow: 22, fs: 11, ls: '0.2em', px: 18 };
+    md: { h: 46, icon: 46, arrow: 18, fs: 13, ls: '0.12em', px: 20 },
+    sm: { h: 40, icon: 40, arrow: 15, fs: 12, ls: '0.12em', px: 16 },
+    xs: { h: 32, icon: 32, arrow: 12, fs: 12, ls: '0.12em', px: 12 },
+  })[size] || { h: 46, icon: 46, arrow: 18, fs: 13, ls: '0.12em', px: 20 };
   const Tag = as || (href ? 'a' : 'button');
   const interactive = Tag !== 'span';
   const tagProps = {
@@ -3667,9 +3449,9 @@ function CTA({ label, href, onClick, target, as, size = 'md', dir = 'up-right', 
   return (
     <Tag {...tagProps}>
       <span className="sgn-cta__icon" style={{ width: S.icon }}>
-        <MarathonArrow size={S.arrow} dir={dir} color={C.yellow}/>
+        <MarathonArrow size={S.arrow} dir={dir} color={C.white}/>
       </span>
-      <span className="sgn-cta__label" style={{ padding: `0 ${S.px}px`, fontSize: S.fs, letterSpacing: S.ls }}>
+      <span className="sgn-cta__label" style={{ padding: `0 ${S.px}px 0 0`, fontSize: S.fs, letterSpacing: S.ls }}>
         {label}
       </span>
     </Tag>
@@ -3682,7 +3464,6 @@ function CTA({ label, href, onClick, target, as, size = 'md', dir = 'up-right', 
 function EmptyModuleState({ status = 'NO RECORDS FOUND', title, body, hint }) {
   return (
     <div style={{
-      background: C.white,
       padding: 'clamp(28px, 4vw, 56px)',
       display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 18,
       fontFamily: 'IBM Plex Mono, monospace',
@@ -3690,10 +3471,10 @@ function EmptyModuleState({ status = 'NO RECORDS FOUND', title, body, hint }) {
       {/* Status line · tacca gialla spec-sheet, niente prompt > da shell */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10,
-        fontSize: 13, fontWeight: 700, color: C.ink,
-        letterSpacing: '0.16em',
+        fontSize: 13, fontWeight: 700, color: C.grey,
+        letterSpacing: '0.12em',
       }}>
-        <span style={{ width: 4, height: 15, background: C.yellow, flexShrink: 0 }}/>
+        <span style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
         <span>{status}</span>
       </div>
       {title && (
@@ -3712,10 +3493,10 @@ function EmptyModuleState({ status = 'NO RECORDS FOUND', title, body, hint }) {
       {hint && (
         <div style={{
           marginTop: 6, display: 'inline-flex', alignItems: 'center', gap: 8,
-          fontSize: 10, letterSpacing: '0.16em', fontWeight: 600,
+          fontSize: 12, letterSpacing: '0.12em', fontWeight: 700,
           color: C.ink,
         }}>
-          <span style={{ color: C.yellow, fontSize: 9 }}>▸</span>{hint}
+          <span style={{ color: C.grey, fontSize: 12 }}>▸</span>{hint}
         </div>
       )}
     </div>
@@ -3730,27 +3511,27 @@ function EmptyModuleState({ status = 'NO RECORDS FOUND', title, body, hint }) {
 function PageHeader({ id, title, page, showTag = true }) {
   return (
     <header style={{
-      display: 'flex', alignItems: 'baseline', gap: 'clamp(8px, 1.2vw, 14px)',
-      paddingBottom: 'clamp(10px, 1.4vh, 14px)',
+      display: 'flex', alignItems: 'baseline', gap: 'clamp(12px, 1.2vw, 14px)',
+      paddingBottom: 'clamp(12px, 1.4vh, 14px)',
       flexShrink: 0, paddingRight: 160,  /* riserva spazio al PageHUD top-right */
     }}>
       {showTag && (
         <span style={{
-          fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, fontWeight: 700,
-          letterSpacing: '0.22em', color: C.faint, textTransform: 'uppercase',
+          fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, fontWeight: 700,
+          letterSpacing: '0.12em', color: C.faint, textTransform: 'uppercase',
           padding: '3px 6px',
           lineHeight: 1,
         }}>§ {id}</span>
       )}
       <h2 style={{
         fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-        fontSize: 'clamp(13px, 1.2vw, 16px)', letterSpacing: '0.18em',
+        fontSize: 'clamp(13px, 1.2vw, 16px)', letterSpacing: '0.12em',
         color: C.ink, textTransform: 'uppercase', margin: 0,
       }}>{title}</h2>
       <span style={{ color: C.border, fontSize: 14 }}>/</span>
       <span style={{
-        fontFamily: 'IBM Plex Mono, monospace', fontSize: 10,
-        letterSpacing: '0.22em', color: C.faint, fontWeight: 600,
+        fontFamily: 'IBM Plex Mono, monospace', fontSize: 12,
+        letterSpacing: '0.12em', color: C.faint, fontWeight: 700,
         textTransform: 'uppercase',
       }}>{page}</span>
     </header>
@@ -3851,7 +3632,7 @@ function useLatestUploads() {
           if (!vid || s.channelId !== CHANNEL_ID) return null;
           return {
             id: vid, youtubeId: vid,
-            title: (s.title || '').toUpperCase(),
+            title: s.title || '',
             cat: 'YOUTUBE',
             url: 'https://www.youtube.com/watch?v=' + vid,
           };
@@ -3883,7 +3664,7 @@ function VideoModule({ lang }) {
           gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
           gridAutoRows: 'min-content',
           alignContent: 'start',
-          gap: 'clamp(10px, 1.2vw, 16px)',
+          gap: 'clamp(12px, 1.2vw, 16px)',
           overflowY: 'auto',
         }}>
           {rest.map((v, i) => <VideoCard key={v.id} v={v} L={L} delay={i * 60}/>)}
@@ -3928,13 +3709,14 @@ function FeaturedVideo({ v, L, lang }) {
   );
 
   return (
-    <div ref={ref} className="sgn-card-hover sgn-card-hover--media sgn-featured" style={{
+    <div ref={ref} className="sgn-featured" style={{
       position: 'relative',
       height: '100%', overflow: 'hidden',
       display: 'grid',
       gridTemplateAreas: '"vid info"',
       gridTemplateColumns: 'minmax(0, 1.68fr) minmax(300px, 0.92fr)',
       gridTemplateRows: '1fr',
+      columnGap: 'clamp(20px, 2.4vw, 40px)',
       background: C.white,
       boxSizing: 'border-box',
     }}>
@@ -3952,25 +3734,28 @@ function FeaturedVideo({ v, L, lang }) {
       {/* INFO: desktop col2 | mobile row2. Pannello editoriale: badge, titolo,
          descrizione tagliata, metadati e CTA in una singola colonna stabile. */}
       <div className="sgn-feat-info" style={{
-        padding: CARD_PAD,
+        padding: 'clamp(4px, 1vh, 12px) 0',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
-        gap: 'clamp(10px, 1.35vh, 16px)',
+        gap: 'clamp(12px, 1.35vh, 16px)',
         overflow: 'hidden',
       }}>
         <div className="sgn-feat-head" style={{ minHeight: 0, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, marginBottom: 'clamp(8px, 1vh, 12px)' }}>
-            <Tag color={C.yellow}>{L.video.featured}</Tag>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, marginBottom: 'clamp(12px, 1vh, 12px)' }}>
+            <Tag>{L.video.featured}</Tag>
           </div>
           <div className="sgn-feat-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-            fontSize: 'clamp(24px, 2.4vw, 42px)', letterSpacing: '-0.05em',
-            color: C.ink, lineHeight: 0.95, margin: 0, textTransform: 'uppercase',
-            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
+            fontSize: 'clamp(24px, 2.3vw, 40px)', letterSpacing: '-0.02em',
+            color: C.ink, lineHeight: 1.08, margin: 0,
+            display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical',
+            overflow: 'hidden', textWrap: 'balance',
           }}>{displayTitle}</div>
-          <Label className="sgn-feat-desktop-meta" color={C.grey} size={10} style={{ display: 'block', marginTop: 8 }}>
-            FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ''}
-          </Label>
+          <span className="sgn-feat-byline" style={{
+            display: 'block', marginTop: 12,
+            fontSize: 'clamp(13px, 1vw, 15px)', color: C.grey, lineHeight: 1.4,
+          }}>
+            Francesco Sgnaolin{displayDate ? ` · ${displayDate}` : ''}
+          </span>
         </div>
 
         <div className="sgn-feat-inline-vid-col" style={{
@@ -3980,62 +3765,22 @@ function FeaturedVideo({ v, L, lang }) {
           {renderFeaturedMedia()}
         </div>
 
-        <div className="sgn-feat-mobile-meta" aria-label={lang === 'it' ? 'Dettagli video' : 'Video details'}>
-          <Label color={C.grey} size={10} style={{ display: 'block' }}>
-            FRANCESCO SGNAOLIN{displayDate ? ` · ${displayDate}` : ''}
-          </Label>
-          {meta && (
-            <div className="sgn-feat-mobile-metrics" aria-label={lang === 'it' ? 'Metriche video' : 'Video metrics'}>
-              {[
-                { k: 'VIEWS', v: fmtViews(meta.views) },
-                { k: 'TIME', v: fmtDur(meta.duration) },
-              ].map(({ k, v: val }) => (
-                <div key={k} className="sgn-feat-mobile-metric">
-                  <span className="sgn-feat-mobile-metric__label">{k}</span>
-                  <span className="sgn-feat-mobile-metric__value">{val}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-
+        {/* v4 · due DATI del kit, stessi su desktop e mobile */}
         {meta && (
-          <div className="sgn-feat-stats" style={{ display: 'flex', flexShrink: 0, marginTop: 'auto' }}>
-            {[
-              { k: 'VIEWS', v: fmtViews(meta.views) },
-              { k: 'TIME', v: fmtDur(meta.duration) },
-            ].map(({ k, v: val }, i) => (
-              <div key={k} className="sgn-feat-stat-cell" style={{
-                flex: 1, boxSizing: 'border-box',
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', gap: 6,
-                paddingTop: 'clamp(12px, 1.6vh, 16px)',
-                paddingBottom: 'clamp(12px, 1.6vh, 16px)',
-                paddingLeft: i > 0 ? 'clamp(12px, 1.4vw, 18px)' : 'clamp(8px, 2.5vw, 16px)',
-                paddingRight: 'clamp(6px, 1.5vw, 12px)',
-                textAlign: 'center',
-              }}>
-                <span className="sgn-feat-stat-value" style={{
-                  display: 'block', fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-                  fontSize: 'clamp(16px, 1.5vw, 20px)', color: C.ink,
-                  lineHeight: 1, letterSpacing: '-0.02em',
-                }}>{val}</span>
-                <span className="sgn-feat-stat-label" style={{
-                  display: 'block', fontFamily: 'IBM Plex Mono, monospace',
-                  fontSize: 9, fontWeight: 600, letterSpacing: '0.14em',
-                  textTransform: 'uppercase', color: C.faint, lineHeight: 1,
-                }}>{k}</span>
-              </div>
-            ))}
+          <div className="sgn-feat-data" style={{
+            display: 'flex', flexWrap: 'wrap', gap: 10, flexShrink: 0,
+            marginTop: 'clamp(4px, 1vh, 12px)',
+          }}>
+            <Datum k={lang === 'it' ? 'VISTE' : 'VIEWS'} v={fmtViews(meta.views)}/>
+            <Datum k={lang === 'it' ? 'DURATA' : 'LENGTH'} v={fmtDur(meta.duration)}/>
           </div>
         )}
 
-        <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(8px, 1.2vh, 14px)', marginTop: meta ? undefined : 'auto' }}>
+        <div className="sgn-feat-foot" style={{ display: 'flex', flexDirection: 'column', flexShrink: 0, gap: 'clamp(12px, 1.2vh, 14px)', marginTop: 'auto' }}>
           <CTA
             href={videoHref}
             target="_blank"
-            size="sm"
+            size="md"
             className="sgn-feat-cta"
             label={lang === 'it' ? 'GUARDA SU YOUTUBE' : 'WATCH ON YOUTUBE'}
             style={{ alignSelf: 'stretch' }}
@@ -4108,8 +3853,8 @@ function VideoPreview({ youtubeId, playlistId, title }) {
           pointerEvents: 'none',
         }}>
           <span style={{
-            fontFamily: 'IBM Plex Mono, monospace', fontSize: 10, fontWeight: 700,
-            letterSpacing: '0.22em', color: C.grey,
+            fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, fontWeight: 700,
+            letterSpacing: '0.12em', color: C.grey,
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
             <span style={{ color: C.grey }}>▸</span>{armed ? 'LOADING' : 'LIVE FEED · STANDBY'}
@@ -4127,7 +3872,7 @@ function VideoCard({ v, L, delay = 0 }) {
     <a ref={ref} href={v.url || undefined}
       target={v.url ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className="sgn-card-hover sgn-card-hover--media sgn-hot" style={{
+      className="sgn-card-hover sgn-hot" style={{
       position: 'relative', textDecoration: 'none', color: 'inherit',
       background: C.white,
       opacity: inView ? 1 : 0,
@@ -4150,8 +3895,8 @@ function VideoCard({ v, L, delay = 0 }) {
             Nessun altro metadato (categoria/durata/data) per scelta. */}
         <div style={{
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-          fontSize: 'clamp(11px, 1vw, 13px)',
-          color: C.ink, lineHeight: 1.25, letterSpacing: '-0.005em',
+          fontSize: 'clamp(13px, 1vw, 15px)',
+          color: C.ink, lineHeight: 1.3, letterSpacing: '-0.005em',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
         }}>{v.title}</div>
@@ -4214,7 +3959,6 @@ function MoreVideosCard({ lang, delay = 0 }) {
         aspectRatio: '16 / 9', flexShrink: 0, position: 'relative', overflow: 'hidden', background: C.paper,
         display: 'flex', alignItems: 'flex-end', padding: 'clamp(12px, 1.2vw, 18px)',
       }}>
-        <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: C.yellow }}/>
         <div style={{
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: 'clamp(18px, 1.8vw, 26px)', letterSpacing: '-0.03em',
@@ -4223,7 +3967,7 @@ function MoreVideosCard({ lang, delay = 0 }) {
       </div>
       <div style={{ flexShrink: 0, padding: CARD_PAD }}>
         <CTA href="https://www.youtube.com/c/FrancescoSgnaolin/videos" target="_blank" size="sm"
-             label={isIt ? 'CANALE FRANCESCO' : 'FRANCESCO CHANNEL'} />
+             label={isIt ? 'APRI IL CANALE' : 'OPEN CHANNEL'} />
       </div>
     </div>
   );
@@ -4242,20 +3986,16 @@ function VideoArt({ v, big, fill }) {
       ...sizing,
       background: C.paper, overflow: 'hidden',
     }}>
-      {/* rail giallo: a sinistra (A) o in alto a tutta larghezza (B) · mai giallo a contatto con l'ink */}
-      {isB
-        ? <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: big ? 5 : 3, background: C.yellow }}/>
-        : <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: big ? 5 : 3, background: C.yellow }}/>}
       <div style={{
         position: 'absolute', top: big ? 22 : 14, left: big ? 22 : 16,
         fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
         fontSize: big ? 'clamp(24px, 3vw, 44px)' : 'clamp(14px, 1.6vw, 20px)',
-        color: C.ink, letterSpacing: '-0.03em', lineHeight: 1.02,
-        textTransform: 'uppercase', maxWidth: '78%',
+        color: C.ink, letterSpacing: '-0.02em', lineHeight: 1.08,
+        maxWidth: '78%',
       }}>{v.title}</div>
       <div style={{
-        position: 'absolute', bottom: 10, left: big ? 22 : 16, fontSize: 9,
-        letterSpacing: '0.14em', textTransform: 'uppercase',
+        position: 'absolute', bottom: 10, left: big ? 22 : 16, fontSize: 12,
+        letterSpacing: '0.12em', textTransform: 'uppercase',
         color: C.faint,
       }}>SGNAOLIN · {v.id}</div>
     </div>
@@ -4329,7 +4069,7 @@ function AppPage({ app, lang }) {
       flex: 1, minHeight: 0,
       display: 'grid',
       gridTemplateRows: 'auto auto auto minmax(0, 1fr)',
-      gap: 'clamp(10px, 1.4vh, 16px)',
+      gap: 'clamp(12px, 1.4vh, 16px)',
       overflow: 'hidden',
     }}>
       {/* ─── HERO ─── icona definisce l'altezza; right col stretch + space-between:
@@ -4346,8 +4086,8 @@ function AppPage({ app, lang }) {
         }}>
           <h3 className="sgn-app-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-            fontSize: 'clamp(22px, 3vw, 42px)', letterSpacing: '-0.04em',
-            color: C.ink, lineHeight: 1, margin: 0, textTransform: 'lowercase',
+            fontSize: 'clamp(28px, 3.2vw, 48px)', letterSpacing: '-0.02em',
+            color: C.ink, lineHeight: 1, margin: 0,
           }}>{app.name}</h3>
           <CTA
             href={APP_PLAY_URL(app.pkg)}
@@ -4364,8 +4104,8 @@ function AppPage({ app, lang }) {
       {tagline && (
         <p className="sgn-app-tagline" style={{
           margin: 0, fontFamily: 'IBM Plex Mono, monospace',
-          fontSize: 'clamp(12px, 1.05vw, 14px)', color: C.ink,
-          lineHeight: 1.5, fontWeight: 600, textWrap: 'pretty',
+          fontSize: 'clamp(16px, 1.45vw, 21px)', color: C.grey,
+          lineHeight: 1.45, fontWeight: 400, textWrap: 'pretty', maxWidth: '48ch',
         }}>{tagline}</p>
       )}
 
@@ -4398,22 +4138,20 @@ function AppPage({ app, lang }) {
           minHeight: 0, overflowY: 'auto',
           display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 3.4vh, 40px)',
           paddingRight: 6, paddingBottom: 2,
-          WebkitMaskImage: 'linear-gradient(to bottom, #000 calc(100% - 18px), transparent)',
-          maskImage: 'linear-gradient(to bottom, #000 calc(100% - 18px), transparent)',
         }}>
           <div className="sgn-app-about">
-            <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 10 }}>
+            <Label size={12} color={C.grey} style={{ display: 'block', marginBottom: 12 }}>
               {lang === 'it' ? 'DESCRIZIONE' : 'ABOUT'}
             </Label>
             <p style={{
               margin: 0, fontFamily: 'IBM Plex Mono, monospace',
-              fontSize: 'clamp(13px, 1.05vw, 15px)', color: C.grey,
-              lineHeight: 1.7, textWrap: 'pretty',
+              fontSize: 'clamp(14px, 1.05vw, 16px)', color: C.grey,
+              lineHeight: 1.65, textWrap: 'pretty',
             }}>{description}</p>
           </div>
           {features.length > 0 && (
             <div className="sgn-app-features">
-              <Label size={9} color={C.faint} style={{ display: 'block', marginBottom: 12 }}>
+              <Label size={12} color={C.grey} style={{ display: 'block', marginBottom: 14 }}>
                 {lang === 'it' ? 'CARATTERISTICHE' : 'FEATURES'}
               </Label>
               <ul style={{
@@ -4422,15 +4160,13 @@ function AppPage({ app, lang }) {
               }}>
                 {features.map((f, i) => (
                   <li key={i} style={{
-                    display: 'flex', alignItems: 'baseline', gap: 10,
+                    /* v4 · "una riga per concetto": numero 700, testo 400 */
+                    display: 'flex', alignItems: 'baseline', gap: 16,
                     fontFamily: 'IBM Plex Mono, monospace',
-                    fontSize: 'clamp(12px, 1vw, 14px)', color: C.ink, fontWeight: 600,
+                    fontSize: 'clamp(14px, 1.05vw, 16px)', color: C.grey, fontWeight: 400,
                     lineHeight: 1.4,
                   }}>
-                    <span aria-hidden="true" style={{
-                      flexShrink: 0, width: 7, height: 7, background: C.yellow,
-                      transform: 'translateY(1px)',
-                    }}/>
+                    <b style={{ fontWeight: 700, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</b>
                     <span style={{ minWidth: 0 }}>{f}</span>
                   </li>
                 ))}
@@ -4444,7 +4180,7 @@ function AppPage({ app, lang }) {
           <div className="sgn-app-galcol" style={{
             minHeight: 0, display: 'flex', flexDirection: 'column', gap: 8,
           }}>
-            <Label size={9} color={C.faint} style={{ display: 'block' }}>
+            <Label size={12} color={C.grey} style={{ display: 'block', marginBottom: 4 }}>
               {lang === 'it' ? 'SCREENSHOT' : 'SCREENSHOTS'}
             </Label>
             <AppGallery shots={app.shotsLh || []} name={app.name}/>
@@ -4485,7 +4221,7 @@ function AppGallery({ shots, name }) {
       className={'sgn-app-gallery sgn-stl-scroll' + (edges.l ? ' fade-l' : '') + (edges.r ? ' fade-r' : '')}
       style={{
       flex: 1, minHeight: 0,
-      display: 'flex', alignItems: 'stretch', gap: 'clamp(8px, 0.9vw, 12px)',
+      display: 'flex', alignItems: 'stretch', gap: 'clamp(12px, 0.9vw, 12px)',
       overflowX: 'auto', overflowY: 'hidden',
       scrollSnapType: 'x proximity',
     }}>
@@ -4523,10 +4259,8 @@ function AppIcon({ app }) {
       position: 'relative', flexShrink: 0,
       width:  'clamp(64px, 7vw, 96px)',
       height: 'clamp(64px, 7vw, 96px)',
-      /* v3.2 flat: pannello bianco pieno sul fondo acciaio, nessuna cornice,
-         niente mirini agli angoli (divieto 06). */
-      background: C.white,
-      padding: 'clamp(8px, 0.8vw, 12px)',
+      /* v4: l'icona sta da sola, a filo, nessun pannello intorno. */
+      padding: 0,
       boxSizing: 'border-box',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
@@ -4556,36 +4290,10 @@ function AppIcon({ app }) {
 /* AppMetaBand · riga unica di celle equispaziate (grid auto-fit), divisori
    hairline. Sostituisce i chip che andavano a capo in modo irregolare. */
 function AppMetaBand({ cells, lang }) {
+  /* v4 · DATI del kit affiancati, separati dallo spazio. */
   return (
-    <div className="sgn-app-metaband" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{
-        display: 'grid',
-        gridAutoFlow: 'column',
-        gridAutoColumns: 'minmax(0, 1fr)',
-        background: C.white,
-        overflow: 'hidden',
-      }}>
-        {cells.map((c, i) => (
-          <div key={c.k} style={{
-            padding: '9px 13px',
-            display: 'flex', flexDirection: 'column', gap: 4,
-            minWidth: 0,
-          }}>
-            <span style={{
-              fontFamily: 'IBM Plex Mono, monospace',
-              fontSize: 9, fontWeight: 600, letterSpacing: '0.18em',
-              color: C.faint, textTransform: 'uppercase',
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-            }}>{c.k}</span>
-            <span style={{
-              fontFamily: 'IBM Plex Mono, monospace',
-              fontSize: 'clamp(12px, 1vw, 14px)', fontWeight: 700,
-              color: C.ink, letterSpacing: '0.01em',
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-            }}>{c.v}</span>
-          </div>
-        ))}
-      </div>
+    <div className="sgn-app-metaband" style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(8px, 1vw, 12px)' }}>
+      {cells.map(c => <Datum key={c.k} k={c.k} v={c.v}/>)}
     </div>
   );
 }
@@ -4614,12 +4322,12 @@ function AppRow({ a, L, delay = 0 }) {
           <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700, fontSize: 15, color: C.ink }}>{a.name}</span>
           <Caption>v{a.ver}</Caption>
         </div>
-        <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: C.grey, lineHeight: 1.6 }}>{a.desc}</div>
+        <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, color: C.grey, lineHeight: 1.6 }}>{a.desc}</div>
       </div>
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <Label size={9}>{L.apps.stage}</Label>
-          <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 9, fontWeight: 700, letterSpacing: '0.16em', color: stageColor }}>
+          <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: stageColor }}>
             {a.stage.toUpperCase()}
           </span>
         </div>
@@ -4708,10 +4416,9 @@ function LinkStrip({ L, lang }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <span style={{
-            width: 6, height: 6, background: C.yellow, display: 'inline-block',
-            animation: 'sgnpulse 1.6s linear infinite', flexShrink: 0,
+            width: 10, height: 10, background: C.yellow, display: 'inline-block', flexShrink: 0,
           }}/>
-          <Label size={10} color={C.ink} style={{ fontWeight: 700 }}>
+          <Label size={12} color={C.grey}>
             {isIt ? 'SPONSOR · COLLABORAZIONI' : 'SPONSORS · COLLABS'}
           </Label>
         </div>
@@ -4737,7 +4444,7 @@ function LinkStrip({ L, lang }) {
           i layout · niente colonna laterale di affordance. */}
       <div className="sgn-link-body" style={{
         flex: 1, minHeight: 0, display: 'flex',
-        gap: 'clamp(8px, 1.4vw, 14px)', alignItems: 'stretch',
+        gap: 'clamp(12px, 1.4vw, 14px)', alignItems: 'stretch',
       }}>
         <div
           ref={scrollerRef}
@@ -4779,14 +4486,15 @@ function StripArrow({ dir, disabled, onClick, lang, small }) {
         : (lang === 'it' ? 'successivo' : 'next')}
       className="sgn-hot"
       style={{
-        width: dim, height: dim,
+        width: dim, height: dim, border: 'none',
         appearance: 'none', cursor: disabled ? 'default' : 'pointer',
-        background: disabled ? 'transparent' : C.white,
-        color: disabled ? C.faint : C.ink,
-        fontFamily: 'IBM Plex Mono, monospace', fontSize: small ? 13 : 14, fontWeight: 700,
+        /* v4: attiva = acciaio pieno; disabilitata = solo il segno grigio,
+           niente opacità */
+        background: disabled ? 'transparent' : C.paper,
+        color: disabled ? C.paper : C.ink,
+        fontFamily: 'IBM Plex Mono, monospace', fontSize: small ? 13 : 15, fontWeight: 700,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        opacity: disabled ? 0.4 : 1,
-        transition: 'background 150ms linear, border-color 150ms linear, opacity 150ms linear',
+        transition: 'background 150ms linear, color 150ms linear',
       }}>
       {glyph}
     </button>
@@ -4804,44 +4512,38 @@ function ContactCard({ L, lang }) {
     <a
       href={typeof MAILTO !== 'undefined' ? MAILTO : 'mailto:francesco.sgnaolin@gmail.com'}
       data-link-card
-      className="sgn-hot sgn-card-hover sgn-link-hero-card"
+      className="sgn-hot sgn-card-hover sgn-card-hover--yellow sgn-link-hero-card"
       style={{
         position: 'relative', flexShrink: 0,
         height: '100%', aspectRatio: '1 / 1',
         minWidth: 'clamp(240px, 30vw, 360px)',
         scrollSnapAlign: 'start',
-        background: C.white, textDecoration: 'none', color: C.ink,
+        /* v4 · SUPERFICIE gialla (come i divisori del deck): sopra solo
+           bianco. È l'unica card piena della strip, quindi è l'invito. */
+        background: C.yellow, textDecoration: 'none', color: C.white,
         boxSizing: 'border-box', overflow: 'hidden',
         padding: 'clamp(20px, 2.4vw, 32px)',
-        paddingLeft: 'clamp(24px, 2.6vw, 38px)',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         gap: 'clamp(12px, 1.8vh, 20px)',
         fontFamily: 'IBM Plex Mono, monospace',
       }}>
-      {/* rail giallo a sinistra = la card "speciale", senza giallo/nero a contatto */}
-      <span aria-hidden style={{
-        position: 'absolute', top: 0, bottom: 0, left: 0, width: 4, background: C.yellow,
-      }}/>
-
-      {/* fondo geometrico in deriva lenta · stessa grammatica hairline 45° del
-          sistema, sovradimensionato così la deriva non scopre i bordi. Sta
-          sotto il rail (z) e dietro testo+CTA (che sono relative). */}
-      <span className="sgn-ambient sgn-contact-bg" aria-hidden="true"/>
+      <span style={{ fontSize: 13, color: C.white, lineHeight: 1.4 }}>
+        {isIt ? 'Collaborazioni e sponsor' : 'Collabs and sponsors'}
+      </span>
 
       <div className="sgn-link-hero-title" style={{
-        position: 'relative', zIndex: 1,
         fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-        fontSize: 'clamp(26px, 3vw, 42px)', letterSpacing: '-0.04em',
-        lineHeight: 0.98, color: C.ink, textWrap: 'balance',
+        fontSize: 'clamp(28px, 3vw, 46px)', letterSpacing: '-0.02em',
+        lineHeight: 1.02, color: C.white, textWrap: 'balance',
       }}>{isIt ? 'Lavoriamo insieme.' : 'Let\u2019s work together.'}</div>
 
-      <CTA
-        as="span"
-        size="sm"
-        className="sgn-link-hero-cta"
-        label={isIt ? 'SCRIVIMI' : 'WRITE ME'}
-        style={{ alignSelf: 'flex-start', marginTop: 2, position: 'relative', zIndex: 1 }}
-      />
+      <span className="sgn-link-hero-cta" style={{
+        display: 'inline-flex', alignItems: 'center', gap: 12,
+        fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: C.white,
+      }}>
+        <MarathonArrow size={16} dir="up-right" color={C.white} className="sgn-nudge"/>
+        {isIt ? 'SCRIVIMI' : 'WRITE ME'}
+      </span>
     </a>
   );
 }
@@ -4878,7 +4580,7 @@ function SponsorCard({ s, L, lang }) {
          faceva "galleggiare" il logo piccolo. Hairline sotto come divisore. */}
       <div style={{
         flex: 1, minHeight: 0,
-        backgroundImage: s.logo ? 'none' : `repeating-linear-gradient(45deg, ${C.borderSoft} 0 1px, transparent 1px 14px)`,
+        background: C.paper,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: s.logo ? 'clamp(18px, 2.6vw, 36px)' : 0,
       }}>
@@ -4900,11 +4602,11 @@ function SponsorCard({ s, L, lang }) {
       <div style={{
         flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-        padding: `clamp(12px, 1.4vw, 18px)`,
+        padding: `clamp(12px, 1.4vw, 18px) 0`,
       }}>
         <span style={{
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-          fontSize: 'clamp(16px, 1.6vw, 22px)', color: C.ink,
+          fontSize: 'clamp(16px, 1.5vw, 20px)', color: C.ink,
           letterSpacing: '-0.02em', lineHeight: 1.05,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{s.name}</span>
@@ -4943,7 +4645,7 @@ function OpenSlotCard({ n, lang }) {
         fontFamily: 'IBM Plex Mono, monospace',
       }}>
       <span style={{
-        fontSize: 9, fontWeight: 700, letterSpacing: '0.22em', color: C.faint,
+        fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: C.grey,
       }}>{isIt ? 'SLOT APERTO' : 'OPEN SLOT'}</span>
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -4951,14 +4653,14 @@ function OpenSlotCard({ n, lang }) {
         <span style={{
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
           fontSize: 'clamp(64px, 9vw, 128px)', letterSpacing: '-0.05em',
-          color: 'rgba(120,122,124,0.5)', lineHeight: 0.85,
+          color: C.white, lineHeight: 0.85,
         }}>{String(n).padStart(2, '0')}</span>
       </div>
       <span style={{
         display: 'inline-flex', alignItems: 'center', gap: 8,
-        fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', color: C.ink,
+        fontSize: 13, fontWeight: 400, color: C.grey,
       }}>
-        <span style={{ color: C.yellow }}>+</span>
+        <span style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
         {isIt ? 'IL TUO BRAND QUI' : 'YOUR BRAND HERE'}
       </span>
     </a>
@@ -5068,58 +4770,33 @@ function AboutProfilePage({ L, lang }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{
             fontFamily: 'IBM Plex Mono, monospace',
-            fontWeight: 900,
+            fontWeight: 700,
             fontSize: 'clamp(30px, 3.4vw, 52px)',
-            lineHeight: 0.95, letterSpacing: '-0.03em',
+            lineHeight: 1.0, letterSpacing: '-0.02em',
             color: C.ink, textWrap: 'balance',
           }}>{L.self.realName}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <span style={{
-              fontFamily: 'IBM Plex Mono, monospace', fontSize: 11,
-              letterSpacing: '0.16em', color: C.ink, fontWeight: 700,
-            }}>@sgnoogle</span>
-            <span style={{
-              fontFamily: 'IBM Plex Mono, monospace', fontSize: 8.5,
-              letterSpacing: '0.22em', color: C.faint, fontWeight: 700, padding: '2px 6px',
-            }}>ALIAS</span>
-          </div>
+          <span style={{
+            fontFamily: 'IBM Plex Mono, monospace', fontSize: 'clamp(14px, 1.05vw, 16px)',
+            color: C.grey, fontWeight: 400,
+          }}>@sgnoogle</span>
         </div>
 
-        {/* stat band · character sheet a 3 celle */}
+        {/* v4 · tre DATI del kit: chiave bianca su giallo + valore su
+            acciaio, affiancati. Lo spazio li separa, nessuna cornice. */}
         <div className="sgn-profile-statband" style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 1, background: C.borderSoft, padding: 1, boxSizing: 'border-box',
+          display: 'flex', flexWrap: 'wrap', gap: 'clamp(8px, 1vw, 12px)',
         }}>
-          {stats.map((s, i) => (
-            <div key={i} style={{
-              background: C.white, padding: 'clamp(9px,1vw,13px) clamp(11px,1.2vw,15px)',
-              display: 'flex', flexDirection: 'column', gap: 7,
-              position: 'relative',
-            }}>
-              {s.gold && (
-                <span style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-                  background: C.yellow,
-                }}/>
-              )}
-              <Label size={8} color={C.faint}>{s.k}</Label>
-              <span style={{
-                fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-                fontSize: 'clamp(12px, 1.05vw, 15px)', letterSpacing: '-0.005em',
-                color: C.ink, lineHeight: 1.15,
-              }}>{s.v}</span>
-            </div>
-          ))}
+          {stats.map((s, i) => <Datum key={i} k={s.k} v={s.v}/>)}
         </div>
 
         {/* BIO */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(9px, 1.4vh, 13px)' }}>
-          <BarHeader>BIO</BarHeader>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 1.4vh, 13px)' }}>
+          <Label color={C.grey} size={12}>BIO</Label>
           <div className="sgn-profile-bio" style={{
             fontFamily: 'IBM Plex Mono, monospace',
-            fontSize: 'clamp(12px, 0.95vw, 14px)',
-            color: C.ink, lineHeight: 1.55, margin: 0,
-            fontWeight: 300, letterSpacing: '0.005em',
+            fontSize: 'clamp(14px, 1.05vw, 16px)',
+            color: C.grey, lineHeight: 1.6, margin: 0,
+            fontWeight: 400, letterSpacing: '0.005em',
             maxWidth: '54ch', textWrap: 'pretty',
           }}>{L.self.bio}</div>
         </div>
@@ -5132,48 +4809,50 @@ function AboutProfilePage({ L, lang }) {
 
 function AboutSkillsPage({ L }) {
   const [ref, inView] = useInView({ threshold: 0.2 });
+  /* v4 · "una riga per concetto": numero 700, nome, valore e BARRA.
+     Nessun box, lo spazio separa. */
   return (
     <div ref={ref} style={{
       flex: 1, minHeight: 0,
-      display: 'flex', flexDirection: 'column',
-      gap: 'clamp(16px, 2.4vh, 26px)',
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
     }}>
       <div className="sgn-skill-grid" style={{
-        flex: 1, minHeight: 0,
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gridAutoRows: 'minmax(0, 1fr)',
-        gap: 'clamp(14px, 2.2vh, 30px) clamp(20px, 3vw, 48px)',
+        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+        gap: 'clamp(22px, 4.2vh, 44px) clamp(28px, 5vw, 80px)',
+        maxWidth: 1040, width: '100%', margin: '0 auto',
       }}>
         {L.skills.map((s, i) => {
           const numeric = typeof s.v === 'number';
           return (
             <div key={i} style={{
-              display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10,
+              display: 'flex', flexDirection: 'column', gap: 12,
+              fontFamily: 'IBM Plex Mono, monospace',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
-                <Label color={C.ink} size={11} style={{ fontWeight: 700 }}>{s.k}</Label>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
+                <span style={{ fontWeight: 700, fontSize: 'clamp(14px, 1.05vw, 16px)', color: C.grey }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span style={{
+                  flex: 1, minWidth: 0, fontWeight: 700,
+                  fontSize: 'clamp(15px, 1.25vw, 19px)', color: C.ink,
+                }}>{s.k}</span>
                 {numeric && (
                   <span style={{
-                    fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-                    fontSize: 11, letterSpacing: '0.06em',
-                    color: s.v >= 9 ? C.yellow : C.ink,
-                  }}>{s.v}/10</span>
+                    fontWeight: 700, fontSize: 'clamp(14px, 1.05vw, 16px)',
+                    color: C.grey, fontVariantNumeric: 'tabular-nums',
+                  }}>{s.v} / 10</span>
                 )}
               </div>
               {numeric ? (
-                <Bar value={s.v} gold={s.v >= 9} active={inView} delay={i * 60} height={8} sound/>
+                <Bar value={s.v} active={inView} delay={i * 60} height={10} sound/>
               ) : (
                 <span style={{
-                  alignSelf: 'flex-start',
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
-                  fontSize: 11, letterSpacing: '0.12em',
-                  color: C.ink, background: C.white,
-                  padding: '5px 9px 5px 0', lineHeight: 1,
+                  display: 'inline-flex', alignItems: 'center', gap: 12,
+                  fontSize: 'clamp(14px, 1.05vw, 16px)', color: C.grey, lineHeight: 1.2,
                 }}>
-                  <span aria-hidden style={{ width: 3, alignSelf: 'stretch', background: C.yellow }}/>
-                  <span style={{ paddingLeft: 6 }}>{s.note}</span>
+                  <i style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
+                  {s.note}
                 </span>
               )}
             </div>
@@ -5191,27 +4870,26 @@ function AboutContactPage({ L, lang }) {
   return (
     <div style={{
       flex: 1, minHeight: 0,
-      display: 'flex', flexDirection: 'column',
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
       gap: 'clamp(16px, 2vh, 24px)',
     }}>
-      <Label size={10} color={C.faint} style={{ flexShrink: 0 }}>{L.self.contactLabel}</Label>
+      <Label size={12} color={C.grey} style={{ flexShrink: 0 }}>{L.self.contactLabel}</Label>
       <div className="sgn-contact-grid" style={{
-        flex: 1, minHeight: 0,
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        gridTemplateRows: 'repeat(2, minmax(0, 1fr))',
-        gap: 1, background: C.borderSoft, padding: 1, boxSizing: 'border-box',
+        gap: 'clamp(8px, 1vw, 14px)',
       }}>
         {channels.map(c => (
           <a key={c.k} href={c.href}
             target={c.href.startsWith('http') ? '_blank' : undefined}
             rel="noopener noreferrer"
-            className="sgn-card-hover sgn-hot"
+            className="sgn-card-hover sgn-card-hover--paper sgn-hot"
             style={{
               position: 'relative',
               gridColumn: c.span ? '1 / -1' : 'auto',
-              background: C.white,
-              padding: 'clamp(14px, 1.8vw, 22px) clamp(16px, 2vw, 24px)',
+              /* v4: blocco acciaio pieno sul bianco, un solo livello */
+              background: C.paper,
+              padding: 'clamp(20px, 3.2vh, 36px) clamp(16px, 2vw, 28px)',
               textDecoration: 'none', color: C.ink,
               display: 'flex', alignItems: 'center', gap: 'clamp(12px, 1.4vw, 16px)',
               fontFamily: 'IBM Plex Mono, monospace',
@@ -5222,18 +4900,22 @@ function AboutContactPage({ L, lang }) {
               width: 'clamp(36px, 3.2vw, 46px)',
               height: 'clamp(36px, 3.2vw, 46px)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              background: C.white, color: C.ink,
+              background: 'transparent', color: C.ink,
             }}>
               <ChannelGlyph id={c.k} size={20}/>
             </span>
-            <Label color={C.faint} size={9} style={{ flexShrink: 0 }}>{c.k}</Label>
-            <span style={{
-              flex: 1, minWidth: 0, fontWeight: 700,
-              fontSize: 'clamp(13px, 1.2vw, 18px)',
-              color: C.ink, letterSpacing: '-0.005em',
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-            }}>{c.v}</span>
-            <MarathonArrow size={18}/>
+            <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label color={C.grey} size={12}>{c.k}</Label>
+              <span style={{
+                fontWeight: 700,
+                fontSize: 'clamp(15px, 1.3vw, 20px)',
+                color: C.ink, letterSpacing: '-0.005em',
+                overflowWrap: 'break-word', lineHeight: 1.25,
+              }}>{c.v.indexOf('@') > 0
+                ? <>{c.v.slice(0, c.v.indexOf('@'))}<wbr/>{c.v.slice(c.v.indexOf('@'))}</>
+                : c.v}</span>
+            </span>
+            <MarathonArrow size={16} dir="up-right" className="sgn-nudge"/>
                 </a>
         ))}
       </div>
@@ -5257,16 +4939,15 @@ function ProfileCard({ L }) {
 
   return (
     <div style={{
+      /* v4 · immagine a filo: niente passe-partout né cornice. */
       position: 'relative',
-      background: C.white,
-      padding: 'clamp(9px, 1vw, 13px)',
     }}>
       {/* FINESTRA AVATAR · passe-partout + corner-tick gialli. La finestra
           MORPHA: quadrata per l'avatar (1:1), verticale per la foto (~5:6),
           con transizione su padding-bottom sincronizzata col flip 3D. */}
       <div style={{
         position: 'relative',
-        height: 0, paddingBottom: isReal ? '122%' : '100%',
+        height: 0, paddingBottom: isReal ? '128.6%' : '100%',   /* foto 398×512 */
         perspective: '1200px', overflow: 'hidden',
         transition: 'padding-bottom 540ms cubic-bezier(0.2,0,0,1)',
       }}>
@@ -5290,7 +4971,7 @@ function ProfileCard({ L }) {
             backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)', background: C.paper,
           }}>
-            <img src="/assets/avatar-real.webp" alt="Francesco Sgnaolin real photo" loading="lazy" decoding="async"
+            <img src="/assets/avatar-real.webp?v=4" alt="Francesco Sgnaolin" loading="lazy" decoding="async"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
           </div>
         </div>
@@ -5306,32 +4987,26 @@ function ProfileCard({ L }) {
           role="switch"
           aria-checked={isReal}
           style={{
-            position: 'absolute', right: 10, bottom: 10, zIndex: 4,
+            /* v4 · switch a due ETICHETTE: l'attiva è bianco su giallo,
+               l'altra grigio su bianco. */
+            position: 'absolute', right: 0, bottom: 0, zIndex: 4,
             display: 'inline-flex', alignItems: 'stretch',
-            background: C.white,
+            background: C.white, border: 'none',
             cursor: 'pointer', padding: 0,
             fontFamily: 'IBM Plex Mono, monospace',
           }}>
-          <span style={{ position: 'relative', display: 'inline-flex' }}>
-            <span aria-hidden="true" style={{
-              position: 'absolute', left: 0, bottom: 0, width: '50%', height: 3,
-              background: C.yellow,
-              transform: isReal ? 'translateX(100%)' : 'translateX(0)',
-              transition: 'transform 260ms cubic-bezier(0.2,0,0,1)',
-            }}/>
-            <span style={{
-              position: 'relative', zIndex: 1, width: 54, textAlign: 'center',
-              padding: '6px 0 8px', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
-              color: isReal ? C.faint : C.ink,
-              transition: 'color 260ms linear',
-            }}>{L.self.viewToggleAvatar}</span>
-            <span style={{
-              position: 'relative', zIndex: 1, width: 54, textAlign: 'center',
-              padding: '6px 0 8px', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
-              color: isReal ? C.ink : C.faint,
-              transition: 'color 260ms linear',
-            }}>{L.self.viewToggleReal}</span>
-          </span>
+          {[['avatar', L.self.viewToggleAvatar], ['real', L.self.viewToggleReal]].map(([k, lbl]) => {
+            const on = view === k;
+            return (
+              <span key={k} style={{
+                padding: '9px 11px', fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
+                lineHeight: 1,
+                background: on ? C.yellow : C.white,
+                color: on ? C.white : C.grey,
+                transition: 'background 200ms linear, color 200ms linear',
+              }}>{lbl}</span>
+            );
+          })}
         </button>
       </div>
     </div>
@@ -5360,7 +5035,9 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
   // Standby: solo a riposo sull'home (nessuna sezione aperta). Il readout
   // smette di dire "ONLINE + ora" e invita all'azione suggerendo la
   // scorciatoia · la palette non vive più nel footer, ma qui al centro.
-  const showIdle = idle && !current;
+  // v4: la scorciatoia "/" vive già a destra (COMANDI): al centro resta
+  // sempre la Nota di stato, mai un doppione.
+  const showIdle = false;
   const [now, setNow] = React.useState(() => new Date());
   React.useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -5436,7 +5113,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
             transition: 'background 320ms linear',
           }}/>
           <span style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: '0.3em',
+            fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
             color: showIdle ? C.grey : C.ink, transition: 'color 320ms linear',
             whiteSpace: 'nowrap',
           }}>{showIdle ? (isIt ? 'IN ATTESA' : 'STANDBY') : 'ONLINE'}</span>
@@ -5449,22 +5126,22 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
             <>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                minWidth: 16, height: 16, padding: '0 4px', background: C.white,
-                fontSize: 10, fontWeight: 700, color: C.ink, lineHeight: 1,
+                minWidth: 18, height: 18, padding: '0 5px', background: C.paper,
+                fontSize: 12, fontWeight: 700, color: C.ink, lineHeight: 1,
                 fontFamily: 'IBM Plex Mono, monospace',
               }}>/</span>
               <span style={{
-                fontSize: 9, fontWeight: 700, letterSpacing: '0.22em', color: C.faint,
+                fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: C.faint,
               }}>{isIt ? 'PER I COMANDI' : 'FOR COMMANDS'}</span>
             </>
           ) : (
             <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
               <span style={{
-                fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', color: C.ink,
+                fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: C.ink,
                 fontVariantNumeric: 'tabular-nums',
               }}>{hh}:{mm}<span style={{ color: C.faint }}>:{ss}</span></span>
               <span style={{
-                fontSize: 8, fontWeight: 700, letterSpacing: '0.22em', color: C.faint,
+                fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: C.faint,
               }}>{tz}</span>
             </span>
           )}
@@ -5487,7 +5164,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
             paddingBottom: 6, lineHeight: 1,
           }}>
             <span style={{
-              fontSize: 11, fontWeight: 700, color: C.ink, letterSpacing: '0.3em',
+              fontSize: 12, fontWeight: 700, color: C.ink, letterSpacing: '0.12em',
               whiteSpace: 'nowrap',
             }}>{route.label}</span>
             <span key={route.key} style={{
@@ -5502,7 +5179,7 @@ function StatusReadout({ lang, current, direction = 0, variant = 'flash', idle =
   );
 }
 
-function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, onOpenPalette, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, sound, idle }) {
+function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome, onOpenPalette, current, direction, variant, mobile, soundOn, onToggleSound, pageLabel, pageIndex, pageTotal, pageGoto, sound, idle }) {
   const L = I18N[lang];
   const mobileRouteLabel = current ? (L.modules[current]?.label || '') : 'HOME';
   return (
@@ -5521,17 +5198,14 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
         <button
           onClick={current ? onHome : undefined}
           className="sgn-hot sgn-mobilemark"
-          aria-hidden={!current}
-          aria-label={current ? (lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel : undefined}
+          aria-label={current ? (lang === 'it' ? 'Torna alla home da ' : 'Back home from ') + mobileRouteLabel : 'SGNOOGLE'}
           tabIndex={current ? 0 : -1}
           style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            /* v4 · il marchio è la firma: piccolo, sempre nell'angolo. */
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-start',
             width: 38, height: 38, padding: 0,
             border: 'none',
             cursor: current ? 'pointer' : 'default', fontFamily: 'inherit', color: C.ink,
-            opacity: current ? 1 : 0,
-            transform: current ? 'translateY(0) scale(1)' : 'translateY(-2px) scale(0.96)',
-            pointerEvents: current ? 'auto' : 'none',
           }}>
           <svg viewBox="0 0 206.1 201.44" aria-hidden style={{ width: 21, height: 21, display: 'block' }}>
             <g fill={C.yellow}>
@@ -5548,15 +5222,14 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
         <button
           onClick={current ? onHome : undefined}
           className="sgn-hot sgn-homebrand"
-          aria-hidden={!current}
+          aria-label={current ? (lang === 'it' ? 'Torna alla home' : 'Back home') : 'SGNOOGLE'}
           tabIndex={current ? 0 : -1}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 10,
+            /* v4 · marchio sempre nell'angolo; il nome compare solo dentro i
+               moduli (in home c'è già il wordmark grande). */
+            display: 'inline-flex', alignItems: 'center', gap: 12,
             background: 'transparent', border: 'none', padding: 0,
             cursor: current ? 'pointer' : 'default', fontFamily: 'inherit', color: 'inherit',
-            opacity: current ? 1 : 0,
-            pointerEvents: current ? 'auto' : 'none',
-            transition: 'opacity 320ms linear',
           }}>
           <svg viewBox="0 0 206.1 201.44" aria-hidden style={{
             width: 22, height: 22, display: 'block', flexShrink: 0,
@@ -5568,7 +5241,9 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
             </g>
           </svg>
           <span style={{
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', color: C.ink,
+            fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
+            fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: C.ink,
+            opacity: current ? 1 : 0, transition: 'opacity 320ms linear',
           }}>{BRAND.product}</span>
         </button>
       )}
@@ -5576,31 +5251,32 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       {!mobile && (
         <StatusReadout lang={lang} current={current} direction={direction} variant={variant} idle={idle}/>
       )}
+      {/* Mobile · la BARRA delle pagine del modulo vive al centro della
+          topbar: niente più rail sovrapposto al bordo delle card. */}
+      {mobile && pageTotal > 1 && pageGoto && (
+        <MobilePageRail index={pageIndex} total={pageTotal} goto={pageGoto} lang={lang} sound={sound}/>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 6 }}>
         {!mobile && (
           <button onClick={onOpenPalette} className="sgn-hot sgn-topctl" title={lang === 'it' ? 'Apri palette comandi' : 'Open command palette'} style={{
             display: 'inline-flex', alignItems: 'stretch',
-            background: C.paper,
+            background: 'transparent', border: 'none',
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: C.ink,
           }}>
             <span style={{
-              padding: '6px 8px', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: C.yellow,
+              padding: '6px 4px 6px 10px', fontSize: 12, fontWeight: 700, color: C.ink,
               display: 'inline-flex', alignItems: 'center',
             }}>/</span>
-            <span style={{ padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em', color: C.grey, fontWeight: 700, alignSelf: 'center' }}>CMD</span>
+            <span style={{ padding: '6px 10px 6px 4px', fontSize: 12, letterSpacing: '0.12em', color: C.grey, fontWeight: 700, alignSelf: 'center' }}>{lang === 'it' ? 'COMANDI' : 'COMMANDS'}</span>
           </button>
         )}
         <button onClick={onToggleSound} className={`sgn-hot sgn-topctl${mobile ? ' sgn-ghostctl' : ''}`} title={soundOn ? 'Sound on' : 'Sound off'} style={{
           display: 'inline-flex', alignItems: 'stretch',
-          background: mobile ? 'transparent' : C.paper, border: 'none',
+          background: 'transparent', border: 'none',
           padding: 0, cursor: 'pointer', fontFamily: 'inherit',
           color: C.ink, minHeight: 34, minWidth: mobile ? 34 : 'auto',
         }}>
-          {!mobile && <span style={{
-            padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em',
-            color: C.grey, fontWeight: 700, alignSelf: 'center',
-          }}>SND</span>}
           <span style={{
             padding: mobile ? '0 9px' : '6px 8px',
             display: 'inline-flex', alignItems: 'center', gap: 7,
@@ -5609,30 +5285,26 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
               <path d="M2.2 5.1 H4.7 L7.5 2.9 V11.1 L4.7 8.9 H2.2 Z" fill="none" stroke={C.ink} strokeWidth="1.4" strokeLinejoin="miter"/>
               {soundOn ? (
                 <>
-                  <path d="M9.1 4.2 L10.3 5.4 L10.3 8.6 L9.1 9.8" stroke={C.yellow} strokeWidth="1.1" fill="none" strokeLinejoin="miter"/>
-                  <path d="M10.9 3.1 L12.4 4.7 L12.4 9.3 L10.9 10.9" stroke={C.yellow} strokeWidth="1.1" fill="none" strokeLinejoin="miter"/>
+                  <path d="M9.1 4.2 L10.3 5.4 L10.3 8.6 L9.1 9.8" stroke={C.ink} strokeWidth="1.1" fill="none" strokeLinejoin="miter"/>
+                  <path d="M10.9 3.1 L12.4 4.7 L12.4 9.3 L10.9 10.9" stroke={C.ink} strokeWidth="1.1" fill="none" strokeLinejoin="miter"/>
                 </>
               ) : (
                 <path d="M9.1 4.2 L12 9.8 M12 4.2 L9.1 9.8" stroke={C.grey} strokeWidth="1.1" fill="none"/>
               )}
             </svg>
-            {!mobile && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', color: C.ink }}>{soundOn ? 'ON' : 'OFF'}</span>}
+            {!mobile && <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: C.grey }}>AUDIO <span style={{ color: C.ink }}>{soundOn ? 'ON' : 'OFF'}</span></span>}
           </span>
         </button>
         <span style={{ position: 'relative', display: 'inline-flex' }}>
           <button onClick={onToggleLang} className={`sgn-hot sgn-topctl sgn-langbtn${mobile ? ' sgn-ghostctl' : ''}${langOpen ? ' is-open' : ''}`} aria-haspopup="menu" aria-expanded={!!langOpen} style={{
             display: 'inline-flex', alignItems: 'stretch',
-            background: mobile ? 'transparent' : C.paper, border: 'none',
+            background: 'transparent', border: 'none',
             padding: 0, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit',
           }}>
-            {!mobile && <span style={{
-              padding: '6px 8px', fontSize: 9, letterSpacing: '0.18em',
-              color: C.grey, fontWeight: 700, alignSelf: 'center',
-            }}>LANG</span>}
             <span className="sgn-langbtn__val" style={{
-              padding: '6px 8px', fontSize: 11, fontWeight: 700,
-              letterSpacing: '0.18em', color: C.ink,
-              background: mobile ? 'transparent' : C.paper,
+              padding: '6px 10px', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.12em', color: C.ink,
+              background: 'transparent',
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}>
               {lang.toUpperCase()}
@@ -5710,152 +5382,102 @@ function IdleDisplay({ lang, mobile, focused }) {
     try { return sessionStorage.getItem('sgnSideNavUsed') === '1'; } catch (e) { return false; }
   });
   const L = I18N[lang];
+  const isIt = lang === 'it';
   const [armed, setArmed] = React.useState(false);
-  const [idleMode, setIdleMode] = React.useState(false);
   React.useEffect(() => {
     const t = setTimeout(() => setArmed(true), 80);
     return () => clearTimeout(t);
   }, []);
-
-  React.useEffect(() => {
-    if (focused) return undefined;
-    let t;
-    const reset = () => {
-      setIdleMode(false);
-      clearTimeout(t);
-      t = setTimeout(() => setIdleMode(true), 30000);
-    };
-    reset();
-    window.addEventListener('mousemove', reset);
-    window.addEventListener('keydown',   reset);
-    window.addEventListener('touchstart',reset);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener('mousemove', reset);
-      window.removeEventListener('keydown',   reset);
-      window.removeEventListener('touchstart',reset);
-    };
-  }, [focused]);
-
-  /* (Il vecchio effect one-tantum del side hint è stato rimosso insieme allo
-     stato showSideHint: il prompt è ora sempre visibile su mobile in home.
-     Una chiamata orfana a setShowSideHint qui crashava l'intero albero per i
-     visitatori senza il flag in localStorage.) */
+  const subs = useCountUp(CHANNEL.subs.value, { duration: 1500, fmt: 'short', active: armed });
 
   const preview = focused && L.modules[focused];
+  if (preview) {
+    return (
+      <div style={{
+        width: '100%', height: '100%', boxSizing: 'border-box',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 'clamp(20px, 3.2vw, 48px)',
+      }}>
+        <ModulePreview id={focused} module={preview} lang={lang}/>
+      </div>
+    );
+  }
 
+  /* v4 · la home è la COPERTINA del deck: marchio nell'angolo (topbar),
+     superficie gialla in alto a destra, riga di supporto grigia e titolo
+     grande in basso a sinistra. Nient'altro. Il blocco giallo porta l'unico
+     numero che conta, in bianco (sul giallo solo bianco). */
+  const reveal = (delay) => ({
+    opacity: armed ? 1 : 0,
+    transform: armed ? 'translateY(0)' : 'translateY(14px)',
+    transition: `opacity 600ms linear ${delay}ms, transform 700ms cubic-bezier(0.2,0,0,1) ${delay}ms`,
+  });
   return (
     <div style={{
       position: 'relative',
-      width: '100%', height: '100%',
-      display: 'flex', flexDirection: 'column',
+      width: '100%', height: '100%', boxSizing: 'border-box',
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       fontFamily: 'IBM Plex Mono, monospace',
+      padding: mobile
+        ? 'clamp(8px, 2vh, 20px) clamp(4px, 1vw, 8px) clamp(8px, 2vh, 20px)'
+        : 'clamp(12px, 2vh, 24px) clamp(20px, 3vw, 48px) clamp(24px, 5vh, 56px)',
     }}>
+      {/* superficie gialla · dato live */}
       <div style={{
-        position: 'absolute', inset: 0,
-        transform: idleMode ? 'scale(1.4)' : 'scale(1)',
-        opacity: preview ? 0.32 : 1,
-        transition: 'transform 1800ms cubic-bezier(0.2,0,0,1), opacity 320ms linear',
+        alignSelf: 'flex-end',
+        width: mobile ? 'min(82%, 340px)' : 'clamp(200px, min(25vw, 42vh), 400px)',
+        aspectRatio: '480 / 560',
+        maxHeight: mobile ? '50%' : '64%',
+        background: C.yellow,
+        boxSizing: 'border-box',
+        padding: mobile ? '18px' : 'clamp(20px, 2vw, 32px)',
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        gap: 10,
+        ...reveal(200),
       }}>
-        <Hero3DMark mobile={mobile}/>
+        <span style={{
+          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
+          fontSize: mobile ? 'clamp(52px, 17vw, 76px)' : 'clamp(64px, 7vw, 120px)',
+          lineHeight: 0.85, letterSpacing: '-0.01em', color: C.white,
+          fontVariantNumeric: 'tabular-nums',
+        }}>{subs}</span>
+        <span style={{
+          fontSize: mobile ? 13 : 'clamp(13px, 1vw, 16px)', fontWeight: 400,
+          color: C.white, lineHeight: 1.3,
+        }}>{isIt ? 'iscritti su YouTube' : 'YouTube subscribers'}</span>
       </div>
 
-      <div style={{
-        position: 'relative', zIndex: 4,
-        flex: 1,
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'clamp(20px, 3.2vw, 48px)',
-        gap: 'clamp(18px, 3vh, 28px)',
-      }}>
-        {/* In STANDBY il wordmark CAMBIA STATO: SGNOOGLE sfuma e al suo posto
-           appare STANDBY, sbiadito, col wireframe che continua a girare
-           dietro. Niente altre scritte (badge, ciclo moduli e label sotto
-           svaniscono): la home non parla più, segnala uno stato · come un
-           vero OS. Crossfade a livelli: zero scatti di testo. */}
+      {/* supporto + titolo */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 16 : 'clamp(16px, 3vh, 32px)' }}>
+        <span style={{
+          fontSize: mobile ? 13 : 'clamp(14px, 1.15vw, 18px)', fontWeight: 400,
+          color: C.grey, lineHeight: 1.4,
+          ...reveal(420),
+        }}>
+          Francesco Sgnaolin · {isIt ? 'tech creator dal 2013' : 'tech creator since 2013'}
+        </span>
         <h1 style={{
           fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
           fontWeight: 700,
-          fontSize: 'clamp(36px, 12vw, 168px)',
-          letterSpacing: '-0.05em', color: C.ink,
-          lineHeight: 0.9, margin: 0,
+          /* limitata anche dall'altezza: in landscape basso non deve mai
+             finire sotto la barra dei moduli */
+          fontSize: mobile ? 'clamp(44px, 14.2vw, 72px)' : 'clamp(48px, min(11.4vw, 15vh), 176px)',
+          letterSpacing: '-0.02em', color: C.ink,
+          lineHeight: 0.85, margin: 0,
           whiteSpace: 'nowrap',
-          display: preview ? 'none' : 'block',
-          position: 'relative',
-          opacity: idleMode ? 0.3 : (armed ? 1 : 0),
-          transform: armed ? 'translateY(0)' : 'translateY(18px)',
-          transition: 'opacity 700ms linear 120ms, transform 700ms cubic-bezier(0.2,0,0,1) 120ms',
-        }}>
-          <span style={{
-            opacity: idleMode ? 0 : 1,
-            transition: 'opacity 600ms linear',
-          }}><span style={{ color: C.yellow }}>SGN</span>OOGLE</span>
-          <span aria-hidden="true" style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            opacity: idleMode ? 1 : 0,
-            transition: 'opacity 600ms linear 200ms',
-          }}>STANDBY</span>
-        </h1>
-
-        {!preview && (
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            gap: 'clamp(5px, 0.8vh, 8px)',
+          ...reveal(120),
+        }}>SGNOOGLE</h1>
+        {mobile && !sideNavUsed && (
+          <span aria-hidden style={{
+            display: 'inline-flex', alignItems: 'center', gap: 12,
+            fontSize: 13, color: C.grey, lineHeight: 1.3,
+            ...reveal(700),
           }}>
-            <LiveBadge armed={armed} dimmed={idleMode}/>
-            <div
-              className="sgn-home-module-cycle"
-              aria-label="VIDEO · OBJECTS · APPS · LINK · ABOUT"
-              style={{
-                marginTop: 'clamp(22px, 4vh, 44px)',
-                opacity: armed ? (idleMode ? 0 : 0.52) : 0,
-                transform: armed ? 'translateY(0)' : 'translateY(6px)',
-                transition: 'opacity 600ms linear 760ms, transform 600ms cubic-bezier(0.2,0,0,1) 760ms',
-              }}
-            >
-              <HomeModuleCycle/>
-            </div>
-          </div>
-        )}
-
-        {/* Prompt fisso ◀ SCORRI LATERALMENTE ▶ · solo mobile (sul desktop si
-           naviga da tab/tastiera). NB: era gated da uno stato showSideHint
-           mai impostato → non appariva MAI (residuo del rework). */}
-        {!preview && mobile && !sideNavUsed && (
-          <div aria-hidden style={{
-            position: 'absolute',
-            bottom: 'clamp(8px, 1.2vh, 14px)',
-            left: '50%', transform: 'translateX(-50%)',
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: 'clamp(4px, 0.6vh, 6px) 0',
-            opacity: idleMode ? 0 : (armed ? 1 : 0),
-            transition: 'opacity 700ms linear 500ms',
-            whiteSpace: 'nowrap',
-          }}>
-            <span style={{
-              fontSize: 10, color: C.grey,
-              animation: 'sgnBlink 1.4s step-start infinite',
-            }}>◀</span>
-            <span style={{
-              fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.faint,
-              fontFamily: 'IBM Plex Mono, monospace',
-            }}>
-              {lang === 'it' ? 'SCORRI LATERALMENTE' : 'SWIPE SIDEWAYS'}
-            </span>
-            <span style={{
-              fontSize: 10, color: C.grey,
-              animation: 'sgnBlink 1.4s step-start infinite', animationDelay: '0.7s',
-            }}>▶</span>
-          </div>
-        )}
-
-        {preview && (
-          <ModulePreview id={focused} module={preview} lang={lang}/>
+            <i style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
+            {isIt ? 'Scorri di lato per esplorare' : 'Swipe sideways to explore'}
+          </span>
         )}
       </div>
-
     </div>
   );
 }
@@ -5910,7 +5532,7 @@ function ModulePreview({ id, module, lang }) {
           lineHeight: 0.9, margin: '0 0 clamp(12px, 1.6vh, 18px)',
         }}>{module.label}</h2>
         <span style={{
-          fontSize: 13, color: C.grey, letterSpacing: '0.01em', lineHeight: 1.6,
+          fontSize: 'clamp(15px, 1.2vw, 18px)', color: C.grey, letterSpacing: '0.01em', lineHeight: 1.5,
           textWrap: 'pretty',
         }}>{module.sub}</span>
       </div>
@@ -5931,14 +5553,6 @@ function ModulePreview({ id, module, lang }) {
 
         {/* velatura paper: scurisce appena in basso a sinistra per la
             didascalia, lascia respirare il resto. (tinta, non ombra) */}
-        <div aria-hidden style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: `linear-gradient(105deg, rgba(240,241,242,0.86) 0%, rgba(240,241,242,0.5) 34%, rgba(240,241,242,0) 62%)`,
-        }}/>
-        {/* hairline interno per ancorare il fondale al telaio della scheda */}
-        <div aria-hidden style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-        }}/>
 
         {/* didascalia sovrapposta · in basso a sinistra */}
         <div style={{
@@ -5946,12 +5560,13 @@ function ModulePreview({ id, module, lang }) {
           bottom: 'clamp(16px, 1.8vw, 26px)', right: 'clamp(16px, 1.8vw, 26px)',
           display: 'flex', flexDirection: 'column', gap: 6, zIndex: 2,
         }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 5, height: 12, background: C.yellow, flexShrink: 0 }}/>
-            <span style={{
-              fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', color: C.grey,
-            }}>{meta.head.tag}</span>
-          </span>
+          {/* v4 · ETICHETTA: bianco su giallo */}
+          <span style={{
+            alignSelf: 'flex-start',
+            background: C.yellow, color: C.white,
+            fontSize: 12, fontWeight: 700, letterSpacing: '0.12em',
+            padding: '8px 10px', lineHeight: 1,
+          }}>{meta.head.tag}</span>
           <span style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
             fontSize: 'clamp(16px, 1.6vw, 24px)', color: C.ink,
@@ -5984,14 +5599,13 @@ function PreviewAmbient({ id }) {
         position: 'absolute', inset: '-30%',
         backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
         backgroundSize: '132px 132px', backgroundRepeat: 'repeat',
-        opacity: 0.5,
         animation: `sgnDrift ${dur}s linear infinite`,
         willChange: 'transform',
       }}/>
     );
   };
 
-  const G = 'rgb(120,122,124)';  // --grey, come il tratteggio della 04
+  const G = '#FFFFFF';  // v4: tratto bianco pieno sull'acciaio, niente opacità
 
   // 01 VIDEO → cornice 16:9 con triangolo play.
   if (id === '01') {
@@ -6089,7 +5703,7 @@ function LiveBadge({ armed, dimmed }) {
         fontSize: 14, letterSpacing: '0.04em', color: C.ink,
       }}>
         {display}
-        <span style={{ color: C.grey, fontWeight: 400, marginLeft: 7, letterSpacing: '0.14em' }}>SUBS</span>
+        <span style={{ color: C.grey, fontWeight: 400, marginLeft: 7, letterSpacing: '0.12em' }}>SUBS</span>
       </span>
     </div>
   );
@@ -6106,18 +5720,18 @@ function CornerChangelog({ armed, mobile, dimmed }) {
       width: 200, pointerEvents: 'none',
     }}>
       <div style={{
-        fontSize: 9, letterSpacing: '0.22em', color: C.faint, fontWeight: 600,
+        fontSize: 12, letterSpacing: '0.12em', color: C.faint, fontWeight: 700,
         marginBottom: 8, paddingBottom: 6,
         display: 'flex', justifyContent: 'space-between',
       }}>
         <span>CHANGELOG</span>
-        <span style={{ color: C.grey, letterSpacing: '0.18em' }}>{BRAND.version}</span>
+        <span style={{ color: C.grey, letterSpacing: '0.12em' }}>{BRAND.version}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {CHANGELOG.slice(0, 4).map((row) => (
           <div key={row.d} style={{
             display: 'grid', gridTemplateColumns: 'auto 1fr',
-            gap: 8, fontSize: 9, lineHeight: 1.4,
+            gap: 8, fontSize: 12, lineHeight: 1.4,
           }}>
             <span style={{ color: C.faint, letterSpacing: '0.04em' }}>{row.d.slice(5)}</span>
             <span style={{ color: C.grey }}>{row.m}</span>
@@ -6189,19 +5803,18 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
       aria-label={label + (sub ? ' · ' + sub : '')}
       style={{
         position: 'relative',
-        // v3.2 flat: la tab è un pannello bianco pieno sul fondo acciaio del
-        // display · nessuna cornice. Lo stato attivo lo dicono larghezza,
-        // icona ink e top-rail giallo.
-        background: C.white,
+        // v4: a riposo la tab è acciaio pieno sul fondo bianco; aperta
+        // diventa SUPERFICIE gialla (come i divisori del deck) con numero e
+        // testo bianchi. Nessuna cornice, nessuna barra decorativa.
+        background: expanded ? C.yellow : C.paper,
         border: 'none',
-        outline: armed ? `1px solid ${C.yellow}` : 'none',
-        outlineOffset: '-1px',
+        outline: armed ? `2px solid ${C.grey}` : 'none',
+        outlineOffset: '-2px',
         padding: 'clamp(14px, 2vh, 22px) clamp(14px, 1.6vw, 22px)',
         textAlign: 'left',
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
-        opacity: dim ? 0.6 : 1,
-        transition: 'background 200ms linear, border-color 200ms linear, opacity 220ms linear, outline-color 80ms linear',
+        transition: 'background 200ms linear, outline-color 80ms linear',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
         gap: 10,
         minHeight: 'clamp(140px, 22vh, 200px)',
@@ -6218,8 +5831,8 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         <ModuleIcon
           id={id}
           size={20}
-          color={expanded ? C.ink : C.grey}
-          strokeWidth={expanded ? 1.4 : 1.1}
+          color={expanded ? C.white : C.grey}
+          strokeWidth={1.3}
         />
       </span>
 
@@ -6241,18 +5854,10 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
           transform: expanded ? 'rotate(135deg)' : 'rotate(0deg)',
           transition: 'transform 360ms cubic-bezier(0.34,1.4,0.5,1)',
         }}>
-          <MarathonArrow size={20} dir="up-right" color={expanded ? C.ink : C.yellow}/>
+          <MarathonArrow size={18} dir="up-right" color={expanded ? C.white : C.ink}/>
         </span>
       </span>
 
-      {/* Yellow top rail sull'active tab */}
-      <span style={{
-        position: 'absolute', top: -0.5, left: -0.5, right: -0.5,
-        height: 2, background: C.yellow,
-        transform: expanded ? 'scaleX(1)' : 'scaleX(0)',
-        transformOrigin: 'left',
-        transition: 'transform 320ms cubic-bezier(0.2,0,0,1)',
-      }}/>
 
       {/* BOTTOM: numero + etichetta SEMPRE visibile (wayfinding anche a
           riposo). Tre stati, animati:
@@ -6272,13 +5877,14 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         transition: 'gap 320ms cubic-bezier(0.2,0,0,1)',
       }}>
         <span style={{
-          fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
+          /* v4 · numero di sezione in Neue Machina Ultrabold */
+          fontFamily: 'Neue Machina, IBM Plex Mono, monospace', fontWeight: 700,
           // Collassata → numero più piccolo (lascia aria all'etichetta sotto);
           // riposo/aperta → numero pieno.
-          fontSize: dim ? 'clamp(30px, 4.6vh, 52px)' : 'clamp(48px, 8vh, 88px)',
-          color: C.ink, letterSpacing: '-0.05em', lineHeight: 0.85,
+          fontSize: dim ? 'clamp(32px, 4.8vh, 54px)' : 'clamp(48px, 8.4vh, 92px)',
+          color: expanded ? C.white : C.ink, letterSpacing: '-0.02em', lineHeight: 0.85,
           flexShrink: 0,
-          transition: 'font-size 340ms cubic-bezier(0.2,0,0,1)',
+          transition: 'font-size 340ms cubic-bezier(0.2,0,0,1), color 200ms linear',
         }}>{id}</span>
 
         {/* Blocco etichetta: label (scala rest→active) + sub (solo da aperta) */}
@@ -6291,19 +5897,19 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
           overflow: 'hidden',
         }}>
           <span style={{
-            fontWeight: 700, letterSpacing: '0.18em',
-            color: expanded ? C.ink : C.grey,
+            fontWeight: 700, letterSpacing: '0.12em',
+            color: expanded ? C.white : C.grey,
             whiteSpace: 'nowrap', overflow: 'hidden',
             textOverflow: expanded ? 'ellipsis' : 'clip',
-            fontSize: expanded ? 'clamp(15px, 1.5vw, 22px)' : 'clamp(9px, 0.95vw, 11px)',
+            fontSize: expanded ? 'clamp(15px, 1.5vw, 22px)' : 12,
             transition: 'font-size 340ms cubic-bezier(0.2,0,0,1), color 220ms linear',
           }}>{label}</span>
           {sub && (
             <span style={{
-              fontSize: 11, fontWeight: 500, color: C.grey,
+              fontSize: 13, fontWeight: 400, color: C.white,
               letterSpacing: '0.02em', whiteSpace: 'nowrap',
               overflow: 'hidden', textOverflow: 'ellipsis',
-              maxHeight: expanded ? 18 : 0,
+              maxHeight: expanded ? 20 : 0,
               opacity: expanded ? 1 : 0,
               transition: 'max-height 320ms cubic-bezier(0.2,0,0,1), opacity 220ms linear 60ms',
             }}>{sub}</span>
@@ -6348,7 +5954,7 @@ function ModuleStrip({ current, focused, setFocused, lang, onSelect, mobile, sou
       style={{
         display: 'grid',
         gridTemplateColumns: cols,
-        gap: 'clamp(8px, 1.2vw, 16px)',
+        gap: 'clamp(12px, 1.2vw, 16px)',
         background: 'transparent',
         transition: 'grid-template-columns 320ms cubic-bezier(0.2,0,0,1)',
       }}>
@@ -6420,7 +6026,10 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         // v3.2 flat: il display è acciaio, quindi la tab attiva diventa PAPER
         // (si fonde col display via ponte), le inattive sono pannelli bianchi.
         // Stacco affidato al tono del fondo, mai ombre né cornici.
-        background: active ? C.paper : C.white,
+        // v4: tasti acciaio pieni sul fondo bianco; attivo = superficie
+        // gialla con icona e nome bianchi. Niente "ponte" verso il display:
+        // il display è bianco, non c'è più un pannello da raccordare.
+        background: active ? C.yellow : C.paper,
         color: C.ink,
         /* ATTIVA SENZA CORNICE + PONTE NEL BOX: la tab cliccata si fonde con
            la view (pannello senza bordi) in un'unica forma bianca. Il
@@ -6431,10 +6040,16 @@ function GameBoyKey({ id, n, label, active, onPress }) {
            separato arrotondava la larghezza in modo indipendente · ~1 device
            px di rientro, misurato). margin-top e min-height compensano:
            contenuto e riga della strip non si muovono di un pixel. */
-        border: '0.5px solid transparent',
-        borderTopWidth: active ? 'calc(var(--frame-gap, 16px) + 2px)' : '0.5px',
-        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px) - 1.5px)' : 0,
-        paddingTop: 11, paddingRight: 6, paddingBottom: 10, paddingLeft: 6,
+        /* PONTE · il tasto attivo sale fino a toccare lo schermo che ha
+           aperto: il border-top TRASPARENTE lascia dipingere sotto di sé il
+           fondo giallo, quindi tasto e ponte sono un'unica forma (niente
+           passi sub-pixel). margin-top e min-height compensano: icona e
+           label non si muovono di un pixel. */
+        border: 'none',
+        borderTop: '0 solid transparent',
+        borderTopWidth: active ? 'var(--frame-gap, 16px)' : 0,
+        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
+        paddingTop: 12, paddingRight: 4, paddingBottom: 11, paddingLeft: 4,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
@@ -6446,17 +6061,15 @@ function GameBoyKey({ id, n, label, active, onPress }) {
            rientrata (delay = durata della corsa), altrimenti il bordo ancora
            alto si tinge → 'ombra' sotto il ponte che si ritira. In apertura
            il grigio sparisce subito. */
-        transition: active
-          ? 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear, border-top-color 60ms linear, border-top-width 340ms cubic-bezier(0.2,0,0,1), margin-top 340ms cubic-bezier(0.2,0,0,1), min-height 340ms cubic-bezier(0.2,0,0,1)'
-          : 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-color 160ms linear, border-top-color 120ms linear 320ms, border-top-width 340ms cubic-bezier(0.2,0,0,1), margin-top 340ms cubic-bezier(0.2,0,0,1), min-height 340ms cubic-bezier(0.2,0,0,1)',
-        minHeight: active ? 'calc(62px + var(--frame-gap, 16px) + 1.5px)' : 62,
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), background 160ms linear, border-top-width 340ms cubic-bezier(0.2,0,0,1), margin-top 340ms cubic-bezier(0.2,0,0,1), min-height 340ms cubic-bezier(0.2,0,0,1)',
+        minHeight: active ? 'calc(64px + var(--frame-gap, 16px))' : 64,
       }}>
-      <ModuleIcon id={id} size={22} color={active ? C.ink : C.grey} strokeWidth={1.4}/>
+      <ModuleIcon id={id} size={22} color={active ? C.white : C.grey} strokeWidth={1.4}/>
       {/* Label del modulo al posto del vecchio numero hotkey (inutile su touch).
           10px: sopra la soglia comoda di lettura su telefono (era 8px). */}
       <span style={{
-        fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-        color: active ? C.ink : C.grey,
+        fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
+        color: active ? C.white : C.grey,
         transition: 'color 160ms linear',
       }}>{label}</span>
     </button>
@@ -6503,7 +6116,7 @@ function TapToStart({ lang = 'it', onStart, sound }) {
       aria-label={lang === 'it' ? 'Premi per avviare' : 'Press to start'}
       style={{
         position: 'fixed', inset: 0, zIndex: 100001,
-        background: C.paper,
+        background: C.white,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         gap: 'clamp(28px, 8vh, 56px)',
@@ -6530,9 +6143,10 @@ function TapToStart({ lang = 'it', onStart, sound }) {
           </svg>
         </span>
 
-        <span style={{ fontSize: 11, letterSpacing: '0.32em', color: C.ink, fontWeight: 700 }}>
-          {BRAND.product}
-        </span>
+        <span style={{
+          fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
+          fontSize: 28, letterSpacing: '-0.01em', color: C.ink, fontWeight: 700, lineHeight: 1,
+        }}>{BRAND.product}</span>
 
         {/* Barra segmentata: tacche SEPARATE in sequenza, ognuna con la sua
             cornice. Bordo a 1px (non 0.5px): un mezzo pixel cadeva su confini
@@ -6541,17 +6155,15 @@ function TapToStart({ lang = 'it', onStart, sound }) {
         <div style={{ display: 'flex', gap: 2, width: '100%', boxSizing: 'border-box' }}>
           {Array.from({ length: SEGMENTS }, (_, i) => (
             <div key={i} style={{
-              flex: 1, minWidth: 0, height: 9,
-              background: 'transparent',
-              border: `1px solid ${C.border}`,
-              boxSizing: 'border-box',
+              flex: 1, minWidth: 0, height: 10,
+              background: C.paper,
             }}/>
           ))}
         </div>
 
         <div style={{
           display: 'flex', justifyContent: 'space-between', width: '100%', boxSizing: 'border-box',
-          fontSize: 9, letterSpacing: '0.22em', color: C.faint, fontWeight: 600,
+          fontSize: 12, letterSpacing: '0.12em', color: C.faint, fontWeight: 700,
         }}>
           <span>BOOT · {BRAND.version}</span>
           <span style={{ color: C.ink, fontWeight: 700 }}>000%</span>
@@ -6561,13 +6173,13 @@ function TapToStart({ lang = 'it', onStart, sound }) {
       {/* Start button · centrato, bordo completo, full-width */}
       <div style={{
         width: '100%', maxWidth: 440, boxSizing: 'border-box',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-        border: `0.5px solid ${C.ink}`,
-        padding: 'clamp(12px, 2vh, 18px) clamp(12px, 3vw, 20px)',
-        animation: 'sgnpulse 2.2s ease-in-out infinite',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+        /* v4: il tasto START è una superficie gialla, testo bianco */
+        background: C.yellow,
+        padding: 'clamp(14px, 2vh, 18px) clamp(12px, 3vw, 20px)',
       }}>
-        <span style={{ fontSize: 9, color: C.ink, animation: 'sgnBlink 1.4s step-start infinite' }}>▶</span>
-        <span style={{ fontSize: 10, letterSpacing: '0.26em', fontWeight: 700, color: C.ink }}>
+        <span style={{ fontSize: 12, color: C.white, animation: 'sgnBlink 1.4s step-start infinite' }}>▶</span>
+        <span style={{ fontSize: 13, letterSpacing: '0.12em', fontWeight: 700, color: C.white }}>
           {lang === 'it' ? 'PREMI PER AVVIARE' : 'PRESS TO START'}
         </span>
       </div>
@@ -6657,7 +6269,7 @@ function BootScreen({ lang = 'it', onDone, sound }) {
       onClick={skip}
       style={{
         position: 'fixed', inset: 0, zIndex: 100000,
-        background: C.paper,
+        background: C.white,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         gap: 'clamp(28px, 8vh, 56px)',
@@ -6690,7 +6302,8 @@ function BootScreen({ lang = 'it', onDone, sound }) {
 
         {/* product name */}
         <span style={{
-          fontSize: 11, letterSpacing: '0.32em', color: C.ink, fontWeight: 700,
+          fontFamily: 'Neue Machina, IBM Plex Mono, monospace',
+          fontSize: 28, letterSpacing: '-0.01em', color: C.ink, fontWeight: 700, lineHeight: 1,
         }}>{BRAND.product}</span>
 
         {/* segmented bar · tacche SEPARATE in sequenza (vedi nota in TapToStart
@@ -6700,11 +6313,9 @@ function BootScreen({ lang = 'it', onDone, sound }) {
             const on = i < filled;
             return (
               <div key={i} style={{
-                flex: 1, minWidth: 0, height: 9,
-                background: on ? C.yellow : 'transparent',
-                border: `1px solid ${on ? C.yellow : C.border}`,
-                boxSizing: 'border-box',
-                transition: 'background 80ms cubic-bezier(0.4,0,0.2,1), border-color 80ms cubic-bezier(0.4,0,0.2,1)',
+                flex: 1, minWidth: 0, height: 10,
+                background: on ? C.yellow : C.paper,
+                transition: 'background 80ms cubic-bezier(0.4,0,0.2,1)',
               }}/>
             );
           })}
@@ -6713,7 +6324,7 @@ function BootScreen({ lang = 'it', onDone, sound }) {
         {/* progress numerico, piccolo, sotto la barra */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', width: '100%', boxSizing: 'border-box',
-          fontSize: 9, letterSpacing: '0.22em', color: C.faint, fontWeight: 600,
+          fontSize: 12, letterSpacing: '0.12em', color: C.faint, fontWeight: 700,
         }}>
           <span>BOOT · {BRAND.version}</span>
           <span style={{ color: C.ink, fontWeight: 700 }}>
@@ -6730,20 +6341,17 @@ function BootScreen({ lang = 'it', onDone, sound }) {
       <div style={{
         width: '100%', maxWidth: 440, boxSizing: 'border-box',
         display: 'flex', alignItems: 'center', gap: 8,
-        border: '0.5px solid transparent',
-        padding: 'clamp(12px, 2vh, 18px) clamp(12px, 3vw, 20px)',
+        padding: 'clamp(14px, 2vh, 18px) clamp(12px, 3vw, 20px)',
         fontFamily: 'IBM Plex Mono, monospace',
-        fontSize: 10, fontWeight: 600, letterSpacing: '0.16em',
+        fontSize: 13, fontWeight: 400,
         color: C.grey, fontVariantNumeric: 'tabular-nums',
       }}>
         <span style={{
-          display: 'inline-block', width: 6, height: 6,
-          background: C.yellow,
-          animation: 'sgnpulse 1.2s linear infinite',
-          flexShrink: 0,
+          display: 'inline-block', width: 10, height: 10,
+          background: C.yellow, flexShrink: 0,
         }}/>
         <span style={{
-          color: C.ink, fontWeight: 700, letterSpacing: '0.18em',
+          color: C.grey, fontWeight: 400,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{statusLine}</span>
       </div>
@@ -6791,16 +6399,15 @@ function LangPopover({ lang, onPick, onClose, sound }) {
   return (
     <div ref={ref} className="sgn-lang-popover" role="menu" aria-label="Locale" style={{
       position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 9000,
-      width: 214, background: C.white,
+      width: 220, background: C.paper,
       fontFamily: 'IBM Plex Mono, monospace',
     }}>
       {/* header strip */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '7px 11px',
+        padding: '12px 13px 6px',
       }}>
-        <span style={{ fontSize: 8, letterSpacing: '0.28em', color: C.grey, fontWeight: 700 }}>LOCALE</span>
-        <span style={{ fontSize: 8, letterSpacing: '0.2em', color: C.faint, fontWeight: 600 }}>SGN·OS</span>
+        <span style={{ fontSize: 12, letterSpacing: '0.12em', color: C.grey, fontWeight: 700 }}>{lang === 'it' ? 'LINGUA' : 'LANGUAGE'}</span>
       </div>
 
       {/* rows */}
@@ -6819,7 +6426,7 @@ function LangPopover({ lang, onPick, onClose, sound }) {
               position: 'relative', width: '100%',
               display: 'flex', alignItems: 'center', gap: 11,
               padding: '12px 13px', cursor: 'pointer',
-              background: active ? C.paper : 'transparent',
+              background: active ? C.white : 'transparent',
               border: 'none',
               fontFamily: 'inherit', textAlign: 'left', color: C.ink,
               transition: 'background 120ms linear',
@@ -6827,13 +6434,13 @@ function LangPopover({ lang, onPick, onClose, sound }) {
             {/* v3.2: niente barre laterali né hairline tra le righe: lo stato
                attivo lo dice solo il fondo paper. */}
             <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '0.04em', minWidth: 22 }}>{r.code}</span>
-            <span style={{ flex: 1, fontSize: 11, letterSpacing: '0.02em',
+            <span style={{ flex: 1, fontSize: 12, letterSpacing: '0.02em',
               color: active ? C.ink : C.grey, transition: 'color 120ms linear' }}>{r.name}</span>
             {current ? (
-              <span aria-hidden title="current" style={{ width: 6, height: 6, background: C.grey, flexShrink: 0 }}/>
+              <span aria-hidden title="current" style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>
             ) : (
-              <span aria-hidden style={{ fontSize: 9, letterSpacing: '0.14em', fontWeight: 700,
-                color: C.faint, opacity: active ? 1 : 0, transition: 'opacity 120ms linear' }}>SET ▸</span>
+              <span aria-hidden style={{ fontSize: 12, letterSpacing: '0.12em', fontWeight: 700,
+                color: active ? C.grey : 'transparent', transition: 'color 120ms linear' }}>▸</span>
             )}
           </button>
         );
@@ -7819,8 +7426,8 @@ function CommandPalette({ open, onClose, lang, current, sound, actions }) {
         </div>
         <ul className="sgn-cp-list" role="listbox">
           {filtered.length === 0 && (
-            <li className="sgn-cp-item" style={{ cursor: 'default', opacity: 0.6, gridTemplateColumns: '1fr' }}>
-              <span className="label" style={{ color: 'rgba(120,122,124,0.8)' }}>
+            <li className="sgn-cp-item" style={{ cursor: 'default', gridTemplateColumns: '1fr' }}>
+              <span className="label" style={{ color: '#6B6D70' }}>
                 {lang === 'it' ? 'Nessun risultato.' : 'No results.'}
               </span>
             </li>
@@ -7916,19 +7523,10 @@ function PagerCard({ index, total, labels, goto, lang, sound }) {
    del display. Solo mobile (CSS) + moduli multi-pagina. Tap su una barra
    salta alla pagina. */
 function MobilePageRail({ index, total, goto, lang, sound }) {
-  // Rail discreto a riposo: vive a bassa opacità per non rubare spazio agli
-  // screenshot/contenuti. "Sveglia" (piena opacità) ad ogni cambio pagina ·
-  // cioè appena si scorre tra le pagine della sezione · poi sfuma di nuovo.
-  const [awake, setAwake] = React.useState(false);
-  const firstRef = React.useRef(true);
-  React.useEffect(() => {
-    if (firstRef.current) { firstRef.current = false; return; } // non al primo mount
-    setAwake(true);
-    const t = setTimeout(() => setAwake(false), 1600);
-    return () => clearTimeout(t);
-  }, [index]);
+  // v4 · BARRA orizzontale nella topbar mobile: segmento attivo giallo e
+  // più lungo, gli altri acciaio. Sempre pieno, mai semi-trasparente.
   return (
-    <div className={`sgn-mrail${awake ? ' awake' : ''}`} role="tablist" aria-orientation="vertical"
+    <div className="sgn-mrail" role="tablist" aria-orientation="horizontal"
       aria-label={lang === 'it' ? 'Pagine del modulo' : 'Module pages'}>
       {Array.from({ length: total }).map((_, i) => {
         const active = i === index;
@@ -7947,10 +7545,6 @@ function MobilePageRail({ index, total, goto, lang, sound }) {
     </div>
   );
 }
-
-/* FadePill · shell comune dei chip-hint: monta col fade-in e smonta DOPO il
-   fade-out (mai comparse/sparizioni a scatto). Doppio rAF: lo stato "off"
-   deve dipingersi prima che parta la transizione. */
 function FadePill({ show, children }) {
   const [mounted, setMounted] = React.useState(show);
   const [on, setOn] = React.useState(false);
@@ -8352,6 +7946,7 @@ function App() {
             pageLabel={pageMeta.label}
             pageIndex={pageMeta.index}
             pageTotal={pageMeta.total}
+            pageGoto={pageMeta.goto}
             idle={idle}
           />
 
@@ -8376,15 +7971,6 @@ function App() {
                   }
                 </div>
               </PageMeta.Provider>
-              {pageMeta.total > 1 && pageMeta.goto && (
-                <MobilePageRail
-                  index={pageMeta.index}
-                  total={pageMeta.total}
-                  goto={pageMeta.goto}
-                  lang={lang}
-                  sound={sound}
-                />
-              )}
               <SwipeHint lang={lang} show={swipeHint}/>
             </section>
             {pageMeta.total > 1 && pageMeta.goto && (
