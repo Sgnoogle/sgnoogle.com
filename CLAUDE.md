@@ -99,6 +99,10 @@ JS `C` negli inline styles:
 
 ## Motion system (v4 · "videogioco elegante")
 
+- **Wipe direction** (owner rule): going FORWARD (to the right / next
+  module) the band enters from the RIGHT edge and travels left; backward is
+  the mirror. Classes `.fwd/.back` describe the band's motion, so App maps
+  direction>0 → `back`. Keep band, reveal and ghost classes in sync.
 - **Module transition** = yellow band (`.sgn-wipe`, 18% of the display)
   crossing the screen in the nav direction while the new content is revealed
   exactly behind it (`sgnRevealFwd/Back` clip-path). Band and clip share the
@@ -127,7 +131,19 @@ JS `C` negli inline styles:
 - **STL explode**: per-geometry `aOffset` attribute (max 4 big chunks:
   2×2 on the two longest axes, owner asked for fewer pieces) +
   `uExplode` uniform injected via `onBeforeCompile`; enter 1→0, exit 0→0.6.
-- **Physical keys**: desktop tabs and mobile keys travel 3px down on press.
+- **Physical keys**: desktop tabs and mobile keys travel down on press.
+  Nav symbols are `Icon3D` (5 stacked copies of the SVG with translateZ =
+  CSS extrusion): on activation each spins on its own axis
+  (`sgnIco3d01..05`), on desktop tab hover it tilts to show its depth.
+- **STL viewer tools**: `renderer.localClippingEnabled` + two shared planes.
+  `printPlane` (-Y) = PRINT: the first model of a visit (and the STAMPA
+  button) grows layer by layer with a white nozzle bar; `sectionPlane` (-Z,
+  toward camera) = SEZIONE + range slider, auto-spin locked and model eased
+  to a 3/4 view. Materials are DoubleSide and back faces are shaded as
+  white/yellow diagonal "infill" in the fragment shader. Drag has inertia
+  (velocity kept on release, damped per frame).
+- **Gamepad rumble**: `vibrationActuator.playEffect('dual-rumble')` on each
+  pad input (stronger on A/B), silently skipped where unsupported.
 - **Gamepad** (App): buttons are translated to the equivalent keydown and
   dispatched to the focused element (d-pad/stick = arrows with repeat,
   A = Enter, B = Esc, Start = `/`, Y = `l`, X = `m`). Never add parallel

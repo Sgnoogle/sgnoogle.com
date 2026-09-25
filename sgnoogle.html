@@ -725,21 +725,50 @@ button { border: none; }
   }
 
   /* ── Slide-in container per il display content ── */
+  /* ── Strumenti del viewer 3D (STAMPA · SEZIONE) + cursore di taglio */
+  .sgn-vbtn {
+    height: 32px; padding: 0 12px; border: none; cursor: pointer;
+    background: var(--white); color: var(--grey);
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+    transition: background 120ms linear, color 120ms linear, transform 90ms ease-out;
+  }
+  .sgn-vbtn:hover { color: var(--ink); }
+  .sgn-vbtn:active { transform: translateY(2px); }
+  .sgn-vbtn.is-on { background: var(--yellow); color: var(--white); }
+  .sgn-vbtn:disabled { cursor: default; color: var(--paper); }
+  .sgn-range { -webkit-appearance: none; appearance: none; flex: 1; height: 24px; background: transparent; margin: 0; cursor: pointer; }
+  .sgn-range::-webkit-slider-runnable-track { height: 6px; background: var(--white); }
+  .sgn-range::-moz-range-track { height: 6px; background: var(--white); }
+  .sgn-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6px; background: var(--yellow); border: none; border-radius: 0; }
+  .sgn-range::-moz-range-thumb { width: 18px; height: 18px; background: var(--yellow); border: none; border-radius: 0; }
+  .sgn-range:focus-visible { outline: 2px solid var(--grey); outline-offset: 2px; }
+
   /* ── Micro-animazioni dei cinque simboli, al momento dell'accensione.
         Ognuna racconta il suo modulo: il play "scatta" in avanti, il cubo
         gira su se stesso, la griglia delle app si ricompone, l'anello del
         link fa uno scatto a vite, l'omino fa un saltello. */
-  .sgn-ico { display: inline-block; line-height: 0; transform-origin: 50% 50%; }
-  .sgn-ico--01 { animation: sgnIcoPlay 520ms cubic-bezier(0.2,0,0,1); }
-  .sgn-ico--02 { animation: sgnIcoCube 620ms cubic-bezier(0.65,0,0.35,1); }
-  .sgn-ico--03 { animation: sgnIcoGrid 480ms cubic-bezier(0.34,1.56,0.64,1); }
-  .sgn-ico--04 { animation: sgnIcoLink 520ms cubic-bezier(0.34,1.56,0.64,1); }
-  .sgn-ico--05 { animation: sgnIcoHop 560ms cubic-bezier(0.2,0,0,1); }
-  @keyframes sgnIcoPlay { 0% { transform: translateX(-4px); } 45% { transform: translateX(4px); } 70% { transform: translateX(-1px); } 100% { transform: none; } }
-  @keyframes sgnIcoCube { from { transform: perspective(80px) rotateY(0); } to { transform: perspective(80px) rotateY(360deg); } }
-  @keyframes sgnIcoGrid { 0% { transform: scale(0.6); } 100% { transform: scale(1); } }
-  @keyframes sgnIcoLink { 0% { transform: rotate(-90deg) scale(0.8); } 100% { transform: none; } }
-  @keyframes sgnIcoHop  { 0% { transform: none; } 35% { transform: translateY(-6px); } 60% { transform: none; } 78% { transform: translateY(-2px); } 100% { transform: none; } }
+  .sgn-ico {
+    display: inline-block; line-height: 0; transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+    transform: perspective(90px);
+    transition: transform 320ms cubic-bezier(0.2,0,0,1);
+  }
+  /* Accensione: ogni simbolo fa un giro 3D diverso (asse e verso), così
+     lo spessore dell'estrusione si vede per un istante. */
+  .sgn-ico--01 { animation: sgnIco3d01 720ms cubic-bezier(0.65,0,0.35,1); }
+  .sgn-ico--02 { animation: sgnIco3d02 780ms cubic-bezier(0.65,0,0.35,1); }
+  .sgn-ico--03 { animation: sgnIco3d03 720ms cubic-bezier(0.65,0,0.35,1); }
+  .sgn-ico--04 { animation: sgnIco3d04 720ms cubic-bezier(0.65,0,0.35,1); }
+  .sgn-ico--05 { animation: sgnIco3d05 720ms cubic-bezier(0.65,0,0.35,1); }
+  @keyframes sgnIco3d01 { from { transform: perspective(90px) rotateY(0); } to { transform: perspective(90px) rotateY(360deg); } }
+  @keyframes sgnIco3d02 { from { transform: perspective(90px) rotate3d(1, 1, 0, 0deg); } to { transform: perspective(90px) rotate3d(1, 1, 0, 360deg); } }
+  @keyframes sgnIco3d03 { from { transform: perspective(90px) rotateX(0); } to { transform: perspective(90px) rotateX(360deg); } }
+  @keyframes sgnIco3d04 { from { transform: perspective(90px) rotateY(0); } to { transform: perspective(90px) rotateY(-360deg); } }
+  @keyframes sgnIco3d05 { from { transform: perspective(90px) rotateX(0); } to { transform: perspective(90px) rotateX(-360deg); } }
+  /* Desktop: al passaggio del mouse il simbolo si inclina e mostra lo spessore */
+  @media (hover: hover) and (pointer: fine) {
+    .sgn-tab:hover .sgn-ico { transform: perspective(90px) rotateY(28deg) rotateX(-14deg); }
+  }
   @media (prefers-reduced-motion: reduce) { .sgn-ico { animation: none !important; } }
 
   /* ── Transizione tra moduli · "onda gialla". Una banda gialla (18% del
@@ -2276,6 +2305,27 @@ Object.assign(window, { C, Tag, Label, Caption, Pill, Datum, Odometer, Bar, BarH
    Same SVG renders on web (small, secondary to number) and mobile (bottom nav).
    Pass `size` and `color` to scale + recolor. */
 
+/* Icon3D · il simbolo del modulo ESTRUSO: 5 copie della stessa icona
+   impilate in profondità (translateZ) dentro un contenitore preserve-3d.
+   Di fronte sembra piatta; quando ruota (accensione del tasto, hover sulle
+   tab desktop) mostra lo spessore come un pezzo solido. Stesso colore su
+   tutti gli strati: nessun grigio o ombra aggiunti. */
+function Icon3D({ id, size = 22, color, strokeWidth = 1.4 }) {
+  const LAYERS = 5, STEP = 0.9;
+  return (
+    <span style={{ position: 'relative', display: 'inline-block', width: size, height: size, transformStyle: 'preserve-3d' }}>
+      {Array.from({ length: LAYERS }, (_, i) => (
+        <span key={i} aria-hidden="true" style={{
+          position: 'absolute', inset: 0,
+          transform: `translateZ(${-i * STEP}px)`,
+        }}>
+          <ModuleIcon id={id} size={size} color={color} strokeWidth={strokeWidth}/>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function ModuleIcon({ id, size = 18, color = 'currentColor', strokeWidth = 1.2 }) {
   const s = strokeWidth;
   const props = {
@@ -2892,6 +2942,8 @@ function STLLab({ lang }) {
     try { return window.matchMedia('(pointer: coarse)').matches; } catch (e) { return false; }
   }, []);
   const [viewerRequested, setViewerRequested] = React.useState(true);
+  // Vista in sezione: null = spenta, 0..1 = posizione del taglio.
+  const [section, setSection] = React.useState(null);
 
   // Load THREE appena il modulo Objects viene montato: gli STL devono essere
   // visibili subito anche su mobile, senza passare da un gate LOAD 3D.
@@ -2951,7 +3003,37 @@ function STLLab({ lang }) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
     renderer.setSize(w, h);
+    renderer.localClippingEnabled = true;
     el.appendChild(renderer.domElement);
+
+    /* Due piani di taglio condivisi da tutti i materiali STL:
+       · printPlane (normale -Y): tiene solo ciò che sta SOTTO l'altezza di
+         stampa → il modello "cresce" strato per strato;
+       · sectionPlane (normale -Z): la vista in sezione.
+       A riposo stanno lontanissimi (constant 1e6) = nessun taglio. */
+    const printPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e6);
+    // sezione lungo la profondità (verso la camera): il taglio rimuove la
+    // parte davanti e mostra l'interno di fronte, a qualunque rotazione
+    const sectionPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 1e6);
+    // Testina: un blocchetto bianco che fa avanti e indietro sullo strato.
+    const nozzle = new THREE.Mesh(
+      new THREE.BoxGeometry(22, 2.2, 2.2),
+      new THREE.MeshBasicMaterial({ color: 0xFFFFFF })
+    );
+    nozzle.visible = false;
+    scene.add(nozzle);
+    let printAnim = null, lastLayer = -1;
+    const startPrint = () => {
+      const box = new THREE.Box3().setFromObject(holder);
+      if (box.isEmpty()) return;
+      printAnim = {
+        start: performance.now(), dur: 2400, layers: 56,
+        min: box.min.y, max: box.max.y, minX: box.min.x, maxX: box.max.x, z: box.max.z,
+      };
+      lastLayer = -1;
+      printPlane.constant = box.min.y;
+    };
+    const cancelPrint = () => { printAnim = null; printPlane.constant = 1e6; nozzle.visible = false; };
 
     // Somma luci = 1: la faccia in luce piena rende esattamente #FFC200
     // (con 1.45 il giallo saturava verso il limone).
@@ -2973,6 +3055,9 @@ function STLLab({ lang }) {
     // ── Interaction
     let rotX = -0.25, rotY = 0.3;
     let dragging = false, dragSx = 0, dragSy = 0, dragRx = 0, dragRy = 0;
+    // Inerzia: velocità dell'ultimo tratto di trascinamento, che continua
+    // dopo il rilascio e si smorza da sola (rad per frame).
+    let lastX = 0, lastY = 0, lastT = 0, velY = 0, velX = 0, inY = 0, inX = 0;
     spinRef.current.autoSpin = true;
 
     // La rotazione automatica si ferma quando l'utente tocca/trascina o usa le
@@ -2994,6 +3079,8 @@ function STLLab({ lang }) {
       const p = e.touches ? e.touches[0] : e;
       dragSx = p.clientX; dragSy = p.clientY;
       dragRx = rotX;      dragRy = rotY;
+      lastX = p.clientX; lastY = p.clientY; lastT = performance.now();
+      velY = velX = inY = inX = 0;
     };
     const onMove = (e) => {
       if (!dragging) return;
@@ -3002,8 +3089,21 @@ function STLLab({ lang }) {
       const dy = p.clientY - dragSy;
       rotY = dragRy + dx * 0.01;
       rotX = Math.max(-1.2, Math.min(1.2, dragRx + dy * 0.01));
+      const now = performance.now(), dt = Math.max(8, now - lastT);
+      velY = ((p.clientX - lastX) * 0.01 / dt) * 16;
+      velX = ((p.clientY - lastY) * 0.01 / dt) * 16;
+      lastX = p.clientX; lastY = p.clientY; lastT = now;
     };
-    const onUp = () => { if (dragging) { dragging = false; scheduleResume(); } };
+    const onUp = () => {
+      if (!dragging) return;
+      dragging = false;
+      // lancio solo se il dito/mouse si muoveva ancora al rilascio
+      if (performance.now() - lastT < 80) {
+        inY = Math.max(-0.25, Math.min(0.25, velY));
+        inX = Math.max(-0.12, Math.min(0.12, velX));
+      }
+      scheduleResume();
+    };
 
     // Rotazione da tastiera: frecce orbitano, +/- ... (il mount è focusabile).
     const onKey = (e) => {
@@ -3072,9 +3172,37 @@ function STLLab({ lang }) {
       // Rotazione "cinematografica": la velocità accelera e decelera
       // dolcemente invece di partire a scatto, e in autospin l'inclinazione
       // respira piano attorno a una vista leggermente dall'alto.
-      spinVel += ((spinRef.current.autoSpin ? 0.0042 : 0) - spinVel) * 0.03;
+      const spinOn = spinRef.current.autoSpin && !spinRef.current.locked;
+      spinVel += ((spinOn ? 0.0042 : 0) - spinVel) * 0.03;
       rotY += spinVel;
-      if (spinRef.current.autoSpin && !dragging) {
+      // Sezione attivata → il modello si porta dolcemente in vista 3/4
+      // (angolo più vicino equivalente), così il taglio si legge di fronte.
+      if (spinRef.current.snapTo != null && !dragging) {
+        const TAU = Math.PI * 2, s = spinRef.current.snapTo;
+        const target = s + Math.round((rotY - s) / TAU) * TAU;
+        rotY += (target - rotY) * 0.08;
+        rotX += (-0.2 - rotX) * 0.08;
+        if (Math.abs(target - rotY) < 0.002) spinRef.current.snapTo = null;
+      }
+      if (!dragging && (Math.abs(inY) > 0.0002 || Math.abs(inX) > 0.0002)) {
+        rotY += inY; rotX = Math.max(-1.2, Math.min(1.2, rotX + inX));
+        inY *= 0.95; inX *= 0.9;
+      }
+      if (printAnim) {
+        const p = Math.min(1, (now - printAnim.start) / printAnim.dur);
+        const layer = Math.ceil(p * printAnim.layers);
+        const hgt = printAnim.min + (layer / printAnim.layers) * (printAnim.max - printAnim.min);
+        printPlane.constant = hgt + 0.01;
+        nozzle.visible = p < 1;
+        nozzle.position.set(
+          printAnim.minX + (0.5 + 0.5 * Math.sin(now * 0.018)) * (printAnim.maxX - printAnim.minX),
+          hgt + 1.2, printAnim.z + 2
+        );
+        if (layer !== lastLayer && layer % 8 === 0 && window.sgnTick) window.sgnTick('boot');
+        lastLayer = layer;
+        if (p >= 1) cancelPrint();
+      }
+      if (spinOn && !dragging) {
         const targetX = -0.24 + Math.sin(now * 0.00055) * 0.1;
         rotX += (targetX - rotX) * 0.012;
       }
@@ -3094,7 +3222,11 @@ function STLLab({ lang }) {
     const ro = new ResizeObserver(onResize);
     ro.observe(el);
 
-    stateRef.current = { THREE, scene, renderer, holder };
+    stateRef.current = {
+      THREE, scene, renderer, holder,
+      planes: { print: printPlane, section: sectionPlane },
+      startPrint, cancelPrint, firstReveal: true,
+    };
 
     return () => {
       cancelAnimationFrame(raf);
@@ -3156,6 +3288,7 @@ function STLLab({ lang }) {
 
     // Nuovo modello selezionato → riparte subito la rotazione automatica.
     spinRef.current.autoSpin = true;
+    stateRef.current.cancelPrint?.();
 
     const obj = OBJECTS.find(o => o.id === currentId);
     const previous = holder.children.slice();
@@ -3205,6 +3338,15 @@ function STLLab({ lang }) {
       if (reduceRevealMotion) {
         materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
         setModelReady(true);
+        return;
+      }
+      const st0 = stateRef.current;
+      if (group.userData.explode && st0 && st0.firstReveal && st0.startPrint) {
+        // Primo modello della visita: si STAMPA strato per strato.
+        st0.firstReveal = false;
+        materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
+        setModelReady(true);
+        requestAnimationFrame(() => st0.startPrint());
         return;
       }
       const start = performance.now();
@@ -3285,14 +3427,26 @@ function STLLab({ lang }) {
       // bianco, mai antracite).
       ensureExplodeOffsets(geometry);
       const uExplode = { value: 0 };
-      const fillMat = new THREE.MeshLambertMaterial({ color: 0xFFC200, transparent: true, opacity: 0 });
+      const planes = stateRef.current?.planes;
+      const clip = planes ? [planes.print, planes.section] : [];
+      /* DoubleSide + shader: le facce INTERNE (visibili solo quando un piano
+         taglia il modello) si dipingono a righe diagonali bianco/giallo, come
+         il riempimento di una stampa vista in sezione. Sul giallo solo
+         bianco: niente grigi, niente antracite. */
+      const fillMat = new THREE.MeshLambertMaterial({
+        color: 0xFFC200, transparent: true, opacity: 0,
+        side: THREE.DoubleSide, clippingPlanes: clip,
+      });
       fillMat.onBeforeCompile = (shader) => {
         shader.uniforms.uExplode = uExplode;
         shader.vertexShader = shader.vertexShader
-          .replace('#include <common>', '#include <common>\nattribute vec3 aOffset;\nuniform float uExplode;')
-          .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += aOffset * uExplode;');
+          .replace('#include <common>', '#include <common>\nattribute vec3 aOffset;\nuniform float uExplode;\nvarying vec3 vSgnWP;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += aOffset * uExplode;\nvSgnWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', '#include <common>\nvarying vec3 vSgnWP;')
+          .replace('#include <dithering_fragment>', '#include <dithering_fragment>\nif (!gl_FrontFacing) { float s = step(0.5, fract((vSgnWP.x + vSgnWP.y + vSgnWP.z) / 7.0)); gl_FragColor = vec4(mix(vec3(1.0), vec3(1.0, 0.761, 0.0), s), gl_FragColor.a); }');
       };
-      const edgeMat = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 1, transparent: true, opacity: 0 });
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 1, transparent: true, opacity: 0, clippingPlanes: clip });
       const mesh  = new THREE.Mesh(geometry, fillMat);
       const edges = new THREE.EdgesGeometry(geometry, 15);
       const lines = new THREE.LineSegments(edges, edgeMat);
@@ -3348,6 +3502,20 @@ function STLLab({ lang }) {
     });
     return () => { cancelled = true; };
   }, [currentId, ready, booted]);
+
+  // Vista in sezione: posiziona il piano sul bounding box del modello
+  // corrente; con la sezione attiva il giro automatico si ferma.
+  React.useEffect(() => {
+    const st = stateRef.current;
+    if (!st?.planes || !window.THREE) return;
+    if (section == null) { st.planes.section.constant = 1e6; spinRef.current.locked = false; spinRef.current.snapTo = null; return; }
+    if (!spinRef.current.locked) spinRef.current.snapTo = 0.5;   // solo all'accensione
+    spinRef.current.locked = true;
+    st.cancelPrint?.();
+    const box = new window.THREE.Box3().setFromObject(st.holder);
+    if (box.isEmpty()) return;
+    st.planes.section.constant = box.min.z + section * (box.max.z - box.min.z);
+  }, [section, currentId, modelReady]);
 
   return (
     <div style={{
@@ -3421,8 +3589,36 @@ function STLLab({ lang }) {
             </button>
           </div>
         )}
+        {/* Strumenti del viewer: STAMPA (rigioca la stampa strato per strato)
+            e SEZIONE (taglio con cursore). Etichette: attivo = bianco su giallo. */}
+        {ready && !loadError && (
+          <div style={{ position: 'absolute', top: 14, left: 14, zIndex: 3, display: 'flex', gap: 8 }}>
+            <button type="button" className="sgn-hot sgn-vbtn" disabled={!modelReady}
+              onClick={() => { setSection(null); stateRef.current?.startPrint?.(); if (window.sgnTick) window.sgnTick('confirm'); }}>
+              ▶ {lang === 'it' ? 'STAMPA' : 'PRINT'}
+            </button>
+            <button type="button" className={'sgn-hot sgn-vbtn' + (section != null ? ' is-on' : '')} disabled={!modelReady}
+              aria-pressed={section != null}
+              onClick={() => { setSection(s => (s == null ? 0.5 : null)); if (window.sgnTick) window.sgnTick('tick'); }}>
+              {lang === 'it' ? 'SEZIONE' : 'SECTION'}
+            </button>
+          </div>
+        )}
+        {section != null && (
+          <div style={{
+            position: 'absolute', left: 14, right: 14, bottom: 12, zIndex: 3,
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
+            <Label size={12} color={C.grey}>{lang === 'it' ? 'TAGLIO' : 'CUT'}</Label>
+            <input type="range" min="0" max="100" className="sgn-range"
+              value={Math.round(section * 100)}
+              aria-label={lang === 'it' ? 'Posizione del taglio' : 'Cut position'}
+              onChange={(ev) => setSection(+ev.target.value / 100)}/>
+          </div>
+        )}
         <div style={{
           position: 'absolute', bottom: 14, right: 16,
+          display: section != null ? 'none' : 'block',
           fontSize: 12, color: C.grey,
           fontFamily: 'IBM Plex Mono, monospace', fontWeight: 400,
           textAlign: 'right', lineHeight: 1.6, pointerEvents: 'none',
@@ -6170,7 +6366,7 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         lineHeight: 0, pointerEvents: 'none',
       }}>
         <span className={'sgn-ico' + (expanded ? ' sgn-ico--' + id : '')}>
-          <ModuleIcon id={id} size={20} color={onY ? C.white : (expanded ? C.ink : C.grey)} strokeWidth={1.3}/>
+          <Icon3D id={id} size={20} color={onY ? C.white : (expanded ? C.ink : C.grey)} strokeWidth={1.3}/>
         </span>
       </span>
       <span style={{
@@ -6410,7 +6606,7 @@ function GameBoyKey({ id, n, label, active, onPress }) {
         minHeight: 64,
       }}>
       <span className={'sgn-ico' + (active ? ' sgn-ico--' + id : '')}>
-        <ModuleIcon id={id} size={22} color={active ? C.white : C.grey} strokeWidth={1.4}/>
+        <Icon3D id={id} size={22} color={active ? C.white : C.grey} strokeWidth={1.4}/>
       </span>
       <span style={{
         fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
@@ -6420,7 +6616,7 @@ function GameBoyKey({ id, n, label, active, onPress }) {
   );
 }
 
-Object.assign(window, { TopBar, IdleDisplay, ModuleTab, ModuleStrip,
+Object.assign(window, { Icon3D, TopBar, IdleDisplay, ModuleTab, ModuleStrip,
                          LiveBadge, CornerChangelog, ModulePreview, GameBoyStrip, GameBoyKey });
 
 </script>
@@ -8030,7 +8226,7 @@ function App() {
     from.forEach((n, i) => { if (n.scrollTop || n.scrollLeft) scrolls.push([to[i], n.scrollTop, n.scrollLeft]); });
     g.querySelectorAll('canvas, iframe, video').forEach(n => n.remove());
     g.querySelectorAll('svg').forEach(s => { if (s.style.opacity === '0') s.style.opacity = '1'; });
-    g.className = 'sgn-display-inner sgn-ghost ' + (dir > 0 ? 'fwd' : 'back');
+    g.className = 'sgn-display-inner sgn-ghost ' + (dir > 0 ? 'back' : 'fwd');
     g.removeAttribute('tabindex');
     g.setAttribute('aria-hidden', 'true');
     host.appendChild(g);
@@ -8246,7 +8442,20 @@ function App() {
     const held = {};
     const MAP = { 12: 'ArrowUp', 13: 'ArrowDown', 14: 'ArrowLeft', 15: 'ArrowRight',
                   0: 'Enter', 1: 'Escape', 9: '/', 3: 'l', 2: 'm' };
+    // Vibrazione del controller (Gamepad Haptics): un colpo leggero a ogni
+    // pulsante, più deciso su conferma/uscita. Ignorata dove non esiste.
+    let padRef = null;
+    const rumble = (key) => {
+      const act = padRef && padRef.vibrationActuator;
+      if (!act || !act.playEffect) return;
+      const strong = key === 'Enter' || key === 'Escape';
+      act.playEffect('dual-rumble', {
+        startDelay: 0, duration: strong ? 70 : 32,
+        weakMagnitude: strong ? 0.5 : 0.3, strongMagnitude: strong ? 0.45 : 0.1,
+      }).catch(() => {});
+    };
     const press = (key) => {
+      rumble(key);
       const target = document.activeElement && document.activeElement !== document.body
         ? document.activeElement : window;
       const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
@@ -8259,6 +8468,7 @@ function App() {
       const pads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
       if (!pads.length) return;
       const gp = pads[0];
+      padRef = gp;
       const now = performance.now();
       const down = {};
       Object.keys(MAP).forEach(i => { if (gp.buttons[i]?.pressed) down[MAP[i]] = true; });
@@ -8341,8 +8551,11 @@ function App() {
   }, [select, goHome, current, langOpen, paletteOpen, tweaks.sound, setTweak, sound, mobile]);
 
   const ActiveModule = current ? MODULES[current] : null;
-  const slideClass = direction > 0 ? 'sgn-slide-forward'
-                    : direction < 0 ? 'sgn-slide-back' : '';
+  /* Verso dell'onda: andando AVANTI (verso destra, come sfogliare) la banda
+     entra dal bordo destro e scorre verso sinistra; indietro, il contrario.
+     (Le classi .fwd/.back descrivono il moto della banda, non la navigazione.) */
+  const slideClass = direction > 0 ? 'sgn-slide-back'
+                    : direction < 0 ? 'sgn-slide-forward' : '';
 
   return (
     <div data-screen-label={current ? `${current} ${I18N[lang].modules[current].label}` : '00 Menu'}>
@@ -8398,7 +8611,7 @@ function App() {
                 : (lang === 'it' ? 'Menu principale' : 'Main menu')}>
               {direction !== 0 && (
                 <span key={`wipe-${current || 'idle'}-${transKey}`} aria-hidden
-                  className={`sgn-wipe ${direction > 0 ? 'fwd' : 'back'}`}/>
+                  className={`sgn-wipe ${direction > 0 ? 'back' : 'fwd'}`}/>
               )}
               <PageMeta.Provider value={pageMetaCtx}>
                 <div
