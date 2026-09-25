@@ -725,6 +725,23 @@ button { border: none; }
   }
 
   /* ── Slide-in container per il display content ── */
+  /* ── Micro-animazioni dei cinque simboli, al momento dell'accensione.
+        Ognuna racconta il suo modulo: il play "scatta" in avanti, il cubo
+        gira su se stesso, la griglia delle app si ricompone, l'anello del
+        link fa uno scatto a vite, l'omino fa un saltello. */
+  .sgn-ico { display: inline-block; line-height: 0; transform-origin: 50% 50%; }
+  .sgn-ico--01 { animation: sgnIcoPlay 520ms cubic-bezier(0.2,0,0,1); }
+  .sgn-ico--02 { animation: sgnIcoCube 620ms cubic-bezier(0.65,0,0.35,1); }
+  .sgn-ico--03 { animation: sgnIcoGrid 480ms cubic-bezier(0.34,1.56,0.64,1); }
+  .sgn-ico--04 { animation: sgnIcoLink 520ms cubic-bezier(0.34,1.56,0.64,1); }
+  .sgn-ico--05 { animation: sgnIcoHop 560ms cubic-bezier(0.2,0,0,1); }
+  @keyframes sgnIcoPlay { 0% { transform: translateX(-4px); } 45% { transform: translateX(4px); } 70% { transform: translateX(-1px); } 100% { transform: none; } }
+  @keyframes sgnIcoCube { from { transform: perspective(80px) rotateY(0); } to { transform: perspective(80px) rotateY(360deg); } }
+  @keyframes sgnIcoGrid { 0% { transform: scale(0.6); } 100% { transform: scale(1); } }
+  @keyframes sgnIcoLink { 0% { transform: rotate(-90deg) scale(0.8); } 100% { transform: none; } }
+  @keyframes sgnIcoHop  { 0% { transform: none; } 35% { transform: translateY(-6px); } 60% { transform: none; } 78% { transform: translateY(-2px); } 100% { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .sgn-ico { animation: none !important; } }
+
   /* ── Transizione tra moduli · "onda gialla". Una banda gialla (18% del
         display) attraversa lo schermo nel verso della navigazione e il nuovo
         contenuto si rivela ESATTAMENTE dietro di lei: il bordo della banda e
@@ -1184,29 +1201,23 @@ button { border: none; }
      Solo mobile + moduli multi-pagina.
      ══════════════════════════════════════════════════════════════ */
   .sgn-mrail {
-    /* v4 · BARRA delle pagine agganciata al bordo basso dello schermo
-       mobile: segmenti pieni a tutta larghezza (attivo giallo). Il tasto
-       attivo della nav sale fino a toccarla: tasto e barra fanno una "T". */
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 32;
-    display: flex; align-items: flex-end; gap: 4px;
-    height: 6px;
+    /* BARRA delle pagine del modulo, al centro della topbar mobile. */
+    display: flex; align-items: center; gap: 6px;
   }
   .sgn-mrail-bar {
     appearance: none; margin: 0; padding: 0; cursor: pointer;
-    position: relative; flex: 1;
+    position: relative;
     background: var(--paper);
     border: none;
-    height: 6px;
-    transition: background 200ms linear;
+    width: 22px; height: 6px;
+    transition: width 200ms cubic-bezier(0.2,0,0,1), background 160ms linear;
   }
-  /* area tap generosa sopra la barra */
   .sgn-mrail-bar::after {
     content: ''; position: absolute;
-    top: -18px; bottom: 0; left: 0; right: 0;
+    top: -16px; bottom: -16px; left: -3px; right: -3px;
   }
-  .sgn-mrail-bar.active { background: var(--yellow); }
+  .sgn-mrail-bar.active { width: 34px; background: var(--yellow); }
   .sgn-mrail-bar:focus-visible { outline: 2px solid var(--grey); outline-offset: 2px; }
-  @media (min-width: 761px) { .sgn-mrail { display: none; } }
 
   /* ── Swipe hint (mobile, una-tantum a sessione) · chip in basso al
         centro del display. Compare all'apertura di un modulo multi-pagina e
@@ -3199,7 +3210,7 @@ function STLLab({ lang }) {
       const start = performance.now();
       const ux = group.userData.explode;
       const edgeMat = group.userData.edgeMat;
-      const duration = ux ? 1100 : 560;
+      const duration = ux ? 1000 : 560;
       const finalScale = group.scale.x || 1;
       const startScale = finalScale * 0.965;
       if (!ux) group.scale.setScalar(startScale);
@@ -3215,7 +3226,8 @@ function STLLab({ lang }) {
         if (ux) {
           // i pezzi volano dentro e si incastrano; gli spigoli compaiono solo
           // a modello ricomposto (sarebbero fermi mentre la mesh si muove)
-          ux.value = 1 - easeOutExpo(p);
+          // curva morbida: con pochi blocchi grandi il viaggio si deve VEDERE
+          ux.value = 1 - (1 - Math.pow(1 - p, 4));
           materials.forEach(m => { if (m && m !== edgeMat) m.opacity = Math.min(1, p * 4); });
           if (edgeMat) edgeMat.opacity = Math.max(0, (p - 0.72) / 0.28);
         } else {
@@ -3242,9 +3254,13 @@ function STLLab({ lang }) {
       const c = bb.getCenter(new THREE.Vector3());
       const size = bb.getSize(new THREE.Vector3());
       const maxDim = Math.max(size.x, size.y, size.z) || 1;
-      const N = 3, cells = new Map();
+      // Pochi pezzi grandi, leggibili: 2 × 2 sui due assi più lunghi, 1 sul
+      // più corto (niente fette di spessore) → al massimo 4 blocchi.
+      const axes = ['x', 'y', 'z'].sort((p, q) => size[q] - size[p]);
+      const NA = { [axes[0]]: 2, [axes[1]]: 2, [axes[2]]: 1 };
+      const cells = new Map();
       const out = new Float32Array(pos.count * 3);
-      const cellOf = (v, axis) => Math.min(N - 1, Math.max(0, Math.floor(((v - bb.min[axis]) / (size[axis] || 1)) * N)));
+      const cellOf = (v, axis) => { const N = NA[axis]; return Math.min(N - 1, Math.max(0, Math.floor(((v - bb.min[axis]) / (size[axis] || 1)) * N))); };
       for (let t = 0; t + 2 < pos.count; t += 3) {
         const cx = (pos.getX(t) + pos.getX(t + 1) + pos.getX(t + 2)) / 3;
         const cy = (pos.getY(t) + pos.getY(t + 1) + pos.getY(t + 2)) / 3;
@@ -3253,10 +3269,11 @@ function STLLab({ lang }) {
         let off = cells.get(key);
         if (!off) {
           const [ix, iy, iz] = key.split(',').map(Number);
-          const dir = new THREE.Vector3(ix - 1, iy - 1, iz - 1);
-          if (dir.lengthSq() === 0) dir.set(Math.random() - 0.5, Math.random() - 0.5, 1);
-          dir.normalize().add(new THREE.Vector3((Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4)).normalize();
-          off = dir.multiplyScalar(maxDim * (0.42 + Math.random() * 0.22));
+          const ctr = (i, axis) => (NA[axis] === 1 ? 0 : i - 0.5);
+          const dir = new THREE.Vector3(ctr(ix, 'x'), ctr(iy, 'y'), ctr(iz, 'z'));
+          if (dir.lengthSq() === 0) dir.set(0, 0, 1);
+          dir.normalize().add(new THREE.Vector3(0, 0, (Math.random() - 0.5) * 0.5)).normalize();
+          off = dir.multiplyScalar(maxDim * (0.26 + Math.random() * 0.08));
           cells.set(key, off);
         }
         for (let k = 0; k < 3; k++) { out[(t + k) * 3] = off.x; out[(t + k) * 3 + 1] = off.y; out[(t + k) * 3 + 2] = off.z; }
@@ -5455,6 +5472,9 @@ function TopBar({ lang, langOpen, onToggleLang, onPickLang, onCloseLang, onHome,
       {!mobile && (
         <StatusReadout lang={lang} current={current} direction={direction} variant={variant} idle={idle}/>
       )}
+      {mobile && pageTotal > 1 && pageGoto && (
+        <MobilePageRail index={pageIndex} total={pageTotal} goto={pageGoto} lang={lang} sound={sound}/>
+      )}
       {/* Mobile · la BARRA delle pagine del modulo vive al centro della
           topbar: niente più rail sovrapposto al bordo delle card. */}
 
@@ -6149,7 +6169,9 @@ function ModuleTab({ id, label, sub, active, focused, anyActive, hotkey, onClick
         position: 'absolute', top: 12, left: 14, zIndex: 2,
         lineHeight: 0, pointerEvents: 'none',
       }}>
-        <ModuleIcon id={id} size={20} color={onY ? C.white : (expanded ? C.ink : C.grey)} strokeWidth={1.3}/>
+        <span className={'sgn-ico' + (expanded ? ' sgn-ico--' + id : '')}>
+          <ModuleIcon id={id} size={20} color={onY ? C.white : (expanded ? C.ink : C.grey)} strokeWidth={1.3}/>
+        </span>
       </span>
       <span style={{
         position: 'absolute', top: 11, right: 11, zIndex: 2,
@@ -6361,16 +6383,11 @@ function GameBoyStrip({ ids, L, current, onSelect, sound }) {
 
 function GameBoyKey({ id, n, label, active, onPress }) {
   const [pressed, setPressed] = React.useState(false);
-  const face = (onY) => (
-    <>
-      <ModuleIcon id={id} size={22} color={onY ? C.white : C.grey} strokeWidth={1.4}/>
-      <span style={{
-        fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
-        color: onY ? C.white : C.grey,
-      }}>{label}</span>
-    </>
-  );
-  const pad = { paddingTop: 12, paddingRight: 4, paddingBottom: 11, paddingLeft: 4 };
+  /* v4 · tasto semplice: attivo = blocco giallo pieno, icona e nome
+     bianchi. Nessuno strato sovrapposto (su Safari iOS gli strati con
+     clip-path facevano lampeggiare l'intera barra a ogni cambio). Il
+     "momento" lo dà il SIMBOLO: ognuno ha la sua micro-animazione quando
+     il tasto si accende (vedi .sgn-ico--NN). */
   return (
     <button
       aria-label={label}
@@ -6382,42 +6399,23 @@ function GameBoyKey({ id, n, label, active, onPress }) {
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPress?.(); } }}
       style={{
         position: 'relative',
-        background: C.paper,
-        color: C.ink,
-        /* PONTE · il tasto attivo SALE (border-top trasparente + margin-top
-           negativo: contenuto fermo, forma unica senza passi sub-pixel) fino
-           a innestarsi nella BARRA delle pagine sul bordo basso dello
-           schermo: tasto e schermo diventano una forma sola. */
+        background: active ? C.yellow : C.paper,
         border: 'none',
-        borderTop: '0 solid transparent',
-        borderTopWidth: active ? 'var(--frame-gap, 16px)' : 0,
-        marginTop: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
-        ...pad,
+        paddingTop: 12, paddingRight: 4, paddingBottom: 11, paddingLeft: 4,
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         cursor: 'pointer',
         fontFamily: 'IBM Plex Mono, monospace',
-        transform: pressed ? 'translateY(3px)' : 'none',
-        transition: 'transform 90ms cubic-bezier(0.2,0,0,1), border-top-width 380ms cubic-bezier(0.2,0,0,1), margin-top 380ms cubic-bezier(0.2,0,0,1), min-height 380ms cubic-bezier(0.2,0,0,1)',
-        minHeight: active ? 'calc(64px + var(--frame-gap, 16px))' : 64,
+        transform: pressed ? 'translateY(2px)' : 'none',
+        transition: 'transform 90ms cubic-bezier(0.2,0,0,1)',   // colore a scatto, niente tinte intermedie
+        minHeight: 64,
       }}>
-      {face(false)}
-      {/* strato giallo: si carica dal basso e copre anche il ponte */}
-      <div aria-hidden="true" style={{
-        position: 'absolute', left: 0, right: 0, bottom: 0,
-        top: active ? 'calc(-1 * var(--frame-gap, 16px))' : 0,
-        background: C.yellow,
-        ...pad,
-        paddingTop: active ? 'calc(12px + var(--frame-gap, 16px))' : 12,
-        boxSizing: 'border-box',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-        clipPath: active ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)',
-        transition: active
-          ? 'clip-path 440ms cubic-bezier(0.65,0,0.35,1), top 380ms cubic-bezier(0.2,0,0,1), padding-top 380ms cubic-bezier(0.2,0,0,1)'
-          : 'clip-path 260ms cubic-bezier(0.2,0,0,1), top 380ms cubic-bezier(0.2,0,0,1), padding-top 380ms cubic-bezier(0.2,0,0,1)',
-        pointerEvents: 'none',
-      }}>
-        {face(true)}
-      </div>
+      <span className={'sgn-ico' + (active ? ' sgn-ico--' + id : '')}>
+        <ModuleIcon id={id} size={22} color={active ? C.white : C.grey} strokeWidth={1.4}/>
+      </span>
+      <span style={{
+        fontSize: 12, fontWeight: 700, letterSpacing: '0.04em',
+        color: active ? C.white : C.grey,
+      }}>{label}</span>
     </button>
   );
 }
@@ -8413,15 +8411,6 @@ function App() {
                   }
                 </div>
               </PageMeta.Provider>
-              {mobile && current && (
-                <MobilePageRail
-                  index={pageMeta.total > 1 ? pageMeta.index : 0}
-                  total={Math.max(1, pageMeta.total || 1)}
-                  goto={pageMeta.goto}
-                  lang={lang}
-                  sound={sound}
-                />
-              )}
               <SwipeHint lang={lang} show={swipeHint}/>
               <FadePill show={padToast}>
                 <i style={{ width: 10, height: 10, background: C.yellow, flexShrink: 0 }}/>

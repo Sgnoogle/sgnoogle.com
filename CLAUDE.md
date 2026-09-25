@@ -106,10 +106,14 @@ JS `C` negli inline styles:
   section is a DOM clone (`ghostOut` in App, canvas/iframe stripped, scroll
   positions copied) whose clip retreats behind the band's far edge, so the
   old screen is wiped by the band instead of vanishing early.
-- **Nav keys**: two layers (acciaio face + yellow face clipped from the
-  bottom). Desktop hover = 6px of yellow "charge", active = full fill.
-  Mobile active key rises (bridge) into the page BARRA docked at the
-  display bottom (`MobilePageRail`, full width): key + bar form one "T".
+- **Nav keys**: desktop tabs have two layers (acciaio face + yellow face
+  clipped from the bottom): hover = 6px of yellow "charge", active = full
+  fill. MOBILE keys are deliberately simple (owner decision): active = flat
+  yellow block, instant color switch, NO bridge, NO overlay layers (clip-path
+  layers made the whole bar flash on iOS), NO page bar at the bottom. The
+  moment comes from the symbol: `.sgn-ico--01..05` micro-animations (play
+  nudge, cube spin, grid pop, link twist, about hop), also on desktop tabs.
+  Mobile page BARRA lives in the topbar center (`MobilePageRail`).
 - **Layout grid**: topbar, PageDeck pages and home have NO horizontal
   padding: every left/right edge sits on the page padding (43px at 1440).
   Keep it that way when adding sections.
@@ -120,7 +124,8 @@ JS `C` negli inline styles:
   the block = one full spin. Static SVG until ready / reduced motion.
 - **Odometer**: rolling digits for every number (home subs, all `Datum`
   values). Starts on IntersectionObserver + 380ms (after the wipe).
-- **STL explode**: per-geometry `aOffset` attribute (3×3×3 chunks) +
+- **STL explode**: per-geometry `aOffset` attribute (max 4 big chunks:
+  2×2 on the two longest axes, owner asked for fewer pieces) +
   `uExplode` uniform injected via `onBeforeCompile`; enter 1→0, exit 0→0.6.
 - **Physical keys**: desktop tabs and mobile keys travel 3px down on press.
 - **Gamepad** (App): buttons are translated to the equivalent keydown and
