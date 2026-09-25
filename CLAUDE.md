@@ -124,7 +124,10 @@ JS `C` negli inline styles:
 - **HeroMark3D** (home yellow block): the monogram extruded in Three.js,
   flat white `MeshBasicMaterial` (no lights: nothing grey on yellow). STILL
   by default (owner request): it only tilts toward the mouse (desktop) or
-  with device orientation (phone, iOS permission asked on tap). Click on
+  with device orientation (phone, very sensitive: ±16° = full range; iOS
+  permission asked on tap). The static SVG and the 3D mark MUST have the
+  same on-screen size (`MARK_FRAC` of the container's short side, 3D scale
+  computed on the front-face plane) or the logo jumps on swap. Click on
   the block = one full spin. Static SVG until ready / reduced motion.
 - **Odometer**: rolling digits for every number (home subs, all `Datum`
   values). Starts on IntersectionObserver + 380ms (after the wipe).
@@ -137,7 +140,11 @@ JS `C` negli inline styles:
   (`sgnIco3d01..05`), on desktop tab hover it tilts to show its depth.
 - **STL viewer tools**: `renderer.localClippingEnabled` + two shared planes.
   `printPlane` (-Y) = PRINT: the first model of a visit (and the STAMPA
-  button) grows layer by layer with a white nozzle bar; `sectionPlane` (-Z,
+  button) grows layer by layer. `startPrint` is SYNCHRONOUS (plane set below
+  the model before the first frame: never a flash of the finished part),
+  edges are hidden while printing, the cut shows flat yellow (uBackMode 0)
+  and the freshly deposited layer is painted white in the shader
+  (uPrintH/uLayer): no floating nozzle object; `sectionPlane` (-Z,
   toward camera) = SEZIONE + range slider, auto-spin locked and model eased
   to a 3/4 view. Materials are DoubleSide and back faces are shaded as
   white/yellow diagonal "infill" in the fragment shader. Drag has inertia

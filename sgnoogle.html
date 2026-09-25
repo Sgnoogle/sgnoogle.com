@@ -896,7 +896,7 @@ button { border: none; }
       grid-area: title !important;
       align-self: stretch !important;
       justify-content: center !important;
-      gap: 0 !important;
+      gap: 16px !important;
     }
     .sgn-app-title {
       font-size: clamp(30px, 9vw, 40px) !important;
@@ -3015,25 +3015,37 @@ function STLLab({ lang }) {
     // sezione lungo la profondità (verso la camera): il taglio rimuove la
     // parte davanti e mostra l'interno di fronte, a qualunque rotazione
     const sectionPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 1e6);
-    // Testina: un blocchetto bianco che fa avanti e indietro sullo strato.
-    const nozzle = new THREE.Mesh(
-      new THREE.BoxGeometry(22, 2.2, 2.2),
-      new THREE.MeshBasicMaterial({ color: 0xFFFFFF })
-    );
-    nozzle.visible = false;
-    scene.add(nozzle);
+    /* Uniform condivisi dai materiali STL (vedi shader in buildSTLGroup):
+       · uBackMode 0 = interno giallo pieno (stampa: il taglio si legge come
+         lo strato superiore, pulito), 1 = righe di riempimento (sezione);
+       · uPrintH / uLayer = quota e spessore dello strato "appena deposto",
+         dipinto di bianco: è lui la testina, niente oggetti che fluttuano. */
+    const shared = { uBackMode: { value: 0 }, uPrintH: { value: 1e6 }, uLayer: { value: 0 } };
     let printAnim = null, lastLayer = -1;
+    const edgeMats = () => {
+      const out = [];
+      holder.traverse(o => { if (o.isLineSegments && o.material) out.push(o.material); });
+      return out;
+    };
     const startPrint = () => {
+      holder.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(holder);
       if (box.isEmpty()) return;
-      printAnim = {
-        start: performance.now(), dur: 2400, layers: 56,
-        min: box.min.y, max: box.max.y, minX: box.min.x, maxX: box.max.x, z: box.max.z,
-      };
+      printAnim = { start: performance.now(), dur: 2400, layers: 56, min: box.min.y, max: box.max.y };
       lastLayer = -1;
-      printPlane.constant = box.min.y;
+      shared.uBackMode.value = 0;
+      shared.uLayer.value = (box.max.y - box.min.y) / 56 * 1.5;
+      // subito sotto il piano: nemmeno un fotogramma del pezzo finito
+      printPlane.constant = box.min.y - 1;
+      shared.uPrintH.value = box.min.y - 1;
+      edgeMats().forEach(m => { m.visible = false; });
     };
-    const cancelPrint = () => { printAnim = null; printPlane.constant = 1e6; nozzle.visible = false; };
+    const cancelPrint = () => {
+      printAnim = null;
+      printPlane.constant = 1e6;
+      shared.uPrintH.value = 1e6;
+      edgeMats().forEach(m => { m.visible = true; });
+    };
 
     // Somma luci = 1: la faccia in luce piena rende esattamente #FFC200
     // (con 1.45 il giallo saturava verso il limone).
@@ -3193,11 +3205,7 @@ function STLLab({ lang }) {
         const layer = Math.ceil(p * printAnim.layers);
         const hgt = printAnim.min + (layer / printAnim.layers) * (printAnim.max - printAnim.min);
         printPlane.constant = hgt + 0.01;
-        nozzle.visible = p < 1;
-        nozzle.position.set(
-          printAnim.minX + (0.5 + 0.5 * Math.sin(now * 0.018)) * (printAnim.maxX - printAnim.minX),
-          hgt + 1.2, printAnim.z + 2
-        );
+        shared.uPrintH.value = hgt + 0.01;
         if (layer !== lastLayer && layer % 8 === 0 && window.sgnTick) window.sgnTick('boot');
         lastLayer = layer;
         if (p >= 1) cancelPrint();
@@ -3225,7 +3233,7 @@ function STLLab({ lang }) {
     stateRef.current = {
       THREE, scene, renderer, holder,
       planes: { print: printPlane, section: sectionPlane },
-      startPrint, cancelPrint, firstReveal: true,
+      shared, startPrint, cancelPrint, firstReveal: true,
     };
 
     return () => {
@@ -3346,7 +3354,7 @@ function STLLab({ lang }) {
         st0.firstReveal = false;
         materials.forEach(m => { if (m) { m.opacity = 1; m.transparent = false; } });
         setModelReady(true);
-        requestAnimationFrame(() => st0.startPrint());
+        st0.startPrint();   // sincrono: il primo fotogramma è già tagliato
         return;
       }
       const start = performance.now();
@@ -3437,14 +3445,24 @@ function STLLab({ lang }) {
         color: 0xFFC200, transparent: true, opacity: 0,
         side: THREE.DoubleSide, clippingPlanes: clip,
       });
+      const sh = stateRef.current?.shared;
       fillMat.onBeforeCompile = (shader) => {
         shader.uniforms.uExplode = uExplode;
+        if (sh) Object.assign(shader.uniforms, { uBackMode: sh.uBackMode, uPrintH: sh.uPrintH, uLayer: sh.uLayer });
         shader.vertexShader = shader.vertexShader
           .replace('#include <common>', '#include <common>\nattribute vec3 aOffset;\nuniform float uExplode;\nvarying vec3 vSgnWP;')
           .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += aOffset * uExplode;\nvSgnWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
         shader.fragmentShader = shader.fragmentShader
-          .replace('#include <common>', '#include <common>\nvarying vec3 vSgnWP;')
-          .replace('#include <dithering_fragment>', '#include <dithering_fragment>\nif (!gl_FrontFacing) { float s = step(0.5, fract((vSgnWP.x + vSgnWP.y + vSgnWP.z) / 7.0)); gl_FragColor = vec4(mix(vec3(1.0), vec3(1.0, 0.761, 0.0), s), gl_FragColor.a); }');
+          .replace('#include <common>', '#include <common>\nvarying vec3 vSgnWP;\nuniform float uBackMode;\nuniform float uPrintH;\nuniform float uLayer;')
+          .replace('#include <dithering_fragment>', [
+            '#include <dithering_fragment>',
+            'vec3 sgnY = vec3(1.0, 0.761, 0.0);',
+            'if (!gl_FrontFacing) {',
+            '  float s = step(0.5, fract((vSgnWP.x + vSgnWP.y + vSgnWP.z) / 7.0));',
+            '  gl_FragColor = vec4(uBackMode > 0.5 ? mix(vec3(1.0), sgnY, s) : sgnY, gl_FragColor.a);',
+            '}',
+            'if (uPrintH < 1e5 && vSgnWP.y > uPrintH - uLayer) gl_FragColor = vec4(1.0, 1.0, 1.0, gl_FragColor.a);',
+          ].join('\n'));
       };
       const edgeMat = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 1, transparent: true, opacity: 0, clippingPlanes: clip });
       const mesh  = new THREE.Mesh(geometry, fillMat);
@@ -3508,7 +3526,12 @@ function STLLab({ lang }) {
   React.useEffect(() => {
     const st = stateRef.current;
     if (!st?.planes || !window.THREE) return;
-    if (section == null) { st.planes.section.constant = 1e6; spinRef.current.locked = false; spinRef.current.snapTo = null; return; }
+    if (section == null) {
+      st.planes.section.constant = 1e6; spinRef.current.locked = false; spinRef.current.snapTo = null;
+      if (st.shared) st.shared.uBackMode.value = 0;
+      return;
+    }
+    if (st.shared) st.shared.uBackMode.value = 1;   // interno a righe di riempimento
     if (!spinRef.current.locked) spinRef.current.snapTo = 0.5;   // solo all'accensione
     spinRef.current.locked = true;
     st.cancelPrint?.();
@@ -4498,6 +4521,7 @@ function AppPage({ app, lang }) {
           flex: 1, minWidth: 0,
           display: 'flex', flexDirection: 'column',
           justifyContent: 'space-between',
+          gap: 'clamp(12px, 1.6vh, 16px)',
         }}>
           <h3 className="sgn-app-title" style={{
             fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700,
@@ -5806,6 +5830,7 @@ const SGN_MARK_POLYS = [
   [[102.79, 0], [206.1, 0], [51.35, 100.8]],
   [[84.44, 0], [33, 100.8], [8.4, 100.8], [59.83, 0]],
 ];
+const MARK_FRAC = 0.58;
 function HeroMark3D({ spinSignal = 0 }) {
   const mountRef = React.useRef(null);
   const [ready, setReady] = React.useState(false);
@@ -5851,21 +5876,26 @@ function HeroMark3D({ spinSignal = 0 }) {
       const holder = new THREE.Group();
       holder.add(mesh);
       scene.add(holder);
+      /* STESSA misura del marchio SVG statico (MARK_FRAC del lato minore del
+         contenitore), calcolata sul piano della faccia frontale: quando l'SVG
+         cede il posto al 3D (e viceversa, nell'uscita dalla home) il logo
+         non cambia di un pixel. */
       const fit = () => {
         const W = el.clientWidth, H = el.clientHeight;
         if (!W || !H) return;
         camera.aspect = W / H;
         camera.updateProjectionMatrix();
         renderer.setSize(W, H);
-        const visH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI / 180) / 2);
-        const visW = visH * camera.aspect;
-        const s = Math.min(visH * 0.62 / 201.44, visW * 0.62 / 206.1);
-        holder.scale.setScalar(s);
+        const zFront = 8;   // metà della profondità di estrusione
+        const visH = 2 * (camera.position.z - zFront) * Math.tan((camera.fov * Math.PI / 180) / 2);
+        const pxPerUnit = H / visH;
+        const markPx = Math.min(W, H) * MARK_FRAC;
+        holder.scale.setScalar(markPx / pxPerUnit / 206.1);
       };
       fit();
       const ro = new ResizeObserver(fit);
       ro.observe(el);
-      const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
+      const ptr = { x: 0, y: 0, tx: 0, ty: 0, k: 1 };
       // Desktop: si orienta verso il cursore (il marchio "guarda" il mouse).
       // Telefono: segue l'inclinazione del dispositivo. Fermo altrimenti.
       const onMove = (e) => {
@@ -5876,11 +5906,14 @@ function HeroMark3D({ spinSignal = 0 }) {
         ptr.ty = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight * 0.5)));
       };
       let baseBeta = null;
+      // Telefono: molto più sensibile (±16° di inclinazione = escursione
+      // piena) e con più rotazione, così il marchio "vive" in mano.
       const onTilt = (e) => {
         if (e.gamma == null || e.beta == null) return;
         if (baseBeta == null) baseBeta = e.beta;
-        ptr.tx = Math.max(-1, Math.min(1, e.gamma / 30));
-        ptr.ty = Math.max(-1, Math.min(1, (e.beta - baseBeta) / 30));
+        ptr.k = 1.7;
+        ptr.tx = Math.max(-1, Math.min(1, e.gamma / 16));
+        ptr.ty = Math.max(-1, Math.min(1, (e.beta - baseBeta) / 16));
       };
       window.addEventListener('pointermove', onMove, { passive: true });
       window.addEventListener('deviceorientation', onTilt, { passive: true });
@@ -5894,8 +5927,8 @@ function HeroMark3D({ spinSignal = 0 }) {
         ptr.y += (ptr.ty - ptr.y) * 0.08;
         const sp = spinRef.current;
         sp.value += (sp.target - sp.value) * 0.07;
-        holder.rotation.y = ptr.x * 0.5 + sp.value;
-        holder.rotation.x = ptr.y * 0.34;
+        holder.rotation.y = ptr.x * 0.5 * ptr.k + sp.value;
+        holder.rotation.x = ptr.y * 0.34 * ptr.k;
         renderer.render(scene, camera);
         if (first) { first = false; setReady(true); }
       };
@@ -5913,11 +5946,14 @@ function HeroMark3D({ spinSignal = 0 }) {
     return () => { cancelled = true; clearTimeout(t0); if (cleanup) cleanup(); };
   }, []);
   return (
-    <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+    <div aria-hidden style={{ position: 'absolute', inset: 0, containerType: 'size' }}>
       <svg viewBox="0 0 206.1 201.44" style={{
-        position: 'absolute', left: '50%', top: '50%', width: '38%',
+        position: 'absolute', left: '50%', top: '50%',
+        width: `calc(min(100cqw, 100cqh) * ${MARK_FRAC})`,
         transform: 'translate(-50%, -50%)',
-        opacity: ready ? 0 : 1, transition: 'opacity 240ms linear',
+        /* scambio a scatto (stessa misura, stessa posizione): nessuna
+           dissolvenza che mostri due loghi sovrapposti */
+        visibility: ready ? 'hidden' : 'visible',
       }}>
         <g fill={C.white}>
           {SGN_MARK_POLYS.map((p, i) => <polygon key={i} points={p.map(q => q.join(' ')).join(' ')}/>)}
@@ -8225,7 +8261,9 @@ function App() {
     const scrolls = [];
     from.forEach((n, i) => { if (n.scrollTop || n.scrollLeft) scrolls.push([to[i], n.scrollTop, n.scrollLeft]); });
     g.querySelectorAll('canvas, iframe, video').forEach(n => n.remove());
-    g.querySelectorAll('svg').forEach(s => { if (s.style.opacity === '0') s.style.opacity = '1'; });
+    // il marchio 3D (canvas) non si clona: nella copia torna il suo SVG
+    // statico, identico per misura e posizione
+    g.querySelectorAll('svg').forEach(s => { if (s.style.visibility === 'hidden') s.style.visibility = 'visible'; });
     g.className = 'sgn-display-inner sgn-ghost ' + (dir > 0 ? 'back' : 'fwd');
     g.removeAttribute('tabindex');
     g.setAttribute('aria-hidden', 'true');
