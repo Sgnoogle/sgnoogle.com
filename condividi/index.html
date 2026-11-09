@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Condividi l'offerta</title>
+<!--
+  Pagina di condivisione per i bot delle offerte (AliExpress, Amazon usato, Amazon Xiaomi).
+  Il pulsante "Condividi" sotto i post del canale apre questa pagina con i dati nel frammento (#),
+  che non arriva mai al server. Da qui parte il menu di condivisione del telefono
+  (navigator.share) oppure i tasti diretti WhatsApp, Telegram, Email, SMS, Copia.
+  Parametri: n nome · p prezzi · l link d'acquisto · u link al post · c nome del canale.
+-->
+<style>
+  :root { --white:#FFFFFF; --paper:#F0F1F2; --yellow:#FFC200; --grey:#6B6D70; --ink:#28282C; }
+  * { box-sizing:border-box; margin:0; }
+  html, body { background:var(--white); color:var(--grey); font:400 15px/1.5 "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  body { min-height:100dvh; padding:max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); display:flex; justify-content:center; }
+  main { width:100%; min-width:0; max-width:460px; display:flex; flex-direction:column; gap:20px; }
+  .label { font-weight:700; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey); }
+  h1 { color:var(--ink); font-size:20px; font-weight:700; line-height:1.3; }
+  .prices { color:var(--ink); font-weight:700; }
+  .preview { background:var(--paper); padding:16px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:13px; }
+  button, a.btn { font:inherit; border:0; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; min-height:52px; padding:0 16px; }
+  #share { background:var(--yellow); color:var(--white); font-weight:700; font-size:17px; min-height:60px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .grid .btn, .grid button { background:var(--paper); color:var(--ink); font-weight:700; }
+  .note { font-size:12px; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <span class="label">Condividi l'offerta</span>
+  <h1 id="name">Offerta</h1>
+  <div id="prices" class="prices"></div>
+  <button id="share" type="button">📤 Condividi</button>
+  <div class="grid">
+    <a class="btn" id="wa" href="#">💬 WhatsApp</a>
+    <a class="btn" id="tg" href="#">✈️ Telegram</a>
+    <a class="btn" id="mail" href="#">✉️ Email</a>
+    <a class="btn" id="sms" href="#">📱 SMS</a>
+    <button id="copy" type="button">📋 Copia testo</button>
+    <a class="btn" id="post" href="#">↩️ Torna al post</a>
+  </div>
+  <span class="label">Cosa viene condiviso</span>
+  <div id="preview" class="preview"></div>
+  <p class="note" id="msg"></p>
+</main>
+<script>
+(function () {
+  var q = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+  var name = q.get('n') || '', prices = q.get('p') || '', link = q.get('l') || '',
+      post = q.get('u') || '', channel = q.get('c') || '';
+  var lines = [];
+  if (name) lines.push('🔥 ' + name);
+  if (prices) lines.push(prices);
+  if (link) lines.push('🛒 ' + link);
+  if (post) lines.push('', '📢 ' + (channel ? 'Altre offerte su ' + channel + ': ' : 'Altre offerte: ') + post);
+  var text = lines.join('\n');
+  var enc = encodeURIComponent;
+  var $ = function (id) { return document.getElementById(id); };
+
+  $('name').textContent = name || 'Offerta';
+  if (prices) $('prices').textContent = prices; else $('prices').classList.add('hidden');
+  $('preview').textContent = text;
+  document.title = name ? 'Condividi: ' + name : document.title;
+
+  $('wa').href = 'https://wa.me/?text=' + enc(text);
+  $('tg').href = 'https://t.me/share/url?url=' + enc(link || post) + '&text=' + enc(lines.filter(function (l) { return l.indexOf(link) < 0 || !link; }).join('\n'));
+  $('mail').href = 'mailto:?subject=' + enc(name || 'Offerta') + '&body=' + enc(text);
+  $('sms').href = (/iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'sms:&body=' : 'sms:?body=') + enc(text);
+  if (post) $('post').href = post; else $('post').classList.add('hidden');
+
+  var android = /Android/i.test(navigator.userAgent);
+  function say(t) { $('msg').textContent = t; }
+
+  function nativeShare() {
+    if (navigator.share) {
+      return navigator.share({ title: name || 'Offerta', text: text }).then(function () { say('Condiviso ✅'); }, function (e) {
+        if (e && e.name === 'AbortError') return;
+        fallback();
+      });
+    }
+    fallback();
+  }
+  function fallback() {
+    if (android) {
+      // Menu di condivisione di Android anche dai browser interni che non hanno navigator.share
+      location.href = 'intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT=' + enc(text) + ';end';
+      return;
+    }
+    say('Il menu del telefono qui non si apre: usa i tasti qui sotto, oppure apri la pagina in Safari o Chrome.');
+  }
+  $('share').addEventListener('click', nativeShare);
+
+  $('copy').addEventListener('click', function () {
+    var done = function () { say('Testo copiato ✅ incollalo dove vuoi.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, legacy);
+    } else legacy();
+    function legacy() {
+      var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t);
+      t.select(); try { document.execCommand('copy'); done(); } catch (e) { say('Copia non riuscita: tieni premuto sul testo qui sotto.'); }
+      document.body.removeChild(t);
+    }
+  });
+
+  // Dove il browser lo permette, il menu del telefono si apre subito
+  if (navigator.share && text) {
+    try { navigator.share({ title: name || 'Offerta', text: text }).then(function () { say('Condiviso ✅'); }, function () {}); } catch (e) {}
+  }
+})();
+</script>
+</body>
+</html>
